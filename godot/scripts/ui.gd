@@ -12,7 +12,7 @@ const ORO := Color("#ffc93c")
 const LILA := Color("#8b7cf6")
 const AZUL := Color("#4aa8ff")
 const ROJO := Color("#ff5a5f")
-const SOMBRA := Color(0.25, 0.12, 0.05, 0.22)
+const SOMBRA := Color(0.25, 0.12, 0.05, 0.13)
 
 static var _fuentes := {}
 
@@ -27,9 +27,9 @@ static func fuente(peso := 500) -> Font:
 	return f
 
 ## Rectángulo redondeado relleno (con sombra opcional y brillo arriba).
-static func caja(ci: CanvasItem, r: Rect2, col: Color, radio: float, sombra := true, brillo := true) -> void:
+static func caja(ci: CanvasItem, r: Rect2, col: Color, radio: float, sombra := true, brillo := false) -> void:
 	if sombra:
-		_sb(ci, Rect2(r.position + Vector2(0, 5), r.size), SOMBRA, radio)
+		_sb(ci, Rect2(r.position + Vector2(0, 3), r.size), SOMBRA, radio)
 	_sb(ci, r, col, radio)
 	if brillo:
 		var h := Rect2(r.position + Vector2(r.size.x * 0.08, r.size.y * 0.06), Vector2(r.size.x * 0.84, r.size.y * 0.3))
@@ -48,6 +48,7 @@ static func _sb(ci: CanvasItem, r: Rect2, col: Color, radio: float) -> void:
 	ci.draw_style_box(_sbox, r)
 
 static func texto(ci: CanvasItem, pos: Vector2, s: String, tam: int, col: Color, peso := 600, centro := true, ancho := -1.0) -> void:
+	s = L.t(s)
 	var f := fuente(peso)
 	if centro:
 		var w := f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
@@ -58,6 +59,7 @@ static func texto(ci: CanvasItem, pos: Vector2, s: String, tam: int, col: Color,
 	ci.draw_string(f, pos + Vector2(0, tam * 0.35), s, HORIZONTAL_ALIGNMENT_LEFT, -1, tam, col)
 
 static func texto_borde(ci: CanvasItem, pos: Vector2, s: String, tam: int, col: Color, borde: Color, grosor := 8, peso := 700) -> void:
+	s = L.t(s)
 	var f := fuente(peso)
 	var w := f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, tam).x
 	var p := pos + Vector2(-w * 0.5, tam * 0.35)
@@ -205,12 +207,48 @@ static func icono(ci: CanvasItem, id: String, c: Vector2, s: float, col := Color
 			ci.draw_polyline(PackedVector2Array([c + Vector2(-16, -30) * u, c + Vector2(16, 0) * u, c + Vector2(-16, 30) * u]), col, 13 * u, true)
 		"zzz":
 			texto(ci, c, "Zz", int(60 * u), col, 700)
+		"juegos":
+			_sb(ci, Rect2(c + Vector2(-48, -26) * u, Vector2(96, 56) * u), col, 26 * u)
+			ci.draw_line(c + Vector2(-30, 2) * u, c + Vector2(-10, 2) * u, Color(0, 0, 0, 0.35), 7 * u)
+			ci.draw_line(c + Vector2(-20, -8) * u, c + Vector2(-20, 12) * u, Color(0, 0, 0, 0.35), 7 * u)
+			ci.draw_circle(c + Vector2(18, -4) * u, 6 * u, Color(0, 0, 0, 0.35))
+			ci.draw_circle(c + Vector2(30, 8) * u, 6 * u, Color(0, 0, 0, 0.35))
+		"menu":
+			for i in 3:
+				ci.draw_circle(c + Vector2(-28 + i * 28, 0) * u, 10 * u, col)
+		"engranaje":
+			for i in 8:
+				var a := TAU * i / 8.0
+				_sb(ci, Rect2(c + Vector2(cos(a), sin(a)) * 34 * u - Vector2(9, 9) * u, Vector2(18, 18) * u), col, 4 * u)
+			ci.draw_circle(c, 32 * u, col)
+			ci.draw_circle(c, 13 * u, Color(0, 0, 0, 0.3))
+		"capibara":
+			_sb(ci, Rect2(c + Vector2(-40, -30) * u, Vector2(80, 66) * u), Color("#a0703f"), 30 * u)
+			_sb(ci, Rect2(c + Vector2(-26, 0) * u, Vector2(52, 36) * u), Color("#8a5a33"), 18 * u)
+			ci.draw_circle(c + Vector2(-22, -30) * u, 9 * u, Color("#6e4a2a"))
+			ci.draw_circle(c + Vector2(22, -30) * u, 9 * u, Color("#6e4a2a"))
+			ci.draw_circle(c + Vector2(-16, -10) * u, 5 * u, Color("#1e1410"))
+			ci.draw_circle(c + Vector2(16, -10) * u, 5 * u, Color("#1e1410"))
+			ci.draw_circle(c + Vector2(0, -44) * u, 13 * u, Color("#ff9f2e"))
+			ci.draw_circle(c + Vector2(6, -56) * u, 5 * u, Color("#4cae4c"))
+		"salto":
+			for j in 3:
+				ci.draw_circle(c + Vector2((j - 1) * 24, 26) * u, 18 * u, col)
+			ci.draw_polyline(PackedVector2Array([c + Vector2(-20, -10) * u, c + Vector2(0, -38) * u, c + Vector2(20, -10) * u]), Color("#ff9f43"), 10 * u, true)
+		"memoria":
+			_sb(ci, Rect2(c + Vector2(-44, -34) * u, Vector2(50, 68) * u), Color("#ff9f43"), 10 * u)
+			_sb(ci, Rect2(c + Vector2(-6, -26) * u, Vector2(50, 68) * u), col, 10 * u)
+			ci.draw_colored_polygon(corazon_pts(c + Vector2(19, 8) * u, 34 * u), ROSA)
+		"cohete":
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -46) * u, c + Vector2(18, -10) * u, c + Vector2(18, 26) * u,
+				c + Vector2(-18, 26) * u, c + Vector2(-18, -10) * u]), Color("#e8eef7"))
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -46) * u, c + Vector2(14, -18) * u, c + Vector2(-14, -18) * u]), Color("#ff5a5f"))
+			ci.draw_circle(c + Vector2(0, 0) * u, 9 * u, Color("#7fd8ff"))
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-12, 26) * u, c + Vector2(0, 50) * u, c + Vector2(12, 26) * u]), Color("#ffb347"))
+		"luna":
+			_luna(ci, c, 40 * u, col)
 		_:
-			if id.begins_with("ropa_"):
-				icono_ropa(ci, id.substr(5), c, s)
-			elif id.begins_with("deco_"):
-				_sb(ci, Rect2(c - Vector2(36, 36) * u, Vector2(72, 72) * u), col, 16 * u)
-			elif id.begins_with("comida_"):
+			if id.begins_with("comida_"):
 				icono_comida(ci, id.substr(7), c, s)
 			else:
 				ci.draw_circle(c, 30 * u, col)
@@ -238,79 +276,205 @@ static func _gota(ci: CanvasItem, c: Vector2, r: float, col: Color) -> void:
 	ci.draw_colored_polygon(p, col)
 
 ## Mini dibujos de la ropa (para las tarjetas del armario).
-static func icono_ropa(ci: CanvasItem, id: String, c: Vector2, s: float) -> void:
+static func icono_ropa(ci: CanvasItem, forma: String, c: Vector2, s: float, cs: Array = []) -> void:
 	var u := s / 100.0
-	match id:
-		"bufanda_nova":
-			_sb(ci, Rect2(c + Vector2(-40, -20) * u, Vector2(80, 26) * u), Color("#6cc9b2"), 13 * u)
-			_sb(ci, Rect2(c + Vector2(10, -4) * u, Vector2(20, 46) * u), Color("#4fae98"), 8 * u)
-			ci.draw_colored_polygon(estrella_pts(c + Vector2(-14, -7) * u, 10 * u), Color("#ffd36e"))
-		"mono_rojo":
-			_poly(ci, [c, c + Vector2(-42, -24) * u, c + Vector2(-42, 24) * u], Color("#e23b4e"))
-			_poly(ci, [c, c + Vector2(42, -24) * u, c + Vector2(42, 24) * u], Color("#e23b4e"))
-			ci.draw_circle(c, 11 * u, Color("#b8283a"))
-		"collar_bellotas":
-			ci.draw_arc(c + Vector2(0, -20) * u, 38 * u, 0.2, PI - 0.2, 20, Color("#7a4b2a"), 4 * u, true)
-			for i in 5:
-				var a := 0.4 + i * (PI - 0.8) / 4.0
-				icono(ci, "bellota", c + Vector2(0, -20) * u + Vector2(cos(a), sin(a)) * 38 * u, 22 * u)
-		"panuelo_azul":
-			_poly(ci, [c + Vector2(-42, -26) * u, c + Vector2(42, -26) * u, c + Vector2(0, 36) * u], Color("#2f7de1"))
-			for i in 5:
-				ci.draw_circle(c + Vector2(-20 + i * 10, -14 + (i % 2) * 14) * u, 3 * u, Color.WHITE)
-		"gorro_lana":
-			ci.draw_circle(c + Vector2(0, 8) * u, 40 * u, Color("#e85d6f"))
-			ci.draw_rect(Rect2(c + Vector2(-44, 10) * u, Vector2(88, 40) * u), Color(0, 0, 0, 0))
-			_sb(ci, Rect2(c + Vector2(-46, 8) * u, Vector2(92, 22) * u), Color("#fff4ec"), 10 * u)
-			ci.draw_circle(c + Vector2(0, -36) * u, 13 * u, Color("#fff4ec"))
-		"gorra_nova":
-			ci.draw_circle(c + Vector2(0, 6) * u, 36 * u, Color("#3d5afe"))
-			_sb(ci, Rect2(c + Vector2(-4, 6) * u, Vector2(52, 14) * u), Color("#2f45c9"), 7 * u)
-			ci.draw_colored_polygon(estrella_pts(c + Vector2(-6, -8) * u, 12 * u), Color("#ffd36e"))
-		"sombrero_copa":
-			_sb(ci, Rect2(c + Vector2(-26, -42) * u, Vector2(52, 66) * u), Color("#2b2633"), 6 * u)
-			_sb(ci, Rect2(c + Vector2(-46, 20) * u, Vector2(92, 14) * u), Color("#2b2633"), 7 * u)
-			ci.draw_rect(Rect2(c + Vector2(-26, 6) * u, Vector2(52, 12) * u), Color("#c0394b"))
-		"corona":
+	var c0 := Color(str(cs[0])) if cs.size() > 0 else Color("#cccccc")
+	var c1 := Color(str(cs[1])) if cs.size() > 1 else Color.WHITE
+	var c2 := Color(str(cs[2])) if cs.size() > 2 else Color("#2b2633")
+	var def: Dictionary = {}
+	for r in Estado.cat.ropa:
+		if r.forma == forma:
+			def = r
+			break
+	var zona := str(def.get("zona", ""))
+	match forma:
+		"bufanda", "panuelo":
+			_sb(ci, Rect2(c + Vector2(-40, -20) * u, Vector2(80, 26) * u), c0, 13 * u)
+			_poly(ci, [c + Vector2(4, -4) * u, c + Vector2(30, -4) * u, c + Vector2(18, 40) * u], c0.darkened(0.1))
+			ci.draw_circle(c + Vector2(-14, -7) * u, 5 * u, c1)
+		"mono", "corbata":
+			if forma == "mono":
+				_poly(ci, [c, c + Vector2(-42, -24) * u, c + Vector2(-42, 24) * u], c0)
+				_poly(ci, [c, c + Vector2(42, -24) * u, c + Vector2(42, 24) * u], c0)
+				ci.draw_circle(c, 11 * u, c0.darkened(0.2))
+			else:
+				_poly(ci, [c + Vector2(-10, -36) * u, c + Vector2(10, -36) * u, c + Vector2(18, 26) * u, c + Vector2(0, 44) * u, c + Vector2(-18, 26) * u], c0)
+		"collar_bellotas", "collar_perlas", "cascabel", "medalla":
+			ci.draw_arc(c + Vector2(0, -24) * u, 38 * u, 0.2, PI - 0.2, 20, c1 if forma != "collar_perlas" else c0, 5 * u, true)
+			if forma == "collar_bellotas":
+				for i in 5:
+					var a := 0.4 + i * (PI - 0.8) / 4.0
+					icono(ci, "bellota", c + Vector2(0, -24) * u + Vector2(cos(a), sin(a)) * 38 * u, 22 * u)
+			elif forma == "collar_perlas":
+				for i in 9:
+					var a := 0.3 + i * (PI - 0.6) / 8.0
+					ci.draw_circle(c + Vector2(0, -24) * u + Vector2(cos(a), sin(a)) * 38 * u, 6 * u, c0)
+			else:
+				ci.draw_circle(c + Vector2(0, 22) * u, 18 * u, c1 if forma == "cascabel" else c0)
+				if forma == "medalla":
+					ci.draw_colored_polygon(estrella_pts(c + Vector2(0, 22) * u, 12 * u), Color("#fff3c4"))
+		"corona", "tiara":
 			_poly(ci, [c + Vector2(-42, 30) * u, c + Vector2(-42, -26) * u, c + Vector2(-21, 0) * u, c + Vector2(0, -36) * u,
-				c + Vector2(21, 0) * u, c + Vector2(42, -26) * u, c + Vector2(42, 30) * u], Color("#ffcf4a"))
+				c + Vector2(21, 0) * u, c + Vector2(42, -26) * u, c + Vector2(42, 30) * u], c0)
 			ci.draw_circle(c + Vector2(0, 14) * u, 8 * u, Color("#ff4d6d"))
-			ci.draw_circle(c + Vector2(-24, 16) * u, 6 * u, Color("#4dd2ff"))
-			ci.draw_circle(c + Vector2(24, 16) * u, 6 * u, Color("#7dff8a"))
-		"flor":
+		"flor", "corona_flores":
 			for i in 5:
 				var a := TAU * i / 5.0 - PI / 2
-				ci.draw_circle(c + Vector2(cos(a), sin(a)) * 24 * u, 18 * u, Color("#ffb3c7"))
-			ci.draw_circle(c, 14 * u, Color("#ffd36e"))
+				ci.draw_circle(c + Vector2(cos(a), sin(a)) * 24 * u, 18 * u, c0)
+			ci.draw_circle(c, 14 * u, c1 if forma == "flor" else Color("#ffcf4a"))
 		"audifonos":
-			ci.draw_arc(c + Vector2(0, 8) * u, 38 * u, PI, TAU, 24, Color("#7c4dff"), 9 * u, true)
-			_sb(ci, Rect2(c + Vector2(-50, 0) * u, Vector2(24, 40) * u), Color("#7c4dff"), 10 * u)
-			_sb(ci, Rect2(c + Vector2(26, 0) * u, Vector2(24, 40) * u), Color("#7c4dff"), 10 * u)
-		"lentes_sol", "lentes_redondos":
-			var lc := Color("#20202a") if id == "lentes_sol" else Color("#d4a24c")
+			ci.draw_arc(c + Vector2(0, 8) * u, 38 * u, PI, TAU, 24, c0, 9 * u, true)
+			_sb(ci, Rect2(c + Vector2(-50, 0) * u, Vector2(24, 40) * u), c0, 10 * u)
+			_sb(ci, Rect2(c + Vector2(26, 0) * u, Vector2(24, 40) * u), c0, 10 * u)
+		"sombrero_copa":
+			_sb(ci, Rect2(c + Vector2(-26, -42) * u, Vector2(52, 66) * u), c0, 6 * u)
+			_sb(ci, Rect2(c + Vector2(-46, 20) * u, Vector2(92, 14) * u), c0, 7 * u)
+			ci.draw_rect(Rect2(c + Vector2(-26, 6) * u, Vector2(52, 12) * u), c1)
+		"mago", "bruja", "gorro_navidad":
+			_poly(ci, [c + Vector2(0, -46) * u, c + Vector2(30, 22) * u, c + Vector2(-30, 22) * u], c0)
+			_sb(ci, Rect2(c + Vector2(-46, 18) * u, Vector2(92, 16) * u), c0 if forma != "gorro_navidad" else c1, 8 * u)
+			if forma == "gorro_navidad":
+				ci.draw_circle(c + Vector2(0, -44) * u, 10 * u, c1)
+			else:
+				ci.draw_colored_polygon(estrella_pts(c + Vector2(0, -4) * u, 10 * u), c1)
+		"vaquero":
+			_sb(ci, Rect2(c + Vector2(-50, 12) * u, Vector2(100, 16) * u), c0, 8 * u)
+			_sb(ci, Rect2(c + Vector2(-26, -24) * u, Vector2(52, 44) * u), c0, 16 * u)
+			ci.draw_rect(Rect2(c + Vector2(-26, 4) * u, Vector2(52, 8) * u), c1)
+		"chef":
+			_sb(ci, Rect2(c + Vector2(-26, 0) * u, Vector2(52, 30) * u), c0, 6 * u)
+			for i in 3:
+				ci.draw_circle(c + Vector2(-22 + i * 22, -14) * u, 22 * u, c0)
+		"pirata":
+			_poly(ci, [c + Vector2(-48, 16) * u, c + Vector2(0, -30) * u, c + Vector2(48, 16) * u], c0)
+			ci.draw_circle(c + Vector2(0, 0) * u, 9 * u, c1)
+		"casco_astronauta":
+			ci.draw_circle(c, 42 * u, Color(0.8, 0.92, 1.0, 0.8))
+			ci.draw_arc(c, 42 * u, 0, TAU, 32, c0, 6 * u, true)
+		"cuernos":
 			for sx in [-1.0, 1.0]:
-				if id == "lentes_sol":
-					ci.draw_circle(c + Vector2(sx * 24, 0) * u, 20 * u, lc)
-				else:
-					ci.draw_arc(c + Vector2(sx * 24, 0) * u, 18 * u, 0, TAU, 24, lc, 5 * u, true)
-			ci.draw_line(c + Vector2(-6, -4) * u, c + Vector2(6, -4) * u, lc, 5 * u)
-		"lentes_corazon":
+				_poly(ci, [c + Vector2(sx * 10, 30) * u, c + Vector2(sx * 40, 30) * u, c + Vector2(sx * 36, -40) * u], c0)
+		"aureola":
+			ci.draw_arc(c, 36 * u, 0, TAU, 32, c0, 10 * u, true)
+		"antenas":
 			for sx in [-1.0, 1.0]:
-				ci.draw_colored_polygon(corazon_pts(c + Vector2(sx * 24, 0) * u, 44 * u), Color("#ff4f86"))
-			ci.draw_line(c + Vector2(-6, -6) * u, c + Vector2(6, -6) * u, Color("#ff8fb3"), 5 * u)
-		"poleron_menta", "camiseta_estrella", "overol", "capa_real":
-			var cc := {"poleron_menta": Color("#7fd8be"), "camiseta_estrella": Color("#fff3c4"), "overol": Color("#4a6fa5"), "capa_real": Color("#b3123d")}
-			icono(ci, "ropa", c, s * 0.95, cc[id])
-			if id == "camiseta_estrella":
-				ci.draw_colored_polygon(estrella_pts(c + Vector2(0, 6) * u, 16 * u), Color("#ffb703"))
-			elif id == "poleron_menta":
-				_sb(ci, Rect2(c + Vector2(-18, 12) * u, Vector2(36, 16) * u), Color("#5fbfa4"), 6 * u)
-			elif id == "overol":
-				_sb(ci, Rect2(c + Vector2(-20, -10) * u, Vector2(40, 50) * u), Color("#3a5a8a"), 6 * u)
-			elif id == "capa_real":
-				ci.draw_circle(c + Vector2(0, -30) * u, 14 * u, Color("#fff8f0"))
+				ci.draw_line(c + Vector2(sx * 10, 36) * u, c + Vector2(sx * 30, -20) * u, c0, 6 * u)
+				ci.draw_circle(c + Vector2(sx * 30, -24) * u, 12 * u, c1)
+		"orejas_conejo":
+			for sx in [-1.0, 1.0]:
+				_sb(ci, Rect2(c + Vector2(sx * 22 - 13, -44) * u, Vector2(26, 80) * u), c0, 13 * u)
+				_sb(ci, Rect2(c + Vector2(sx * 22 - 7, -36) * u, Vector2(14, 60) * u), c1, 7 * u)
+		"cuerno_unicornio":
+			_poly(ci, [c + Vector2(-16, 36) * u, c + Vector2(16, 36) * u, c + Vector2(0, -44) * u], Color("#fff3f8"))
+			for i in 3:
+				ci.draw_line(c + Vector2(-12 + i * 2, 20 - i * 20) * u, c + Vector2(12 - i * 2, 12 - i * 20) * u, c0, 4 * u)
+		"boina":
+			_sb(ci, Rect2(c + Vector2(-46, -12) * u, Vector2(92, 36) * u), c0, 18 * u)
+			ci.draw_line(c + Vector2(10, -12) * u, c + Vector2(14, -26) * u, c0, 5 * u)
+		"vikingo":
+			ci.draw_circle(c + Vector2(0, 10) * u, 34 * u, c0)
+			for sx in [-1.0, 1.0]:
+				_poly(ci, [c + Vector2(sx * 30, 0) * u, c + Vector2(sx * 52, -40) * u, c + Vector2(sx * 40, 10) * u], c1)
+		"lentes_sol", "lentes_redondos", "gafas_buceo", "lentes_corazon", "lentes_estrella":
+			for sx in [-1.0, 1.0]:
+				var q := c + Vector2(sx * 24, 0) * u
+				match forma:
+					"lentes_corazon":
+						ci.draw_colored_polygon(corazon_pts(q, 44 * u), c0)
+					"lentes_estrella":
+						ci.draw_colored_polygon(estrella_pts(q, 22 * u), c0)
+					"lentes_redondos":
+						ci.draw_arc(q, 18 * u, 0, TAU, 24, c0, 5 * u, true)
+					_:
+						ci.draw_circle(q, 20 * u, c0 if forma == "lentes_sol" else c1)
+			ci.draw_line(c + Vector2(-6, -4) * u, c + Vector2(6, -4) * u, c0, 5 * u)
+		"monoculo":
+			ci.draw_arc(c, 24 * u, 0, TAU, 24, c0, 6 * u, true)
+			ci.draw_line(c + Vector2(20, 14) * u, c + Vector2(30, 44) * u, c0, 3 * u)
+		"visor":
+			_sb(ci, Rect2(c + Vector2(-48, -14) * u, Vector2(96, 28) * u), c1, 14 * u)
+		"parche":
+			ci.draw_line(c + Vector2(-46, -20) * u, c + Vector2(46, 10) * u, c0, 4 * u)
+			ci.draw_circle(c + Vector2(12, 0) * u, 20 * u, c0)
+		"alas_hada", "alas_angel", "alas_mariposa", "alas_murcielago":
+			for sx in [-1.0, 1.0]:
+				var q := c + Vector2(sx * 24, -6) * u
+				var pts := PackedVector2Array()
+				for i in 20:
+					var a := TAU * i / 20.0
+					pts.append(q + Vector2(cos(a) * 22 * sx + sx * 6, sin(a) * 34) * u)
+				ci.draw_colored_polygon(pts, Color(c0, 0.75 if forma == "alas_hada" else 1.0))
+		"mochila", "jetpack", "caparazon":
+			_sb(ci, Rect2(c + Vector2(-32, -34) * u, Vector2(64, 72) * u), c0, 18 * u)
+			_sb(ci, Rect2(c + Vector2(-22, 4) * u, Vector2(44, 26) * u), c1, 10 * u)
+			if forma == "jetpack":
+				_poly(ci, [c + Vector2(-14, 40) * u, c + Vector2(0, 58) * u, c + Vector2(14, 40) * u], Color("#ffb347"))
 		_:
-			ci.draw_circle(c, 30 * u, Color("#cccccc"))
+			if zona == "cuerpo" or forma == "capa":
+				icono(ci, "ropa", c, s * 0.95, c0)
+				ci.draw_circle(c + Vector2(0, 6) * u, 9 * u, c1)
+			elif zona == "traje":
+				# Pip con el traje puesto
+				ci.draw_circle(c + Vector2(0, 26) * u, 30 * u, c0)
+				ci.draw_circle(c + Vector2(0, -14) * u, 32 * u, c0)
+				ci.draw_circle(c + Vector2(0, -10) * u, 20 * u, Color("#cf7a3e") if forma not in ["robot", "slime", "astronauta"] else c1.lerp(c0, 0.3))
+				for sx in [-1.0, 1.0]:
+					ci.draw_circle(c + Vector2(sx * 8, -14) * u, 4 * u, Color("#2a1a18"))
+				ci.draw_circle(c + Vector2(0, 26) * u, 12 * u, c1)
+			else:
+				# gorros y gorras
+				ci.draw_circle(c + Vector2(0, 8) * u, 38 * u, c0)
+				ci.draw_rect(Rect2(c + Vector2(-44, 12) * u, Vector2(88, 40) * u), Color(0, 0, 0, 0))
+				_sb(ci, Rect2(c + Vector2(-44, 8) * u, Vector2(88, 20) * u), c1, 10 * u)
+				if forma == "helice":
+					ci.draw_line(c + Vector2(-30, -40) * u, c + Vector2(30, -40) * u, c1, 6 * u)
+
+## Miniatura de una decoración: la pared con su patrón, el piso, o el mueble en su color.
+static func icono_deco(ci: CanvasItem, slot: String, r: Rect2, c1: Color, cs: Array) -> void:
+	var c2 := Color(str(cs[0])) if cs.size() > 0 and str(cs[0]).begins_with("#") else Color.WHITE
+	var pat := str(cs[1]) if cs.size() > 1 else ""
+	var c := r.get_center()
+	var u := minf(r.size.x, r.size.y) / 100.0
+	match slot:
+		"pared", "piso":
+			_sb(ci, r, c1, 20)
+			match pat:
+				"rayas", "tablas":
+					var x := r.position.x + 14
+					while x < r.end.x - 10:
+						ci.draw_rect(Rect2(Vector2(x, r.position.y + 6), Vector2(8 if pat == "rayas" else 2, r.size.y - 12)), c2)
+						x += 22
+				"lunares", "nubes", "ondas":
+					for i in 9:
+						ci.draw_circle(r.position + Vector2(18 + (i % 3) * r.size.x * 0.33, 18 + (i / 3) * r.size.y * 0.33), 6, c2)
+				"estrellas":
+					for i in 6:
+						ci.draw_colored_polygon(estrella_pts(r.position + Vector2(20 + (i % 3) * r.size.x * 0.33, 24 + (i / 3) * r.size.y * 0.45), 9), c2)
+				"corazones":
+					for i in 6:
+						ci.draw_colored_polygon(corazon_pts(r.position + Vector2(20 + (i % 3) * r.size.x * 0.33, 24 + (i / 3) * r.size.y * 0.45), 18), c2)
+				"cuadros", "ladrillo", "ajedrez", "rombos":
+					var tam := r.size.x / 5.0
+					for ix in 5:
+						for iy in int(r.size.y / tam):
+							if (ix + iy) % 2 == 0:
+								ci.draw_rect(Rect2(r.position + Vector2(ix * tam, iy * tam), Vector2(tam, tam)).intersection(r.grow(-4)), c2)
+				"hojas":
+					for i in 6:
+						ci.draw_circle(r.position + Vector2(20 + (i % 3) * r.size.x * 0.33, 24 + (i / 3) * r.size.y * 0.45), 8, c2)
+		"fondo":
+			var cols := {"dia": ["#7cc4ff", "#e4f5ff"], "atardecer": ["#7b5cff", "#ffb38a"], "noche": ["#0d1340", "#3a3f8f"],
+				"galaxia": ["#1a0b3d", "#6a2c91"], "aurora": ["#071a35", "#2ad59a"], "nublado": ["#9fb3c8", "#e3eaf2"],
+				"amanecer": ["#8fb8ff", "#ffc9a8"], "dulce": ["#ffb8e1", "#b8f0ff"]}
+			var cc: Array = cols.get(pat, cols.dia)
+			var pts := PackedVector2Array([r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)])
+			ci.draw_polygon(pts, PackedColorArray([Color(cc[0]), Color(cc[0]), Color(cc[1]), Color(cc[1])]))
+		_:
+			_sb(ci, r, Color(c1, 0.25), 20)
+			var ic: String = {"cama": "habitacion", "lampara": "foco", "alfombra": "estrella", "cerca": "menu", "arbol": "patio",
+				"pasto": "patio", "juguete": "pelota", "banera": "bano", "cortina": "ducha", "nevera": "cocina", "mesa": "cocina",
+				"planta": "patio"}.get(slot, "pincel")
+			icono(ci, ic, c, 70 * u, c1.darkened(0.15) if c1.v > 0.9 else c1)
 
 static func icono_comida(ci: CanvasItem, id: String, c: Vector2, s: float) -> void:
 	var u := s / 100.0
@@ -360,6 +524,7 @@ class Boton extends Control:
 	var _apretado := false
 	var _tw: Tween
 	var sonido := "select"
+	var sin_fondo := false
 
 	func _init(ic := "", tx := "", col := UI.CREMA, sz := Vector2(96, 96)) -> void:
 		icono = ic
@@ -394,7 +559,8 @@ class Boton extends Control:
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
 		var c := color if activo else color.lerp(Color(0.8, 0.8, 0.8), 0.6)
-		UI.caja(self, r, c, minf(radio, size.y * 0.5))
+		if not sin_fondo:
+			UI.caja(self, r, c, minf(radio, size.y * 0.5))
 		if seleccionado:
 			draw_style_box(_borde(), r.grow(3))
 		var has_t := texto != ""
@@ -440,6 +606,10 @@ class Tarjeta extends Control:
 	var cantidad := -1
 	var color := Color.WHITE
 	var color_icono := UI.CAFE
+	var colores: Array = []       ## colores de la prenda o decoración (para su miniatura)
+	var etiqueta := ""            ## texto en lugar del precio ("Gratis", "Récord: 120")
+	var cinta := ""               ## cinta de esquina ("¡Oferta!", "Más popular")
+	var animada := false          ## la prenda tiene animación (chispita en la esquina)
 	var _p := Vector2.ZERO
 	var _apretado := false
 	var _tw: Tween
@@ -484,29 +654,47 @@ class Tarjeta extends Control:
 			sb.set_corner_radius_all(26)
 			sb.anti_aliasing = true
 			draw_style_box(sb, r)
-		var ir := Rect2(Vector2(12, 12), Vector2(size.x - 24, size.y * 0.55))
+		var doble := precio_txt != "" and etiqueta != ""
+		var ir := Rect2(Vector2(12, 12), Vector2(size.x - 24, size.y * (0.46 if doble else 0.55)))
 		UI._sb(self, ir, color, 20)
-		UI.icono(self, icono, ir.get_center(), minf(ir.size.x, ir.size.y) * 0.82, color_icono)
-		UI.texto(self, Vector2(size.x * 0.5, size.y * 0.68), nombre, 19, UI.CAFE, 600, true, size.x - 16)
-		var py := size.y * 0.86
+		var isz := minf(ir.size.x, ir.size.y) * 0.82
+		if icono.begins_with("ropa_"):
+			UI.icono_ropa(self, icono.substr(5), ir.get_center(), isz, colores)
+		elif icono.begins_with("deco_"):
+			UI.icono_deco(self, icono.substr(5), ir, color, colores)
+		else:
+			UI.icono(self, icono, ir.get_center(), isz, color_icono)
+		if animada:
+			draw_colored_polygon(UI.estrella_pts(ir.position + Vector2(ir.size.x - 18, 18), 12), UI.ORO)
+		UI.texto(self, Vector2(size.x * 0.5, size.y * (0.6 if doble else 0.68)), nombre, 22 if doble else 19, UI.CAFE, 700 if doble else 600, true, size.x - 16)
+		var py := size.y * (0.72 if doble else 0.86)
 		if estado == "bloqueado":
 			UI.icono(self, "candado", Vector2(size.x * 0.5, py), 30, UI.CAFE2)
 		elif estado == "puesto":
 			UI.icono(self, "check", Vector2(size.x * 0.5, py), 30, UI.MENTA)
+		elif etiqueta != "":
+			UI.texto(self, Vector2(size.x * 0.5, py), etiqueta, 19, UI.MENTA.darkened(0.15), 700, true, size.x - 16)
 		elif estado == "tiene":
 			UI.texto(self, Vector2(size.x * 0.5, py), "Tuyo", 20, UI.MENTA, 700)
 		elif precio_txt != "":
-			UI._sb(self, Rect2(Vector2(14, py - 18), Vector2(size.x - 28, 36)), UI.MENTA, 18)
-			UI.texto(self, Vector2(size.x * 0.5, py), precio_txt, 19, Color.WHITE, 700, true, size.x - 36)
+			UI._sb(self, Rect2(Vector2(14, py - 20), Vector2(size.x - 28, 40)), UI.MENTA, 20)
+			UI.texto(self, Vector2(size.x * 0.5, py), precio_txt, 22, Color.WHITE, 700, true, size.x - 36)
 		elif precio == 0:
 			UI.texto(self, Vector2(size.x * 0.5, py), "Gratis", 20, UI.MENTA, 700)
 		else:
 			UI.icono(self, "bellota", Vector2(size.x * 0.5 - 26, py), 30)
 			UI.texto(self, Vector2(size.x * 0.5 + 14, py), str(precio), 22, UI.CAFE, 700)
+		if precio_txt != "" and etiqueta != "":
+			UI._sb(self, Rect2(Vector2(14, size.y - 50), Vector2(size.x - 28, 40)), UI.MENTA, 20)
+			UI.texto(self, Vector2(size.x * 0.5, size.y - 30), precio_txt, 22, Color.WHITE, 700, true, size.x - 36)
 		if cantidad >= 0:
 			var p := Vector2(size.x - 22, 22)
 			draw_circle(p, 18, UI.LILA)
 			UI.texto(self, p, str(cantidad), 18, Color.WHITE, 700)
+		if cinta != "":
+			var w := UI.fuente(700).get_string_size(L.t(cinta), HORIZONTAL_ALIGNMENT_LEFT, -1, 18).x + 28
+			UI._sb(self, Rect2(Vector2(-4, 6), Vector2(w, 34)), UI.ROJO, 17)
+			UI.texto(self, Vector2(-4 + w * 0.5, 23), cinta, 18, Color.WHITE, 700)
 
 
 # ================= efectos 2D (encima del juego) =================
@@ -603,7 +791,8 @@ class Fx extends Control:
 				"estrella":
 					draw_colored_polygon(UI.estrella_pts(p, s * 0.5, q.rot + k * 2.0), Color(UI.ORO, a))
 				"chispa":
-					draw_colored_polygon(UI.estrella_pts(p, s * 0.5 * (1.0 - k), k * 4.0), Color(q.col, a))
+					if (1.0 - k) * s > 2.0:
+						draw_colored_polygon(UI.estrella_pts(p, s * 0.5 * (1.0 - k), k * 4.0), Color(q.col, a))
 				"burbuja":
 					draw_arc(p, s * 0.5, 0, TAU, 24, Color(1, 1, 1, a * 0.9), 2.5, true)
 					draw_circle(p, s * 0.5, Color(0.85, 0.95, 1.0, a * 0.25))
@@ -616,3 +805,24 @@ class Fx extends Control:
 					UI.texto_borde(self, p, q.txt, int(s), Color(q.col, a), Color(0.35, 0.18, 0.08, a), 8)
 				"vuela":
 					UI.icono(self, "bellota", p, s * (1.0 - 0.3 * k))
+
+
+## Pip dibujado en 2D (minijuegos): cabeza redonda con orejas, ojos brillantes y cachetes.
+static func pip2d(ci: CanvasItem, p: Vector2, r: float, feliz := true) -> void:
+	var fur := Color("#cf7a3e")
+	if Estado.capibara_activa():
+		fur = Color("#a0703f")
+	for s in [-1.0, 1.0]:
+		ci.draw_colored_polygon(PackedVector2Array([p + Vector2(s * r * 0.35, -r * 0.6), p + Vector2(s * r * 0.85, -r * 1.35), p + Vector2(s * r * 0.95, -r * 0.35)]), fur)
+	ci.draw_circle(p + Vector2(0, r * 0.08), r * 1.02, Color(0, 0, 0, 0.12))
+	ci.draw_circle(p, r, fur)
+	ci.draw_circle(p + Vector2(0, r * 0.35), r * 0.55, Color("#fbe6cf"))
+	for s in [-1.0, 1.0]:
+		if feliz:
+			ci.draw_circle(p + Vector2(s * r * 0.38, -r * 0.08), r * 0.17, Color("#2a1a18"))
+			ci.draw_circle(p + Vector2(s * r * 0.38 - r * 0.05, -r * 0.14), r * 0.06, Color.WHITE)
+		else:
+			ci.draw_arc(p + Vector2(s * r * 0.38, -r * 0.05), r * 0.14, PI + 0.3, TAU - 0.3, 8, Color("#2a1a18"), r * 0.07)
+		ci.draw_circle(p + Vector2(s * r * 0.62, r * 0.25), r * 0.13, Color(1, 0.6, 0.65, 0.7))
+	ci.draw_circle(p + Vector2(0, r * 0.18), r * 0.1, Color("#5a2f2a"))
+	ci.draw_arc(p + Vector2(0, r * 0.3), r * 0.15, 0.4, PI - 0.4, 8, Color("#5a2f2a"), r * 0.05)

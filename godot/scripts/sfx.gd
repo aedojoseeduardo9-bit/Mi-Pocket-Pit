@@ -10,7 +10,7 @@ var _m_a: AudioStreamPlayer
 var _m_b: AudioStreamPlayer
 var _cancion := ""
 var _fade := 1.0
-var _vol_m := 0.55
+var _vol_m := 0.8
 var agua: AudioStreamPlayer
 var ronroneo: AudioStreamPlayer
 const RATE := 22050
@@ -49,7 +49,8 @@ func _stream(id: String) -> AudioStream:
 	return s
 
 func play(id: String, pitch := 1.0, vol_db := 0.0) -> void:
-	if not Estado.d.get("sonido", true):
+	var ef := float(Estado.cfg("efectos"))
+	if ef <= 0.01:
 		return
 	var s := _stream(id)
 	if s == null:
@@ -60,7 +61,7 @@ func play(id: String, pitch := 1.0, vol_db := 0.0) -> void:
 	_next = (_next + 1) % _players.size()
 	p.stream = s
 	p.pitch_scale = pitch
-	p.volume_db = vol_db
+	p.volume_db = vol_db + linear_to_db(ef)
 	p.play()
 
 func musica(id: String) -> void:
@@ -80,17 +81,15 @@ func musica(id: String) -> void:
 	_fade = 0.0
 
 func _process(dt: float) -> void:
-	var on: bool = Estado.d.get("musica", true)
 	_fade = minf(1.0, _fade + dt / 1.2)
-	var v := _vol_m if on else 0.0
+	var v := _vol_m * float(Estado.cfg("musica"))
 	_m_a.volume_db = linear_to_db(maxf(0.0001, v * _fade))
 	_m_b.volume_db = linear_to_db(maxf(0.0001, v * (1.0 - _fade)))
 	if _fade >= 1.0 and _m_b.playing:
 		_m_b.stop()
 
 func set_ronroneo(k: float) -> void:
-	if not Estado.d.get("sonido", true):
-		k = 0.0
+	k *= float(Estado.cfg("efectos"))
 	if k > 0.01 and not ronroneo.playing:
 		ronroneo.play()
 	ronroneo.volume_db = linear_to_db(maxf(0.0001, k * 0.6))
@@ -98,7 +97,7 @@ func set_ronroneo(k: float) -> void:
 		ronroneo.stop()
 
 func set_agua(on: bool) -> void:
-	if on and Estado.d.get("sonido", true):
+	if on and float(Estado.cfg("efectos")) > 0.01:
 		if not agua.playing:
 			agua.play()
 	elif agua.playing:

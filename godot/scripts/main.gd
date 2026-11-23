@@ -37,7 +37,8 @@ var _zona := ""
 var _arrastre := 0.0
 var _car_acum := 0.0
 var _t_corazon := 0.0
-var _premio_caricia := 0.0
+var _t_forma := 0.0
+var _vitrina: Node3D
 
 # actividades
 var jabon := false
@@ -76,7 +77,10 @@ func _ready() -> void:
 	capa_intro.add_child(intro)
 	intro.terminada.connect(_fin_intro)
 	Estado.subio_nivel.connect(_subio_nivel)
+	Estado.cambio.connect(_revisar_forma)
 	Pagos.compra_lista.connect(_compra_lista)
+	aplicar_ajustes()
+	_precalentar()
 	if OS.get_cmdline_user_args().has("--sin-intro"):
 		intro.t = IntroNioro.LEN - 0.01
 	for a in OS.get_cmdline_user_args():
@@ -94,7 +98,7 @@ func _armar_mundo() -> void:
 	env.background_color = Color("#2a1f2e")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("#fff1e6")
-	env.ambient_light_energy = 0.32
+	env.ambient_light_energy = 0.38
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 0.95
 	env.glow_enabled = true
@@ -111,8 +115,8 @@ func _armar_mundo() -> void:
 	sol.light_color = Color("#fff4e2")
 	sol.shadow_enabled = true
 	sol.shadow_blur = 1.6
-	sol.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	sol.directional_shadow_max_distance = 14.0
+	sol.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	sol.directional_shadow_max_distance = 11.0
 	mundo.add_child(sol)
 	casa = Casa.new()
 	mundo.add_child(casa)
@@ -156,8 +160,12 @@ func _fin_intro() -> void:
 	tw.tween_property(negro, "color:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE)
 	intro.queue_free()
 	await get_tree().create_timer(0.9).timeout
-	pip.hacer("saludo")
-	Sfx.play("feliz")
+	if Estado.d.get("durmiendo", false) and hab == 1:
+		apagar_luz(true)
+	else:
+		Estado.d.durmiendo = false
+		pip.hacer("saludo")
+		Sfx.play("feliz")
 	if Estado.regalo_disponible():
 		await get_tree().create_timer(0.6).timeout
 		hud.abrir_regalo()
@@ -218,24 +226,21 @@ func _process(dt: float) -> void:
 	if casa.ducha:
 		var y := 2.35 if modo == "ducha" else 4.6
 		casa.ducha.position.y = lerpf(casa.ducha.position.y, y, minf(1.0, dt * 4.0))
-	# la cola de bellotas que vuelan
-	if _premio_caricia > 0.0:
-		_premio_caricia -= dt
+	_t_forma -= dt
+	if _t_forma < 0.0:
+		_t_forma = 0.5
+		_revisar_forma()
 
 func _aplicar_noche() -> void:
 	var k := _noche_k
 	sol.light_energy = lerpf(0.42, 0.06, k)
-	env.ambient_light_energy = lerpf(0.32, 0.16, k)
+	env.ambient_light_energy = lerpf(0.38, 0.16, k)
 	env.ambient_light_color = Color("#fff1e6").lerp(Color("#6b78c9"), k)
-	if casa.lampara:
-		casa.lampara.light_energy = lerpf(0.35, 0.0, k)
 	if casa.lampara_mat:
 		casa.lampara_mat.emission_energy_multiplier = lerpf(0.6, 0.05, k)
 	var vm = casa.get_meta("ventana_habitacion", null)
 	if vm:
 		(vm as StandardMaterial3D).emission = Color("#9fc8ff").lerp(Color("#1a2266"), k)
-	for h in casa.luces:
-		(casa.luces[h] as OmniLight3D).light_energy = lerpf(0.22, 0.0, k)
 
 func _pantalla(p: Vector3) -> Vector2:
 	# de 3D a coordenadas de la interfaz (el lienzo está escalado)
@@ -381,12 +386,7 @@ func _frotar(zona: String, p: Vector2, d: float) -> void:
 	if _car_acum > 900.0:
 		_car_acum = 0.0
 		Estado.subir("diversion", 3.0)
-		Estado.dar_xp(2)
-		# un premio chiquito por cariño (con pausa: no es una fuente infinita)
-		if _premio_caricia <= 0.0:
-			_premio_caricia = 25.0
-			fx.volar(p, hud.pos_bellotas(), 3)
-			Estado.dar_bellotas(3)
+		Estado.dar_xp(1)
 
 func _accion_terminada(nombre: String) -> void:
 	if nombre == "enojo":
@@ -403,12 +403,12 @@ func alimentar(id: String, desde: Vector2) -> void:
 		hud.toast("Pip está lleno", UI.NARANJO)
 		return
 	if Estado.comida(id) <= 0:
-		if not Estado.gastar(int(c.precio)):
-			hud.sin_bellotas()
+		if not hud.pagar(int(c.precio)):
 			return
+	elif id == "bellota":
+		Estado.usar_gratis()
 	else:
-		if id != "bellota":
-			Estado.sumar_comida(id, -1)
+		Estado.sumar_comida(id, -1)
 	var boca := boca_en_pantalla()
 	pip.mirar_a = pip.mouth.global_position + Vector3(0, 0.3, 1.0)
 	hud.volar_icono("comida_" + id, desde, boca, 0.55, func():
@@ -424,6 +424,8 @@ func apagar_luz(on: bool) -> void:
 	if on == luz_apagada:
 		return
 	luz_apagada = on
+	Estado.d.durmiendo = on
+	Estado.marcar()
 	Sfx.play("tic", 0.7)
 	if on:
 		modo = "dormir"
@@ -564,6 +566,11 @@ func pocion(id: String) -> void:
 	if Estado.pociones(id) <= 0:
 		return
 	Estado.sumar_pocion(id, -1)
+	if id == "capibara":
+		Estado.d.capi_hasta = Time.get_unix_time_from_system() + float(p.segundos)
+		Estado.marcar()
+		_revisar_forma()
+		return
 	pip.tomar_pocion(id, float(p.segundos))
 	Sfx.play("crystal")
 	var c := pip_en_pantalla()
@@ -571,15 +578,19 @@ func pocion(id: String) -> void:
 	Estado.dar_xp(2)
 
 func _subio_nivel(n: int) -> void:
-	hud.toast("¡Nivel %d! +%d bellotas" % [n, 50 + n * 10], UI.ORO)
+	hud.toast(L.f("¡Nivel %d! +%d bellotas", [n, 20 + n * 5]), UI.ORO)
 	Sfx.play("level")
 	pip.hacer("celebrar", true)
 	fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -150), 10)
 
-func _compra_lista(_id: String, n: int) -> void:
+func _compra_lista(id: String, n: int) -> void:
 	Sfx.play("chest")
-	fx.volar(hud.size * 0.5, hud.pos_bellotas(), 16)
-	hud.toast("+%d bellotas (compra de prueba)" % n, UI.MENTA)
+	if n > 0:
+		fx.volar(hud.size * 0.5, hud.pos_bellotas(), 16)
+		hud.toast(L.f("+%d bellotas (compra de prueba)", [n]), UI.MENTA)
+	if id == "capibara_permanente":
+		hud.toast("¡La capibara es tuya para siempre!", UI.MENTA)
+		_revisar_forma()
 	pip.hacer("celebrar")
 
 ## Llamado cada cuadro por Pip al terminar un baile (ver _process).
@@ -590,3 +601,74 @@ func _physics_process(_dt: float) -> void:
 		Estado.dar_xp(5)
 		_musica()
 		hud.refrescar()
+
+# ---------------- ajustes ----------------
+func aplicar_ajustes() -> void:
+	var q := int(Estado.cfg("calidad"))
+	sol.shadow_enabled = q >= 1
+	sol.shadow_blur = 1.6 if q >= 2 else 1.0
+	env.glow_enabled = q >= 1
+	get_viewport().msaa_3d = Viewport.MSAA_4X if q >= 2 else (Viewport.MSAA_2X if q == 1 else Viewport.MSAA_DISABLED)
+	get_viewport().scaling_3d_scale = 1.0 if q >= 1 else 0.75
+	Engine.max_fps = 60 if q >= 1 else 30
+	RenderingServer.directional_shadow_atlas_set_size(2048 if q >= 2 else 1024, true)
+	var idioma := str(Estado.cfg("idioma"))
+	if idioma != L.idioma:
+		L.cambiar(idioma)
+		if hud:
+			hud.cambio_habitacion()
+			hud.queue_redraw()
+
+func vibrar(ms := 18) -> void:
+	if Estado.cfg("vibrar"):
+		Input.vibrate_handheld(ms)
+
+# ---------------- capibara ----------------
+func _revisar_forma() -> void:
+	var quiere := "capibara" if Estado.capibara_activa() else "pip"
+	if quiere == pip.forma:
+		return
+	pip.set_forma(quiere)
+	if quiere == "pip":
+		Atuendos.vestir(pip, Estado.d.puesto)
+	Sfx.play("crystal", 0.8)
+	fx.emitir("chispa", pip_en_pantalla() + Vector2(0, -60), 28, Color("#ffd9a8"))
+	fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -90), 6)
+	pip.hacer("celebrar")
+	if quiere == "capibara":
+		hud.toast("¡Pip es una capibara!", Color("#b07a45"))
+
+# ---------------- sin tirones ----------------
+## Durante la intro (que tapa la pantalla) se dibuja una vez cada tipo de material, la ropa animada, la capibara
+## y las partículas: así el teléfono prepara sus sombreadores antes de jugar y no se traba la primera vez.
+func _precalentar() -> void:
+	_vitrina = Node3D.new()
+	_vitrina.position = Vector3(casa.centro(hab), 0.2, 1.6)
+	mundo.add_child(_vitrina)
+	var mats: Array = Atuendos.muestras()
+	mats.append_array([casa.mat("#ffffff", 0.5, 1.0), casa.mat("#ffffff"), pip.M.fur, pip.M.eye, pip.M["cola"]])
+	var esfera := SphereMesh.new()
+	esfera.radius = 0.05
+	esfera.height = 0.1
+	for i in mats.size():
+		var m := MeshInstance3D.new()
+		m.mesh = esfera
+		m.material_override = mats[i]
+		m.position = Vector3(-0.6 + i * 0.1, 0.5, 0)
+		_vitrina.add_child(m)
+	# un Pip de muestra con un traje, alas y casco (sombras y transparencias incluidas)
+	var muestra := PipModel.new()
+	muestra.scale = Vector3.ONE * 0.8
+	_vitrina.add_child(muestra)
+	Atuendos.vestir(muestra, {"traje": "slime_verde", "espalda": "alas_hada_celeste", "ojos": "visor_celeste"})
+	var capi := PipModel.new()
+	capi.scale = Vector3.ONE * 0.8
+	capi.position.x = 0.5
+	_vitrina.add_child(capi)
+	capi.set_forma("capibara")
+	casa.gotas.emitting = true
+	pelota.visible = true
+	await get_tree().create_timer(1.2).timeout
+	casa.gotas.emitting = false
+	pelota.visible = false
+	_vitrina.queue_free()

@@ -1,85 +1,3506 @@
 {
-  "_nota": "Catálogo de Pocket Pip. Precios en bellotas doradas. 'nivel' = nivel mínimo para comprarlo. Para añadir contenido basta editar este archivo (y, si es ropa nueva, su forma en atuendos.gd).",
-
-  "ropa": [
-    {"id": "bufanda_nova",      "nombre": "Bufanda Nova",       "zona": "cuello", "precio": 0,   "nivel": 1},
-    {"id": "mono_rojo",         "nombre": "Moño rojo",          "zona": "cuello", "precio": 40,  "nivel": 1},
-    {"id": "collar_bellotas",   "nombre": "Collar de bellotas", "zona": "cuello", "precio": 70,  "nivel": 2},
-    {"id": "panuelo_azul",      "nombre": "Pañuelo vaquero",    "zona": "cuello", "precio": 45,  "nivel": 1},
-
-    {"id": "gorro_lana",        "nombre": "Gorro de lana",      "zona": "cabeza", "precio": 60,  "nivel": 1},
-    {"id": "gorra_nova",        "nombre": "Gorra Star Nova",    "zona": "cabeza", "precio": 80,  "nivel": 1},
-    {"id": "sombrero_copa",     "nombre": "Sombrero de copa",   "zona": "cabeza", "precio": 150, "nivel": 2},
-    {"id": "corona",            "nombre": "Corona real",        "zona": "cabeza", "precio": 300, "nivel": 3},
-    {"id": "flor",              "nombre": "Flor de cerezo",     "zona": "cabeza", "precio": 35,  "nivel": 1},
-    {"id": "audifonos",         "nombre": "Audífonos",          "zona": "cabeza", "precio": 120, "nivel": 2},
-
-    {"id": "lentes_sol",        "nombre": "Lentes de sol",      "zona": "ojos",   "precio": 55,  "nivel": 1},
-    {"id": "lentes_corazon",    "nombre": "Lentes corazón",     "zona": "ojos",   "precio": 90,  "nivel": 2},
-    {"id": "lentes_redondos",   "nombre": "Lentes de lectura",  "zona": "ojos",   "precio": 65,  "nivel": 1},
-
-    {"id": "poleron_menta",     "nombre": "Polerón menta",      "zona": "cuerpo", "precio": 110, "nivel": 1},
-    {"id": "camiseta_estrella", "nombre": "Polera estrella",    "zona": "cuerpo", "precio": 75,  "nivel": 1},
-    {"id": "overol",            "nombre": "Overol de jardín",   "zona": "cuerpo", "precio": 130, "nivel": 2},
-    {"id": "capa_real",         "nombre": "Capa real",          "zona": "cuerpo", "precio": 260, "nivel": 3}
-  ],
-
-  "pociones": [
-    {"id": "gigante",  "nombre": "Poción gigante",  "precio": 30, "color": "#ff8a5c", "segundos": 40},
-    {"id": "mini",     "nombre": "Poción mini",     "precio": 30, "color": "#6cc9ff", "segundos": 40},
-    {"id": "arcoiris", "nombre": "Poción arcoíris", "precio": 50, "color": "#c77dff", "segundos": 40},
-    {"id": "fantasma", "nombre": "Poción fantasma", "precio": 40, "color": "#d9e4ff", "segundos": 40},
-    {"id": "brillo",   "nombre": "Poción estelar",  "precio": 45, "color": "#ffd36e", "segundos": 40}
-  ],
-
-  "bailes": [
-    {"id": "saltitos", "nombre": "Saltitos",     "precio": 0,   "musica": "musica_dia_0"},
-    {"id": "robot",    "nombre": "Robot Nova",   "precio": 90,  "musica": "musica_prisma_0"},
-    {"id": "trompo",   "nombre": "Trompo",       "precio": 140, "musica": "musica_prisma_0"},
-    {"id": "aplausos", "nombre": "Aplausos",     "precio": 60,  "musica": "musica_cuento_0"}
-  ],
-
-  "comida": [
-    {"id": "bellota", "nombre": "Bellota",  "precio": 0,  "llena": 8,  "color": "#c58a4a"},
-    {"id": "fresa",   "nombre": "Frutilla", "precio": 4,  "llena": 14, "color": "#ff5a6e"},
-    {"id": "galleta", "nombre": "Galleta",  "precio": 6,  "llena": 18, "color": "#e2a95f"},
-    {"id": "nuez",    "nombre": "Nuez",     "precio": 3,  "llena": 12, "color": "#a8743f"},
-    {"id": "pastel",  "nombre": "Pastel",   "precio": 15, "llena": 35, "color": "#ffc2d6"},
-    {"id": "helado",  "nombre": "Helado",   "precio": 10, "llena": 22, "color": "#bff0e4"}
-  ],
-
-  "deco": {
-    "cocina": {
-      "pared":  [{"id": "crema", "nombre": "Crema", "precio": 0}, {"id": "menta", "nombre": "Menta", "precio": 60}, {"id": "cerezo", "nombre": "Cerezo", "precio": 80}],
-      "piso":   [{"id": "madera", "nombre": "Madera", "precio": 0}, {"id": "ajedrez", "nombre": "Baldosa", "precio": 50}],
-      "nevera": [{"id": "clasica", "nombre": "Clásica", "precio": 0}, {"id": "retro", "nombre": "Retro rosa", "precio": 120}],
-      "mesa":   [{"id": "madera", "nombre": "De madera", "precio": 0}, {"id": "azul", "nombre": "Redonda azul", "precio": 90}]
-    },
-    "habitacion": {
-      "pared":    [{"id": "lavanda", "nombre": "Lavanda", "precio": 0}, {"id": "noche", "nombre": "Cielo de noche", "precio": 100}, {"id": "durazno", "nombre": "Durazno", "precio": 60}],
-      "cama":     [{"id": "nido", "nombre": "Nido", "precio": 0}, {"id": "nube", "nombre": "Nube", "precio": 150}, {"id": "cohete", "nombre": "Cohete Avellana", "precio": 220}],
-      "lampara":  [{"id": "hongo", "nombre": "Hongo", "precio": 0}, {"id": "luna", "nombre": "Luna", "precio": 90}],
-      "alfombra": [{"id": "redonda", "nombre": "Redonda", "precio": 0}, {"id": "estrella", "nombre": "Estrella", "precio": 70}]
-    },
-    "patio": {
-      "fondo": [{"id": "dia", "nombre": "Día", "precio": 0}, {"id": "atardecer", "nombre": "Atardecer", "precio": 80}, {"id": "noche", "nombre": "Noche", "precio": 100}, {"id": "galaxia", "nombre": "Galaxia Nova", "precio": 200}],
-      "cerca": [{"id": "blanca", "nombre": "Blanca", "precio": 0}, {"id": "madera", "nombre": "Troncos", "precio": 50}],
-      "arbol": [{"id": "roble", "nombre": "Roble", "precio": 0}, {"id": "cerezo", "nombre": "Cerezo", "precio": 120}]
-    },
-    "bano": {
-      "pared":   [{"id": "azulejo", "nombre": "Azulejo", "precio": 0}, {"id": "coral", "nombre": "Coral", "precio": 70}],
-      "banera":  [{"id": "clasica", "nombre": "Clásica", "precio": 0}, {"id": "dorada", "nombre": "Patas doradas", "precio": 150}],
-      "cortina": [{"id": "rayas", "nombre": "Rayas", "precio": 0}, {"id": "burbujas", "nombre": "Burbujas", "precio": 60}, {"id": "estrellas", "nombre": "Estrellas", "precio": 90}]
-    }
+ "_nota": "GENERADO por godot/tools/generar_catalogo.py — no editar a mano.",
+ "ropa": [
+  {
+   "id": "bufanda_nova",
+   "forma": "bufanda",
+   "zona": "cuello",
+   "nombre": "Bufanda Nova",
+   "en": "Nova Scarf",
+   "precio": 0,
+   "nivel": 1,
+   "c": [
+    "#6cc9b2",
+    "#4fae98"
+   ],
+   "anim": ""
   },
-
-  "paquetes": [
-    {"id": "bellotas_500",   "nombre": "Puñado de bellotas", "bellotas": 500,   "precio": "US$0,99"},
-    {"id": "bellotas_1200",  "nombre": "Bolsa de bellotas",  "bellotas": 1200,  "precio": "US$1,99"},
-    {"id": "bellotas_3500",  "nombre": "Cofre de bellotas",  "bellotas": 3500,  "precio": "US$4,99"},
-    {"id": "bellotas_8000",  "nombre": "Carreta de bellotas", "bellotas": 8000, "precio": "US$9,99"},
-    {"id": "bellotas_20000", "nombre": "Montaña de bellotas", "bellotas": 20000, "precio": "US$19,99"}
-  ],
-
-  "regalo_diario": [30, 40, 50, 60, 80, 100, 200]
+  {
+   "id": "bufanda_rojo",
+   "forma": "bufanda",
+   "zona": "cuello",
+   "nombre": "Bufanda rojo",
+   "en": "Red Scarf",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "bufanda_lila",
+   "forma": "bufanda",
+   "zona": "cuello",
+   "nombre": "Bufanda lila",
+   "en": "Purple Scarf",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#9b7cf6",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "bufanda_amarillo",
+   "forma": "bufanda",
+   "zona": "cuello",
+   "nombre": "Bufanda amarillo",
+   "en": "Yellow Scarf",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#ffcf4a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mono_rojo",
+   "forma": "mono",
+   "zona": "cuello",
+   "nombre": "Moño rojo",
+   "en": "Red Bow Tie",
+   "precio": 40,
+   "nivel": 1,
+   "c": [
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mono_negro",
+   "forma": "mono",
+   "zona": "cuello",
+   "nombre": "Moño negro",
+   "en": "Black Bow Tie",
+   "precio": 40,
+   "nivel": 1,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mono_lila",
+   "forma": "mono",
+   "zona": "cuello",
+   "nombre": "Moño lila",
+   "en": "Purple Bow Tie",
+   "precio": 40,
+   "nivel": 1,
+   "c": [
+    "#9b7cf6"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "collar_bellotas",
+   "forma": "collar_bellotas",
+   "zona": "cuello",
+   "nombre": "Collar de bellotas",
+   "en": "Acorn Necklace",
+   "precio": 70,
+   "nivel": 2,
+   "c": [
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "panuelo_azul",
+   "forma": "panuelo",
+   "zona": "cuello",
+   "nombre": "Pañuelo azul",
+   "en": "Blue Bandana",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "panuelo_rojo",
+   "forma": "panuelo",
+   "zona": "cuello",
+   "nombre": "Pañuelo rojo",
+   "en": "Red Bandana",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "panuelo_verde",
+   "forma": "panuelo",
+   "zona": "cuello",
+   "nombre": "Pañuelo verde",
+   "en": "Green Bandana",
+   "precio": 45,
+   "nivel": 1,
+   "c": [
+    "#4cc38a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "corbata_azul",
+   "forma": "corbata",
+   "zona": "cuello",
+   "nombre": "Corbata azul",
+   "en": "Blue Necktie",
+   "precio": 60,
+   "nivel": 2,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "corbata_rojo",
+   "forma": "corbata",
+   "zona": "cuello",
+   "nombre": "Corbata rojo",
+   "en": "Red Necktie",
+   "precio": 60,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "collar_perlas",
+   "forma": "collar_perlas",
+   "zona": "cuello",
+   "nombre": "Collar de perlas",
+   "en": "Pearl Necklace",
+   "precio": 140,
+   "nivel": 4,
+   "c": [
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "cascabel_rojo",
+   "forma": "cascabel",
+   "zona": "cuello",
+   "nombre": "Cascabel rojo",
+   "en": "Red Jingle Bell",
+   "precio": 80,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#ffcf4a"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "cascabel_azul",
+   "forma": "cascabel",
+   "zona": "cuello",
+   "nombre": "Cascabel azul",
+   "en": "Blue Jingle Bell",
+   "precio": 80,
+   "nivel": 2,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "medalla",
+   "forma": "medalla",
+   "zona": "cuello",
+   "nombre": "Medalla de campeón",
+   "en": "Champion Medal",
+   "precio": 160,
+   "nivel": 5,
+   "c": [
+    "#ffcf4a",
+    "#3d6dfe"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorro_lana_rojo",
+   "forma": "gorro_lana",
+   "zona": "cabeza",
+   "nombre": "Gorro de lana rojo",
+   "en": "Red Beanie",
+   "precio": 60,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorro_lana_azul",
+   "forma": "gorro_lana",
+   "zona": "cabeza",
+   "nombre": "Gorro de lana azul",
+   "en": "Blue Beanie",
+   "precio": 60,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorro_lana_verde",
+   "forma": "gorro_lana",
+   "zona": "cabeza",
+   "nombre": "Gorro de lana verde",
+   "en": "Green Beanie",
+   "precio": 60,
+   "nivel": 1,
+   "c": [
+    "#4cc38a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorro_lana_lila",
+   "forma": "gorro_lana",
+   "zona": "cabeza",
+   "nombre": "Gorro de lana lila",
+   "en": "Purple Beanie",
+   "precio": 60,
+   "nivel": 1,
+   "c": [
+    "#9b7cf6",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorra_azul",
+   "forma": "gorra",
+   "zona": "cabeza",
+   "nombre": "Gorra azul",
+   "en": "Blue Cap",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorra_rojo",
+   "forma": "gorra",
+   "zona": "cabeza",
+   "nombre": "Gorra rojo",
+   "en": "Red Cap",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorra_negro",
+   "forma": "gorra",
+   "zona": "cabeza",
+   "nombre": "Gorra negro",
+   "en": "Black Cap",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#2b2633",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "gorra_verde",
+   "forma": "gorra",
+   "zona": "cabeza",
+   "nombre": "Gorra verde",
+   "en": "Green Cap",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#4cc38a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "sombrero_copa_negro",
+   "forma": "sombrero_copa",
+   "zona": "cabeza",
+   "nombre": "Sombrero de copa negro",
+   "en": "Black Top Hat",
+   "precio": 150,
+   "nivel": 3,
+   "c": [
+    "#2b2633",
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "sombrero_copa_lila",
+   "forma": "sombrero_copa",
+   "zona": "cabeza",
+   "nombre": "Sombrero de copa lila",
+   "en": "Purple Top Hat",
+   "precio": 150,
+   "nivel": 3,
+   "c": [
+    "#9b7cf6",
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "corona_oro",
+   "forma": "corona",
+   "zona": "cabeza",
+   "nombre": "Corona de oro",
+   "en": "Gold Crown",
+   "precio": 320,
+   "nivel": 5,
+   "c": [
+    "#ffcf4a",
+    "#e85d6f"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "corona_plata",
+   "forma": "corona",
+   "zona": "cabeza",
+   "nombre": "Corona de plata",
+   "en": "Silver Crown",
+   "precio": 320,
+   "nivel": 5,
+   "c": [
+    "#cfd6e2",
+    "#e85d6f"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "flor_rosa",
+   "forma": "flor",
+   "zona": "cabeza",
+   "nombre": "Flor rosa",
+   "en": "Pink Flower",
+   "precio": 35,
+   "nivel": 1,
+   "c": [
+    "#ff8fb3",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "flor_blanco",
+   "forma": "flor",
+   "zona": "cabeza",
+   "nombre": "Flor blanco",
+   "en": "White Flower",
+   "precio": 35,
+   "nivel": 1,
+   "c": [
+    "#f6f2ee",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "flor_celeste",
+   "forma": "flor",
+   "zona": "cabeza",
+   "nombre": "Flor celeste",
+   "en": "Sky Flower",
+   "precio": 35,
+   "nivel": 1,
+   "c": [
+    "#7fc8ff",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "audifonos_lila",
+   "forma": "audifonos",
+   "zona": "cabeza",
+   "nombre": "Audífonos lila",
+   "en": "Purple Headphones",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#9b7cf6",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "audifonos_rojo",
+   "forma": "audifonos",
+   "zona": "cabeza",
+   "nombre": "Audífonos rojo",
+   "en": "Red Headphones",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "audifonos_menta",
+   "forma": "audifonos",
+   "zona": "cabeza",
+   "nombre": "Audífonos menta",
+   "en": "Mint Headphones",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#7fd8be",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "vaquero_cafe",
+   "forma": "vaquero",
+   "zona": "cabeza",
+   "nombre": "Sombrero vaquero café",
+   "en": "Brown Cowboy Hat",
+   "precio": 130,
+   "nivel": 3,
+   "c": [
+    "#8d5d32",
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "vaquero_negro",
+   "forma": "vaquero",
+   "zona": "cabeza",
+   "nombre": "Sombrero vaquero negro",
+   "en": "Black Cowboy Hat",
+   "precio": 130,
+   "nivel": 3,
+   "c": [
+    "#2b2633",
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "chef",
+   "forma": "chef",
+   "zona": "cabeza",
+   "nombre": "Gorro de chef",
+   "en": "Chef Hat",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "pirata",
+   "forma": "pirata",
+   "zona": "cabeza",
+   "nombre": "Sombrero pirata",
+   "en": "Pirate Hat",
+   "precio": 150,
+   "nivel": 3,
+   "c": [
+    "#2b2633",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mago_azul",
+   "forma": "mago",
+   "zona": "cabeza",
+   "nombre": "Sombrero de mago azul",
+   "en": "Blue Wizard Hat",
+   "precio": 160,
+   "nivel": 4,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mago_lila",
+   "forma": "mago",
+   "zona": "cabeza",
+   "nombre": "Sombrero de mago lila",
+   "en": "Purple Wizard Hat",
+   "precio": 160,
+   "nivel": 4,
+   "c": [
+    "#9b7cf6",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "casco_astronauta",
+   "forma": "casco_astronauta",
+   "zona": "cabeza",
+   "nombre": "Casco de astronauta",
+   "en": "Space Helmet",
+   "precio": 260,
+   "nivel": 6,
+   "c": [
+    "#f6f2ee",
+    "#7fc8ff"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "corona_flores_rosa",
+   "forma": "corona_flores",
+   "zona": "cabeza",
+   "nombre": "Corona de flores rosa",
+   "en": "Pink Flower Crown",
+   "precio": 110,
+   "nivel": 2,
+   "c": [
+    "#ff8fb3",
+    "#4cc38a",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "corona_flores_lila",
+   "forma": "corona_flores",
+   "zona": "cabeza",
+   "nombre": "Corona de flores lila",
+   "en": "Purple Flower Crown",
+   "precio": 110,
+   "nivel": 2,
+   "c": [
+    "#9b7cf6",
+    "#4cc38a",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "cuernos_rojo",
+   "forma": "cuernos",
+   "zona": "cabeza",
+   "nombre": "Cuernitos rojo",
+   "en": "Red Little Horns",
+   "precio": 90,
+   "nivel": 3,
+   "c": [
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "cuernos_negro",
+   "forma": "cuernos",
+   "zona": "cabeza",
+   "nombre": "Cuernitos negro",
+   "en": "Black Little Horns",
+   "precio": 90,
+   "nivel": 3,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "aureola",
+   "forma": "aureola",
+   "zona": "cabeza",
+   "nombre": "Aureola",
+   "en": "Halo",
+   "precio": 200,
+   "nivel": 5,
+   "c": [
+    "#ffcf4a"
+   ],
+   "anim": "flotar"
+  },
+  {
+   "id": "antenas",
+   "forma": "antenas",
+   "zona": "cabeza",
+   "nombre": "Antenas",
+   "en": "Antennae",
+   "precio": 70,
+   "nivel": 2,
+   "c": [
+    "#2b2633",
+    "#ffcf4a"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "helice_azul",
+   "forma": "helice",
+   "zona": "cabeza",
+   "nombre": "Gorro con hélice azul",
+   "en": "Blue Propeller Cap",
+   "precio": 120,
+   "nivel": 3,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a",
+    "#e85d6f"
+   ],
+   "anim": "girar"
+  },
+  {
+   "id": "helice_verde",
+   "forma": "helice",
+   "zona": "cabeza",
+   "nombre": "Gorro con hélice verde",
+   "en": "Green Propeller Cap",
+   "precio": 120,
+   "nivel": 3,
+   "c": [
+    "#4cc38a",
+    "#ffcf4a",
+    "#e85d6f"
+   ],
+   "anim": "girar"
+  },
+  {
+   "id": "gorro_navidad",
+   "forma": "gorro_navidad",
+   "zona": "cabeza",
+   "nombre": "Gorro navideño",
+   "en": "Holiday Hat",
+   "precio": 100,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "orejas_conejo_blanco",
+   "forma": "orejas_conejo",
+   "zona": "cabeza",
+   "nombre": "Orejas de conejo blanco",
+   "en": "White Bunny Ears",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#f6f2ee",
+    "#ff8fb3"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "orejas_conejo_negro",
+   "forma": "orejas_conejo",
+   "zona": "cabeza",
+   "nombre": "Orejas de conejo negro",
+   "en": "Black Bunny Ears",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#2b2633",
+    "#ff8fb3"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "cuerno_unicornio",
+   "forma": "cuerno_unicornio",
+   "zona": "cabeza",
+   "nombre": "Cuerno de unicornio",
+   "en": "Unicorn Horn",
+   "precio": 180,
+   "nivel": 4,
+   "c": [
+    "#ff8fb3"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "boina_rojo",
+   "forma": "boina",
+   "zona": "cabeza",
+   "nombre": "Boina rojo",
+   "en": "Red Beret",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "boina_negro",
+   "forma": "boina",
+   "zona": "cabeza",
+   "nombre": "Boina negro",
+   "en": "Black Beret",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "boina_azul",
+   "forma": "boina",
+   "zona": "cabeza",
+   "nombre": "Boina azul",
+   "en": "Blue Beret",
+   "precio": 70,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "casco_bombero",
+   "forma": "casco_bombero",
+   "zona": "cabeza",
+   "nombre": "Casco de bombero",
+   "en": "Firefighter Helmet",
+   "precio": 140,
+   "nivel": 3,
+   "c": [
+    "#e85d6f",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "tiara",
+   "forma": "tiara",
+   "zona": "cabeza",
+   "nombre": "Tiara",
+   "en": "Tiara",
+   "precio": 190,
+   "nivel": 4,
+   "c": [
+    "#cfd6e2",
+    "#ff8fb3"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "bruja",
+   "forma": "bruja",
+   "zona": "cabeza",
+   "nombre": "Sombrero de bruja",
+   "en": "Witch Hat",
+   "precio": 150,
+   "nivel": 3,
+   "c": [
+    "#2b2633",
+    "#9b7cf6"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "vikingo",
+   "forma": "vikingo",
+   "zona": "cabeza",
+   "nombre": "Casco vikingo",
+   "en": "Viking Helmet",
+   "precio": 170,
+   "nivel": 4,
+   "c": [
+    "#cfd6e2",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_sol_negro",
+   "forma": "lentes_sol",
+   "zona": "ojos",
+   "nombre": "Lentes de sol negro",
+   "en": "Black Sunglasses",
+   "precio": 55,
+   "nivel": 1,
+   "c": [
+    "#2b2633",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_sol_rojo",
+   "forma": "lentes_sol",
+   "zona": "ojos",
+   "nombre": "Lentes de sol rojo",
+   "en": "Red Sunglasses",
+   "precio": 55,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_sol_azul",
+   "forma": "lentes_sol",
+   "zona": "ojos",
+   "nombre": "Lentes de sol azul",
+   "en": "Blue Sunglasses",
+   "precio": 55,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_corazon_rojo",
+   "forma": "lentes_corazon",
+   "zona": "ojos",
+   "nombre": "Lentes corazón rojo",
+   "en": "Red Heart Glasses",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#ff8fb3"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_corazon_rosa",
+   "forma": "lentes_corazon",
+   "zona": "ojos",
+   "nombre": "Lentes corazón rosa",
+   "en": "Pink Heart Glasses",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#ff8fb3",
+    "#ff8fb3"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_redondos_oro",
+   "forma": "lentes_redondos",
+   "zona": "ojos",
+   "nombre": "Lentes redondos de oro",
+   "en": "Gold Round Glasses",
+   "precio": 65,
+   "nivel": 1,
+   "c": [
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_redondos_negro",
+   "forma": "lentes_redondos",
+   "zona": "ojos",
+   "nombre": "Lentes redondos negro",
+   "en": "Black Round Glasses",
+   "precio": 65,
+   "nivel": 1,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_estrella_amarillo",
+   "forma": "lentes_estrella",
+   "zona": "ojos",
+   "nombre": "Lentes estrella amarillo",
+   "en": "Yellow Star Glasses",
+   "precio": 95,
+   "nivel": 2,
+   "c": [
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "lentes_estrella_lila",
+   "forma": "lentes_estrella",
+   "zona": "ojos",
+   "nombre": "Lentes estrella lila",
+   "en": "Purple Star Glasses",
+   "precio": 95,
+   "nivel": 2,
+   "c": [
+    "#9b7cf6"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "monoculo",
+   "forma": "monoculo",
+   "zona": "ojos",
+   "nombre": "Monóculo",
+   "en": "Monocle",
+   "precio": 120,
+   "nivel": 3,
+   "c": [
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "visor_celeste",
+   "forma": "visor",
+   "zona": "ojos",
+   "nombre": "Visor cibernético celeste",
+   "en": "Sky Cyber Visor",
+   "precio": 220,
+   "nivel": 5,
+   "c": [
+    "#7fc8ff",
+    "#2b2633"
+   ],
+   "anim": "parpadear"
+  },
+  {
+   "id": "visor_rosa",
+   "forma": "visor",
+   "zona": "ojos",
+   "nombre": "Visor cibernético rosa",
+   "en": "Pink Cyber Visor",
+   "precio": 220,
+   "nivel": 5,
+   "c": [
+    "#ff8fb3",
+    "#2b2633"
+   ],
+   "anim": "parpadear"
+  },
+  {
+   "id": "gafas_buceo",
+   "forma": "gafas_buceo",
+   "zona": "ojos",
+   "nombre": "Gafas de buceo",
+   "en": "Diving Goggles",
+   "precio": 80,
+   "nivel": 2,
+   "c": [
+    "#ffcf4a",
+    "#7fc8ff"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "parche",
+   "forma": "parche",
+   "zona": "ojos",
+   "nombre": "Parche pirata",
+   "en": "Eye Patch",
+   "precio": 50,
+   "nivel": 1,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "poleron_menta",
+   "forma": "poleron",
+   "zona": "cuerpo",
+   "nombre": "Polerón menta",
+   "en": "Mint Hoodie",
+   "precio": 110,
+   "nivel": 1,
+   "c": [
+    "#7fd8be"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "poleron_rosa",
+   "forma": "poleron",
+   "zona": "cuerpo",
+   "nombre": "Polerón rosa",
+   "en": "Pink Hoodie",
+   "precio": 110,
+   "nivel": 1,
+   "c": [
+    "#ff8fb3"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "poleron_gris",
+   "forma": "poleron",
+   "zona": "cuerpo",
+   "nombre": "Polerón gris",
+   "en": "Gray Hoodie",
+   "precio": 110,
+   "nivel": 1,
+   "c": [
+    "#9aa0ad"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "poleron_azul",
+   "forma": "poleron",
+   "zona": "cuerpo",
+   "nombre": "Polerón azul",
+   "en": "Blue Hoodie",
+   "precio": 110,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "polera_estrella_amarillo",
+   "forma": "polera_estrella",
+   "zona": "cuerpo",
+   "nombre": "Polera estrella amarillo",
+   "en": "Yellow Star Tee",
+   "precio": 75,
+   "nivel": 1,
+   "c": [
+    "#ffcf4a",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "polera_estrella_celeste",
+   "forma": "polera_estrella",
+   "zona": "cuerpo",
+   "nombre": "Polera estrella celeste",
+   "en": "Sky Star Tee",
+   "precio": 75,
+   "nivel": 1,
+   "c": [
+    "#7fc8ff",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "overol_azul",
+   "forma": "overol",
+   "zona": "cuerpo",
+   "nombre": "Overol azul",
+   "en": "Blue Overalls",
+   "precio": 130,
+   "nivel": 2,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "overol_rosa",
+   "forma": "overol",
+   "zona": "cuerpo",
+   "nombre": "Overol rosa",
+   "en": "Pink Overalls",
+   "precio": 130,
+   "nivel": 2,
+   "c": [
+    "#ff8fb3",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "capa_rojo",
+   "forma": "capa",
+   "zona": "cuerpo",
+   "nombre": "Capa rojo",
+   "en": "Red Cape",
+   "precio": 220,
+   "nivel": 3,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "capa_azul",
+   "forma": "capa",
+   "zona": "cuerpo",
+   "nombre": "Capa azul",
+   "en": "Blue Cape",
+   "precio": 220,
+   "nivel": 3,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "capa_lila",
+   "forma": "capa",
+   "zona": "cuerpo",
+   "nombre": "Capa lila",
+   "en": "Purple Cape",
+   "precio": 220,
+   "nivel": 3,
+   "c": [
+    "#9b7cf6",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "chaleco_rojo",
+   "forma": "chaleco",
+   "zona": "cuerpo",
+   "nombre": "Chaleco rojo",
+   "en": "Red Vest",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "chaleco_cafe",
+   "forma": "chaleco",
+   "zona": "cuerpo",
+   "nombre": "Chaleco café",
+   "en": "Brown Vest",
+   "precio": 90,
+   "nivel": 2,
+   "c": [
+    "#8d5d32",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "hawaiana_celeste",
+   "forma": "hawaiana",
+   "zona": "cuerpo",
+   "nombre": "Camisa hawaiana celeste",
+   "en": "Sky Hawaiian Shirt",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#7fc8ff",
+    "#f6f2ee",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "hawaiana_rojo",
+   "forma": "hawaiana",
+   "zona": "cuerpo",
+   "nombre": "Camisa hawaiana rojo",
+   "en": "Red Hawaiian Shirt",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "smoking",
+   "forma": "smoking",
+   "zona": "cuerpo",
+   "nombre": "Esmoquin",
+   "en": "Tuxedo",
+   "precio": 260,
+   "nivel": 5,
+   "c": [
+    "#2b2633",
+    "#f6f2ee",
+    "#e85d6f"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "impermeable_amarillo",
+   "forma": "impermeable",
+   "zona": "cuerpo",
+   "nombre": "Impermeable amarillo",
+   "en": "Yellow Raincoat",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#ffcf4a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "impermeable_rojo",
+   "forma": "impermeable",
+   "zona": "cuerpo",
+   "nombre": "Impermeable rojo",
+   "en": "Red Raincoat",
+   "precio": 120,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "sueter_rojo",
+   "forma": "sueter",
+   "zona": "cuerpo",
+   "nombre": "Suéter rojo",
+   "en": "Red Sweater",
+   "precio": 100,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "sueter_verde",
+   "forma": "sueter",
+   "zona": "cuerpo",
+   "nombre": "Suéter verde",
+   "en": "Green Sweater",
+   "precio": 100,
+   "nivel": 2,
+   "c": [
+    "#4cc38a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "sueter_azul",
+   "forma": "sueter",
+   "zona": "cuerpo",
+   "nombre": "Suéter azul",
+   "en": "Blue Sweater",
+   "precio": 100,
+   "nivel": 2,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "futbol_azul",
+   "forma": "futbol",
+   "zona": "cuerpo",
+   "nombre": "Camiseta de fútbol azul",
+   "en": "Blue Soccer Jersey",
+   "precio": 110,
+   "nivel": 2,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "futbol_rojo",
+   "forma": "futbol",
+   "zona": "cuerpo",
+   "nombre": "Camiseta de fútbol rojo",
+   "en": "Red Soccer Jersey",
+   "precio": 110,
+   "nivel": 2,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "futbol_amarillo",
+   "forma": "futbol",
+   "zona": "cuerpo",
+   "nombre": "Camiseta de fútbol amarillo",
+   "en": "Yellow Soccer Jersey",
+   "precio": 110,
+   "nivel": 2,
+   "c": [
+    "#ffcf4a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "tutu_rosa",
+   "forma": "tutu",
+   "zona": "cuerpo",
+   "nombre": "Tutú rosa",
+   "en": "Pink Tutu",
+   "precio": 140,
+   "nivel": 3,
+   "c": [
+    "#ff8fb3",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "tutu_lila",
+   "forma": "tutu",
+   "zona": "cuerpo",
+   "nombre": "Tutú lila",
+   "en": "Purple Tutu",
+   "precio": 140,
+   "nivel": 3,
+   "c": [
+    "#9b7cf6",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "alas_hada_celeste",
+   "forma": "alas_hada",
+   "zona": "espalda",
+   "nombre": "Alas de hada celeste",
+   "en": "Sky Fairy Wings",
+   "precio": 260,
+   "nivel": 4,
+   "c": [
+    "#7fc8ff"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "alas_hada_rosa",
+   "forma": "alas_hada",
+   "zona": "espalda",
+   "nombre": "Alas de hada rosa",
+   "en": "Pink Fairy Wings",
+   "precio": 260,
+   "nivel": 4,
+   "c": [
+    "#ff8fb3"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "alas_murcielago",
+   "forma": "alas_murcielago",
+   "zona": "espalda",
+   "nombre": "Alas de murciélago",
+   "en": "Bat Wings",
+   "precio": 240,
+   "nivel": 4,
+   "c": [
+    "#2b2633"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "mochila_rojo",
+   "forma": "mochila",
+   "zona": "espalda",
+   "nombre": "Mochila rojo",
+   "en": "Red Backpack",
+   "precio": 90,
+   "nivel": 1,
+   "c": [
+    "#e85d6f",
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mochila_azul",
+   "forma": "mochila",
+   "zona": "espalda",
+   "nombre": "Mochila azul",
+   "en": "Blue Backpack",
+   "precio": 90,
+   "nivel": 1,
+   "c": [
+    "#3d6dfe",
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "mochila_verde",
+   "forma": "mochila",
+   "zona": "espalda",
+   "nombre": "Mochila verde",
+   "en": "Green Backpack",
+   "precio": 90,
+   "nivel": 1,
+   "c": [
+    "#4cc38a",
+    "#8d5d32"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "jetpack",
+   "forma": "jetpack",
+   "zona": "espalda",
+   "nombre": "Mochila cohete",
+   "en": "Jetpack",
+   "precio": 380,
+   "nivel": 6,
+   "c": [
+    "#cfd6e2",
+    "#ff9f43"
+   ],
+   "anim": "llama"
+  },
+  {
+   "id": "alas_angel",
+   "forma": "alas_angel",
+   "zona": "espalda",
+   "nombre": "Alas de ángel",
+   "en": "Angel Wings",
+   "precio": 300,
+   "nivel": 5,
+   "c": [
+    "#f6f2ee"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "caparazon",
+   "forma": "caparazon",
+   "zona": "espalda",
+   "nombre": "Caparazón",
+   "en": "Turtle Shell",
+   "precio": 150,
+   "nivel": 3,
+   "c": [
+    "#4cc38a",
+    "#ffcf4a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "alas_mariposa_naranjo",
+   "forma": "alas_mariposa",
+   "zona": "espalda",
+   "nombre": "Alas de mariposa naranjo",
+   "en": "Orange Butterfly Wings",
+   "precio": 280,
+   "nivel": 4,
+   "c": [
+    "#ff9f43",
+    "#2b2633"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "alas_mariposa_lila",
+   "forma": "alas_mariposa",
+   "zona": "espalda",
+   "nombre": "Alas de mariposa lila",
+   "en": "Purple Butterfly Wings",
+   "precio": 280,
+   "nivel": 4,
+   "c": [
+    "#9b7cf6",
+    "#2b2633"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "ninja_negro",
+   "forma": "ninja",
+   "zona": "traje",
+   "nombre": "Traje ninja negro",
+   "en": "Black Ninja Suit",
+   "precio": 600,
+   "nivel": 4,
+   "c": [
+    "#2b2633",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "ninja_rojo",
+   "forma": "ninja",
+   "zona": "traje",
+   "nombre": "Traje ninja rojo",
+   "en": "Red Ninja Suit",
+   "precio": 600,
+   "nivel": 4,
+   "c": [
+    "#e85d6f",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "ninja_azul",
+   "forma": "ninja",
+   "zona": "traje",
+   "nombre": "Traje ninja azul",
+   "en": "Blue Ninja Suit",
+   "precio": 600,
+   "nivel": 4,
+   "c": [
+    "#3d6dfe",
+    "#f6f2ee"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "robot_plata",
+   "forma": "robot",
+   "zona": "traje",
+   "nombre": "Traje de robot de plata",
+   "en": "Silver Robot Suit",
+   "precio": 900,
+   "nivel": 6,
+   "c": [
+    "#cfd6e2",
+    "#7fc8ff",
+    "#e85d6f"
+   ],
+   "anim": "parpadear"
+  },
+  {
+   "id": "robot_oro",
+   "forma": "robot",
+   "zona": "traje",
+   "nombre": "Traje de robot de oro",
+   "en": "Gold Robot Suit",
+   "precio": 900,
+   "nivel": 6,
+   "c": [
+    "#ffcf4a",
+    "#7fc8ff",
+    "#e85d6f"
+   ],
+   "anim": "parpadear"
+  },
+  {
+   "id": "slime_verde",
+   "forma": "slime",
+   "zona": "traje",
+   "nombre": "Traje de slime verde",
+   "en": "Green Slime Suit",
+   "precio": 750,
+   "nivel": 5,
+   "c": [
+    "#4cc38a"
+   ],
+   "anim": "gelatina"
+  },
+  {
+   "id": "slime_rosa",
+   "forma": "slime",
+   "zona": "traje",
+   "nombre": "Traje de slime rosa",
+   "en": "Pink Slime Suit",
+   "precio": 750,
+   "nivel": 5,
+   "c": [
+    "#ff8fb3"
+   ],
+   "anim": "gelatina"
+  },
+  {
+   "id": "slime_celeste",
+   "forma": "slime",
+   "zona": "traje",
+   "nombre": "Traje de slime celeste",
+   "en": "Sky Slime Suit",
+   "precio": 750,
+   "nivel": 5,
+   "c": [
+    "#7fc8ff"
+   ],
+   "anim": "gelatina"
+  },
+  {
+   "id": "astronauta",
+   "forma": "astronauta",
+   "zona": "traje",
+   "nombre": "Traje de astronauta",
+   "en": "Astronaut Suit",
+   "precio": 1100,
+   "nivel": 8,
+   "c": [
+    "#f6f2ee",
+    "#ff9f43",
+    "#7fc8ff"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "dino_verde",
+   "forma": "dino",
+   "zona": "traje",
+   "nombre": "Disfraz de dinosaurio verde",
+   "en": "Green Dino Costume",
+   "precio": 700,
+   "nivel": 5,
+   "c": [
+    "#4cc38a",
+    "#ffcf4a"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "dino_lila",
+   "forma": "dino",
+   "zona": "traje",
+   "nombre": "Disfraz de dinosaurio lila",
+   "en": "Purple Dino Costume",
+   "precio": 700,
+   "nivel": 5,
+   "c": [
+    "#9b7cf6",
+    "#ffcf4a"
+   ],
+   "anim": "balancear"
+  },
+  {
+   "id": "abeja",
+   "forma": "abeja",
+   "zona": "traje",
+   "nombre": "Disfraz de abeja",
+   "en": "Bee Costume",
+   "precio": 650,
+   "nivel": 4,
+   "c": [
+    "#ffcf4a",
+    "#2b2633",
+    "#f6f2ee"
+   ],
+   "anim": "aletear"
+  },
+  {
+   "id": "caballero",
+   "forma": "caballero",
+   "zona": "traje",
+   "nombre": "Armadura de caballero",
+   "en": "Knight Armor",
+   "precio": 1000,
+   "nivel": 7,
+   "c": [
+    "#cfd6e2",
+    "#e85d6f"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "mago_traje",
+   "forma": "mago_traje",
+   "zona": "traje",
+   "nombre": "Túnica de mago",
+   "en": "Wizard Robe",
+   "precio": 800,
+   "nivel": 6,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "pinguino",
+   "forma": "pinguino",
+   "zona": "traje",
+   "nombre": "Disfraz de pingüino",
+   "en": "Penguin Costume",
+   "precio": 600,
+   "nivel": 4,
+   "c": [
+    "#2b2633",
+    "#f6f2ee",
+    "#ff9f43"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "rana",
+   "forma": "rana",
+   "zona": "traje",
+   "nombre": "Disfraz de rana",
+   "en": "Frog Costume",
+   "precio": 550,
+   "nivel": 3,
+   "c": [
+    "#4cc38a",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "unicornio",
+   "forma": "unicornio",
+   "zona": "traje",
+   "nombre": "Disfraz de unicornio",
+   "en": "Unicorn Costume",
+   "precio": 850,
+   "nivel": 6,
+   "c": [
+    "#f6f2ee",
+    "#ff8fb3",
+    "#ffcf4a"
+   ],
+   "anim": "brillar"
+  },
+  {
+   "id": "vampiro",
+   "forma": "vampiro",
+   "zona": "traje",
+   "nombre": "Traje de vampiro",
+   "en": "Vampire Suit",
+   "precio": 700,
+   "nivel": 5,
+   "c": [
+    "#2b2633",
+    "#e85d6f"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "payaso",
+   "forma": "payaso",
+   "zona": "traje",
+   "nombre": "Traje de payaso",
+   "en": "Clown Suit",
+   "precio": 500,
+   "nivel": 3,
+   "c": [
+    "#e85d6f",
+    "#ffcf4a",
+    "#3d6dfe"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "heroe_azul",
+   "forma": "heroe",
+   "zona": "traje",
+   "nombre": "Traje de superhéroe azul",
+   "en": "Blue Superhero Suit",
+   "precio": 900,
+   "nivel": 6,
+   "c": [
+    "#3d6dfe",
+    "#ffcf4a"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "heroe_rojo",
+   "forma": "heroe",
+   "zona": "traje",
+   "nombre": "Traje de superhéroe rojo",
+   "en": "Red Superhero Suit",
+   "precio": 900,
+   "nivel": 6,
+   "c": [
+    "#e85d6f",
+    "#ffcf4a"
+   ],
+   "anim": "ondear"
+  },
+  {
+   "id": "momia",
+   "forma": "momia",
+   "zona": "traje",
+   "nombre": "Disfraz de momia",
+   "en": "Mummy Costume",
+   "precio": 550,
+   "nivel": 4,
+   "c": [
+    "#f6f2ee"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "calabaza",
+   "forma": "calabaza",
+   "zona": "traje",
+   "nombre": "Disfraz de calabaza",
+   "en": "Pumpkin Costume",
+   "precio": 500,
+   "nivel": 3,
+   "c": [
+    "#ff9f43",
+    "#4cc38a"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "panda",
+   "forma": "panda",
+   "zona": "traje",
+   "nombre": "Disfraz de panda",
+   "en": "Panda Costume",
+   "precio": 650,
+   "nivel": 4,
+   "c": [
+    "#f6f2ee",
+    "#2b2633"
+   ],
+   "anim": ""
+  },
+  {
+   "id": "tiburon",
+   "forma": "tiburon",
+   "zona": "traje",
+   "nombre": "Disfraz de tiburón",
+   "en": "Shark Costume",
+   "precio": 700,
+   "nivel": 5,
+   "c": [
+    "#9aa0ad",
+    "#f6f2ee"
+   ],
+   "anim": ""
+  }
+ ],
+ "pociones": [
+  {
+   "id": "gigante",
+   "nombre": "Poción gigante",
+   "en": "Giant Potion",
+   "precio": 30,
+   "color": "#ff8a5c",
+   "segundos": 40
+  },
+  {
+   "id": "mini",
+   "nombre": "Poción mini",
+   "en": "Mini Potion",
+   "precio": 30,
+   "color": "#6cc9ff",
+   "segundos": 40
+  },
+  {
+   "id": "arcoiris",
+   "nombre": "Poción arcoíris",
+   "en": "Rainbow Potion",
+   "precio": 50,
+   "color": "#c77dff",
+   "segundos": 40
+  },
+  {
+   "id": "fantasma",
+   "nombre": "Poción fantasma",
+   "en": "Ghost Potion",
+   "precio": 40,
+   "color": "#d9e4ff",
+   "segundos": 40
+  },
+  {
+   "id": "brillo",
+   "nombre": "Poción estelar",
+   "en": "Star Potion",
+   "precio": 45,
+   "color": "#ffd36e",
+   "segundos": 40
+  },
+  {
+   "id": "capibara",
+   "nombre": "Poción capibara",
+   "en": "Capybara Potion",
+   "precio": 120,
+   "color": "#b07a45",
+   "segundos": 180
+  }
+ ],
+ "bailes": [
+  {
+   "id": "saltitos",
+   "nombre": "Saltitos",
+   "en": "Hops",
+   "precio": 0,
+   "musica": "musica_dia_0"
+  },
+  {
+   "id": "robot",
+   "nombre": "Robot Nova",
+   "en": "Nova Robot",
+   "precio": 90,
+   "musica": "musica_prisma_0"
+  },
+  {
+   "id": "trompo",
+   "nombre": "Trompo",
+   "en": "Spinning Top",
+   "precio": 140,
+   "musica": "musica_prisma_0"
+  },
+  {
+   "id": "aplausos",
+   "nombre": "Aplausos",
+   "en": "Clapping",
+   "precio": 60,
+   "musica": "musica_cuento_0"
+  }
+ ],
+ "comida": [
+  {
+   "id": "bellota",
+   "nombre": "Bellota",
+   "en": "Acorn",
+   "precio": 2,
+   "llena": 8,
+   "color": "#c58a4a"
+  },
+  {
+   "id": "fresa",
+   "nombre": "Frutilla",
+   "en": "Strawberry",
+   "precio": 6,
+   "llena": 14,
+   "color": "#ff5a6e"
+  },
+  {
+   "id": "galleta",
+   "nombre": "Galleta",
+   "en": "Cookie",
+   "precio": 8,
+   "llena": 18,
+   "color": "#e2a95f"
+  },
+  {
+   "id": "nuez",
+   "nombre": "Nuez",
+   "en": "Walnut",
+   "precio": 5,
+   "llena": 12,
+   "color": "#a8743f"
+  },
+  {
+   "id": "pastel",
+   "nombre": "Pastel",
+   "en": "Cake",
+   "precio": 18,
+   "llena": 35,
+   "color": "#ffc2d6"
+  },
+  {
+   "id": "helado",
+   "nombre": "Helado",
+   "en": "Ice Cream",
+   "precio": 12,
+   "llena": 22,
+   "color": "#bff0e4"
+  }
+ ],
+ "deco": {
+  "cocina": {
+   "pared": [
+    {
+     "id": "liso_crema",
+     "nombre": "Pared crema",
+     "en": "Cream Wall",
+     "precio": 0,
+     "p": {
+      "patron": "liso",
+      "c1": "#fff1dc",
+      "c2": "#f3d9b6"
+     }
+    },
+    {
+     "id": "rayas_lavanda",
+     "nombre": "Pared lavanda a rayas",
+     "en": "Striped Lavender Wall",
+     "precio": 55,
+     "p": {
+      "patron": "rayas",
+      "c1": "#efe2ff",
+      "c2": "#d8c4ff"
+     }
+    },
+    {
+     "id": "lunares_cielo",
+     "nombre": "Pared cielo con lunares",
+     "en": "Polka Dot Sky Wall",
+     "precio": 70,
+     "p": {
+      "patron": "lunares",
+      "c1": "#dbe9ff",
+      "c2": "#b9d2ff"
+     }
+    },
+    {
+     "id": "cuadros_limon",
+     "nombre": "Pared limón a cuadros",
+     "en": "Checkered Lemon Wall",
+     "precio": 85,
+     "p": {
+      "patron": "cuadros",
+      "c1": "#fff6c2",
+      "c2": "#ffe58a"
+     }
+    },
+    {
+     "id": "estrellas_cerezo",
+     "nombre": "Pared cerezo con estrellas",
+     "en": "Starry Cherry Wall",
+     "precio": 100,
+     "p": {
+      "patron": "estrellas",
+      "c1": "#ffe1e8",
+      "c2": "#ffc2d1"
+     }
+    },
+    {
+     "id": "corazones_menta",
+     "nombre": "Pared menta con corazones",
+     "en": "Hearts Mint Wall",
+     "precio": 115,
+     "p": {
+      "patron": "corazones",
+      "c1": "#cdeee2",
+      "c2": "#a9dcc8"
+     }
+    },
+    {
+     "id": "ladrillo_crema",
+     "nombre": "Pared crema de ladrillo",
+     "en": "Brick Cream Wall",
+     "precio": 40,
+     "p": {
+      "patron": "ladrillo",
+      "c1": "#fff1dc",
+      "c2": "#f3d9b6"
+     }
+    },
+    {
+     "id": "tablas_lavanda",
+     "nombre": "Pared lavanda de tablas",
+     "en": "Wood Panel Lavender Wall",
+     "precio": 55,
+     "p": {
+      "patron": "tablas",
+      "c1": "#efe2ff",
+      "c2": "#d8c4ff"
+     }
+    },
+    {
+     "id": "ondas_cielo",
+     "nombre": "Pared cielo con ondas",
+     "en": "Wavy Sky Wall",
+     "precio": 70,
+     "p": {
+      "patron": "ondas",
+      "c1": "#dbe9ff",
+      "c2": "#b9d2ff"
+     }
+    },
+    {
+     "id": "rombos_limon",
+     "nombre": "Pared limón con rombos",
+     "en": "Diamond Lemon Wall",
+     "precio": 85,
+     "p": {
+      "patron": "rombos",
+      "c1": "#fff6c2",
+      "c2": "#ffe58a"
+     }
+    },
+    {
+     "id": "hojas_cerezo",
+     "nombre": "Pared cerezo con hojas",
+     "en": "Leafy Cherry Wall",
+     "precio": 100,
+     "p": {
+      "patron": "hojas",
+      "c1": "#ffe1e8",
+      "c2": "#ffc2d1"
+     }
+    },
+    {
+     "id": "nubes_menta",
+     "nombre": "Pared menta con nubes",
+     "en": "Cloudy Mint Wall",
+     "precio": 115,
+     "p": {
+      "patron": "nubes",
+      "c1": "#cdeee2",
+      "c2": "#a9dcc8"
+     }
+    }
+   ],
+   "piso": [
+    {
+     "id": "madera",
+     "nombre": "Madera",
+     "en": "Wood",
+     "precio": 0,
+     "p": {
+      "tipo": "tablas",
+      "c1": "#d4a373",
+      "c2": "#b9875a"
+     }
+    },
+    {
+     "id": "madera_oscura",
+     "nombre": "Madera oscura",
+     "en": "Dark Wood",
+     "precio": 60,
+     "p": {
+      "tipo": "tablas",
+      "c1": "#8d5d32",
+      "c2": "#6e4524"
+     }
+    },
+    {
+     "id": "ajedrez",
+     "nombre": "Baldosa ajedrez",
+     "en": "Checker Tiles",
+     "precio": 50,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f4f1ec",
+      "c2": "#3c3f58"
+     }
+    },
+    {
+     "id": "ajedrez_rosa",
+     "nombre": "Baldosa rosa",
+     "en": "Pink Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#fff3f7",
+      "c2": "#ff9fb8"
+     }
+    },
+    {
+     "id": "ajedrez_menta",
+     "nombre": "Baldosa menta",
+     "en": "Mint Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f2fbf8",
+      "c2": "#7fd8be"
+     }
+    },
+    {
+     "id": "alfombra_azul",
+     "nombre": "Alfombra azul",
+     "en": "Blue Carpet",
+     "precio": 80,
+     "p": {
+      "tipo": "liso",
+      "c1": "#7fa8e8",
+      "c2": "#6a92d4"
+     }
+    },
+    {
+     "id": "alfombra_lila",
+     "nombre": "Alfombra lila",
+     "en": "Purple Carpet",
+     "precio": 80,
+     "p": {
+      "tipo": "liso",
+      "c1": "#b9a2f0",
+      "c2": "#a68ce0"
+     }
+    }
+   ],
+   "nevera": [
+    {
+     "id": "clasica",
+     "nombre": "Nevera clásica",
+     "en": "Classic Fridge",
+     "precio": 0,
+     "p": {
+      "c": "#f4f6fa",
+      "r": 0.08
+     }
+    },
+    {
+     "id": "retro",
+     "nombre": "Nevera retro rosa",
+     "en": "Retro Pink Fridge",
+     "precio": 120,
+     "p": {
+      "c": "#ffb3c1",
+      "r": 0.18
+     }
+    },
+    {
+     "id": "menta",
+     "nombre": "Nevera menta",
+     "en": "Mint Fridge",
+     "precio": 120,
+     "p": {
+      "c": "#9fe0c8",
+      "r": 0.18
+     }
+    },
+    {
+     "id": "negra",
+     "nombre": "Nevera moderna",
+     "en": "Modern Fridge",
+     "precio": 160,
+     "p": {
+      "c": "#3a3d4a",
+      "r": 0.05
+     }
+    },
+    {
+     "id": "amarilla",
+     "nombre": "Nevera amarilla",
+     "en": "Yellow Fridge",
+     "precio": 120,
+     "p": {
+      "c": "#ffd86a",
+      "r": 0.18
+     }
+    }
+   ],
+   "mesa": [
+    {
+     "id": "madera",
+     "nombre": "Mesa de madera",
+     "en": "Wooden Table",
+     "precio": 0,
+     "p": {
+      "forma": "cuadrada",
+      "c": "#c08552"
+     }
+    },
+    {
+     "id": "azul",
+     "nombre": "Mesa redonda azul",
+     "en": "Round Blue Table",
+     "precio": 90,
+     "p": {
+      "forma": "redonda",
+      "c": "#7fb8ff"
+     }
+    },
+    {
+     "id": "rosa",
+     "nombre": "Mesa redonda rosa",
+     "en": "Round Pink Table",
+     "precio": 90,
+     "p": {
+      "forma": "redonda",
+      "c": "#ffadc4"
+     }
+    },
+    {
+     "id": "blanca",
+     "nombre": "Mesa blanca",
+     "en": "White Table",
+     "precio": 80,
+     "p": {
+      "forma": "cuadrada",
+      "c": "#f2efe9"
+     }
+    },
+    {
+     "id": "hongo",
+     "nombre": "Mesa hongo",
+     "en": "Mushroom Table",
+     "precio": 150,
+     "p": {
+      "forma": "hongo",
+      "c": "#ff6b6b"
+     }
+    }
+   ],
+   "planta": [
+    {
+     "id": "ninguna",
+     "nombre": "Sin planta",
+     "en": "No Plant",
+     "precio": 0,
+     "p": {
+      "forma": "nada"
+     }
+    },
+    {
+     "id": "cactus",
+     "nombre": "Cactus",
+     "en": "Cactus",
+     "precio": 40,
+     "p": {
+      "forma": "cactus",
+      "c": "#5fae4a"
+     }
+    },
+    {
+     "id": "helecho",
+     "nombre": "Helecho",
+     "en": "Fern",
+     "precio": 50,
+     "p": {
+      "forma": "helecho",
+      "c": "#4f9a3e"
+     }
+    },
+    {
+     "id": "girasol",
+     "nombre": "Girasol",
+     "en": "Sunflower",
+     "precio": 60,
+     "p": {
+      "forma": "girasol",
+      "c": "#ffcf4a"
+     }
+    }
+   ]
+  },
+  "habitacion": {
+   "pared": [
+    {
+     "id": "liso_lavanda",
+     "nombre": "Pared lavanda",
+     "en": "Lavender Wall",
+     "precio": 0,
+     "p": {
+      "patron": "liso",
+      "c1": "#e6dcff",
+      "c2": "#d2c2ff"
+     }
+    },
+    {
+     "id": "rayas_vainilla",
+     "nombre": "Pared vainilla a rayas",
+     "en": "Striped Vanilla Wall",
+     "precio": 55,
+     "p": {
+      "patron": "rayas",
+      "c1": "#fff3d6",
+      "c2": "#ffe1a1"
+     }
+    },
+    {
+     "id": "lunares_algodon",
+     "nombre": "Pared algodón con lunares",
+     "en": "Polka Dot Cotton Wall",
+     "precio": 70,
+     "p": {
+      "patron": "lunares",
+      "c1": "#ffe8f1",
+      "c2": "#ffcfe2"
+     }
+    },
+    {
+     "id": "cuadros_menta",
+     "nombre": "Pared menta a cuadros",
+     "en": "Checkered Mint Wall",
+     "precio": 85,
+     "p": {
+      "patron": "cuadros",
+      "c1": "#d7f2e8",
+      "c2": "#b4e3d1"
+     }
+    },
+    {
+     "id": "estrellas_durazno",
+     "nombre": "Pared durazno con estrellas",
+     "en": "Starry Peach Wall",
+     "precio": 100,
+     "p": {
+      "patron": "estrellas",
+      "c1": "#ffdcc8",
+      "c2": "#ffc6a8"
+     }
+    },
+    {
+     "id": "corazones_noche",
+     "nombre": "Pared noche con corazones",
+     "en": "Hearts Night Wall",
+     "precio": 115,
+     "p": {
+      "patron": "corazones",
+      "c1": "#2f3170",
+      "c2": "#454a9c"
+     }
+    },
+    {
+     "id": "ladrillo_lavanda",
+     "nombre": "Pared lavanda de ladrillo",
+     "en": "Brick Lavender Wall",
+     "precio": 40,
+     "p": {
+      "patron": "ladrillo",
+      "c1": "#e6dcff",
+      "c2": "#d2c2ff"
+     }
+    },
+    {
+     "id": "tablas_vainilla",
+     "nombre": "Pared vainilla de tablas",
+     "en": "Wood Panel Vanilla Wall",
+     "precio": 55,
+     "p": {
+      "patron": "tablas",
+      "c1": "#fff3d6",
+      "c2": "#ffe1a1"
+     }
+    },
+    {
+     "id": "ondas_algodon",
+     "nombre": "Pared algodón con ondas",
+     "en": "Wavy Cotton Wall",
+     "precio": 70,
+     "p": {
+      "patron": "ondas",
+      "c1": "#ffe8f1",
+      "c2": "#ffcfe2"
+     }
+    },
+    {
+     "id": "rombos_menta",
+     "nombre": "Pared menta con rombos",
+     "en": "Diamond Mint Wall",
+     "precio": 85,
+     "p": {
+      "patron": "rombos",
+      "c1": "#d7f2e8",
+      "c2": "#b4e3d1"
+     }
+    },
+    {
+     "id": "hojas_durazno",
+     "nombre": "Pared durazno con hojas",
+     "en": "Leafy Peach Wall",
+     "precio": 100,
+     "p": {
+      "patron": "hojas",
+      "c1": "#ffdcc8",
+      "c2": "#ffc6a8"
+     }
+    },
+    {
+     "id": "nubes_noche",
+     "nombre": "Pared noche con nubes",
+     "en": "Cloudy Night Wall",
+     "precio": 115,
+     "p": {
+      "patron": "nubes",
+      "c1": "#2f3170",
+      "c2": "#454a9c"
+     }
+    }
+   ],
+   "piso": [
+    {
+     "id": "madera",
+     "nombre": "Madera",
+     "en": "Wood",
+     "precio": 0,
+     "p": {
+      "tipo": "tablas",
+      "c1": "#d4a373",
+      "c2": "#b9875a"
+     }
+    },
+    {
+     "id": "madera_oscura",
+     "nombre": "Madera oscura",
+     "en": "Dark Wood",
+     "precio": 60,
+     "p": {
+      "tipo": "tablas",
+      "c1": "#8d5d32",
+      "c2": "#6e4524"
+     }
+    },
+    {
+     "id": "ajedrez",
+     "nombre": "Baldosa ajedrez",
+     "en": "Checker Tiles",
+     "precio": 50,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f4f1ec",
+      "c2": "#3c3f58"
+     }
+    },
+    {
+     "id": "ajedrez_rosa",
+     "nombre": "Baldosa rosa",
+     "en": "Pink Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#fff3f7",
+      "c2": "#ff9fb8"
+     }
+    },
+    {
+     "id": "ajedrez_menta",
+     "nombre": "Baldosa menta",
+     "en": "Mint Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f2fbf8",
+      "c2": "#7fd8be"
+     }
+    },
+    {
+     "id": "alfombra_azul",
+     "nombre": "Alfombra azul",
+     "en": "Blue Carpet",
+     "precio": 80,
+     "p": {
+      "tipo": "liso",
+      "c1": "#7fa8e8",
+      "c2": "#6a92d4"
+     }
+    }
+   ],
+   "cama": [
+    {
+     "id": "nido",
+     "nombre": "Nido",
+     "en": "Nest",
+     "precio": 0,
+     "p": {
+      "forma": "nido"
+     }
+    },
+    {
+     "id": "nube",
+     "nombre": "Cama nube",
+     "en": "Cloud Bed",
+     "precio": 150,
+     "p": {
+      "forma": "nube"
+     }
+    },
+    {
+     "id": "cohete",
+     "nombre": "Cohete Avellana",
+     "en": "Hazel Rocket",
+     "precio": 220,
+     "p": {
+      "forma": "cohete"
+     }
+    },
+    {
+     "id": "concha",
+     "nombre": "Cama concha",
+     "en": "Shell Bed",
+     "precio": 180,
+     "p": {
+      "forma": "concha",
+      "c": "#ffc2d6"
+     }
+    },
+    {
+     "id": "hoja",
+     "nombre": "Cama hoja",
+     "en": "Leaf Bed",
+     "precio": 140,
+     "p": {
+      "forma": "hoja",
+      "c": "#7cc96a"
+     }
+    },
+    {
+     "id": "castillo",
+     "nombre": "Cama castillo",
+     "en": "Castle Bed",
+     "precio": 300,
+     "p": {
+      "forma": "castillo",
+      "c": "#c9b8f0"
+     }
+    }
+   ],
+   "lampara": [
+    {
+     "id": "hongo",
+     "nombre": "Lámpara hongo",
+     "en": "Mushroom Lamp",
+     "precio": 0,
+     "p": {
+      "forma": "hongo",
+      "c": "#ff6b6b"
+     }
+    },
+    {
+     "id": "luna",
+     "nombre": "Lámpara luna",
+     "en": "Moon Lamp",
+     "precio": 90,
+     "p": {
+      "forma": "luna",
+      "c": "#e9f0ff"
+     }
+    },
+    {
+     "id": "estrella",
+     "nombre": "Lámpara estrella",
+     "en": "Star Lamp",
+     "precio": 110,
+     "p": {
+      "forma": "estrella",
+      "c": "#ffd36e"
+     }
+    },
+    {
+     "id": "hongo_azul",
+     "nombre": "Lámpara hongo azul",
+     "en": "Blue Mushroom Lamp",
+     "precio": 70,
+     "p": {
+      "forma": "hongo",
+      "c": "#6fa8ff"
+     }
+    },
+    {
+     "id": "lava",
+     "nombre": "Lámpara de lava",
+     "en": "Lava Lamp",
+     "precio": 130,
+     "p": {
+      "forma": "lava",
+      "c": "#ff7ac0"
+     }
+    }
+   ],
+   "alfombra": [
+    {
+     "id": "redonda",
+     "nombre": "Alfombra redonda",
+     "en": "Round Rug",
+     "precio": 0,
+     "p": {
+      "forma": "redonda",
+      "c": "#ffb3c7"
+     }
+    },
+    {
+     "id": "estrella",
+     "nombre": "Alfombra estrella",
+     "en": "Star Rug",
+     "precio": 70,
+     "p": {
+      "forma": "estrella",
+      "c": "#ffd36e"
+     }
+    },
+    {
+     "id": "redonda_azul",
+     "nombre": "Alfombra celeste",
+     "en": "Sky Rug",
+     "precio": 50,
+     "p": {
+      "forma": "redonda",
+      "c": "#a9d2ff"
+     }
+    },
+    {
+     "id": "corazon",
+     "nombre": "Alfombra corazón",
+     "en": "Heart Rug",
+     "precio": 80,
+     "p": {
+      "forma": "corazon",
+      "c": "#ff8fb3"
+     }
+    },
+    {
+     "id": "nube",
+     "nombre": "Alfombra nube",
+     "en": "Cloud Rug",
+     "precio": 80,
+     "p": {
+      "forma": "nube",
+      "c": "#f4f6ff"
+     }
+    }
+   ]
+  },
+  "patio": {
+   "fondo": [
+    {
+     "id": "dia",
+     "nombre": "Día",
+     "en": "Day",
+     "precio": 0,
+     "p": {
+      "cielo": "dia"
+     }
+    },
+    {
+     "id": "atardecer",
+     "nombre": "Atardecer",
+     "en": "Sunset",
+     "precio": 80,
+     "p": {
+      "cielo": "atardecer"
+     }
+    },
+    {
+     "id": "noche",
+     "nombre": "Noche",
+     "en": "Night",
+     "precio": 100,
+     "p": {
+      "cielo": "noche"
+     }
+    },
+    {
+     "id": "galaxia",
+     "nombre": "Galaxia Nova",
+     "en": "Nova Galaxy",
+     "precio": 200,
+     "p": {
+      "cielo": "galaxia"
+     }
+    },
+    {
+     "id": "aurora",
+     "nombre": "Aurora",
+     "en": "Aurora",
+     "precio": 180,
+     "p": {
+      "cielo": "aurora"
+     }
+    },
+    {
+     "id": "nublado",
+     "nombre": "Nublado",
+     "en": "Cloudy",
+     "precio": 60,
+     "p": {
+      "cielo": "nublado"
+     }
+    },
+    {
+     "id": "amanecer",
+     "nombre": "Amanecer",
+     "en": "Sunrise",
+     "precio": 80,
+     "p": {
+      "cielo": "amanecer"
+     }
+    },
+    {
+     "id": "dulce",
+     "nombre": "Cielo de algodón",
+     "en": "Candy Sky",
+     "precio": 150,
+     "p": {
+      "cielo": "dulce"
+     }
+    }
+   ],
+   "cerca": [
+    {
+     "id": "blanca",
+     "nombre": "Cerca blanca",
+     "en": "White Fence",
+     "precio": 0,
+     "p": {
+      "forma": "estacas",
+      "c": "#ffffff"
+     }
+    },
+    {
+     "id": "madera",
+     "nombre": "Cerca de troncos",
+     "en": "Log Fence",
+     "precio": 50,
+     "p": {
+      "forma": "troncos",
+      "c": "#a8743f"
+     }
+    },
+    {
+     "id": "rosa",
+     "nombre": "Cerca rosa",
+     "en": "Pink Fence",
+     "precio": 60,
+     "p": {
+      "forma": "estacas",
+      "c": "#ffb3c7"
+     }
+    },
+    {
+     "id": "seto",
+     "nombre": "Seto",
+     "en": "Hedge",
+     "precio": 70,
+     "p": {
+      "forma": "seto",
+      "c": "#5fae4a"
+     }
+    },
+    {
+     "id": "piedra",
+     "nombre": "Muro de piedra",
+     "en": "Stone Wall",
+     "precio": 90,
+     "p": {
+      "forma": "piedra",
+      "c": "#b8b2a7"
+     }
+    }
+   ],
+   "arbol": [
+    {
+     "id": "roble",
+     "nombre": "Roble",
+     "en": "Oak",
+     "precio": 0,
+     "p": {
+      "forma": "redondo",
+      "c": "#5fae4a"
+     }
+    },
+    {
+     "id": "cerezo",
+     "nombre": "Cerezo",
+     "en": "Cherry Tree",
+     "precio": 120,
+     "p": {
+      "forma": "redondo",
+      "c": "#ffc2d6"
+     }
+    },
+    {
+     "id": "pino",
+     "nombre": "Pino",
+     "en": "Pine",
+     "precio": 90,
+     "p": {
+      "forma": "pino",
+      "c": "#3f8f4a"
+     }
+    },
+    {
+     "id": "palmera",
+     "nombre": "Palmera",
+     "en": "Palm Tree",
+     "precio": 130,
+     "p": {
+      "forma": "palmera",
+      "c": "#5fbf5a"
+     }
+    },
+    {
+     "id": "otono",
+     "nombre": "Árbol de otoño",
+     "en": "Autumn Tree",
+     "precio": 110,
+     "p": {
+      "forma": "redondo",
+      "c": "#ff9f43"
+     }
+    },
+    {
+     "id": "magico",
+     "nombre": "Árbol mágico",
+     "en": "Magic Tree",
+     "precio": 250,
+     "p": {
+      "forma": "redondo",
+      "c": "#b49cff"
+     }
+    }
+   ],
+   "pasto": [
+    {
+     "id": "verde",
+     "nombre": "Pasto",
+     "en": "Grass",
+     "precio": 0,
+     "p": {
+      "c": "#8fd16a"
+     }
+    },
+    {
+     "id": "primavera",
+     "nombre": "Pasto con flores",
+     "en": "Spring Grass",
+     "precio": 60,
+     "p": {
+      "c": "#a5de7c"
+     }
+    },
+    {
+     "id": "otono",
+     "nombre": "Pasto de otoño",
+     "en": "Autumn Grass",
+     "precio": 60,
+     "p": {
+      "c": "#c9c46a"
+     }
+    },
+    {
+     "id": "nieve",
+     "nombre": "Nieve",
+     "en": "Snow",
+     "precio": 120,
+     "p": {
+      "c": "#f2f6fb"
+     }
+    },
+    {
+     "id": "arena",
+     "nombre": "Arena de playa",
+     "en": "Beach Sand",
+     "precio": 90,
+     "p": {
+      "c": "#f5dfa8"
+     }
+    }
+   ],
+   "juguete": [
+    {
+     "id": "ninguno",
+     "nombre": "Nada",
+     "en": "Nothing",
+     "precio": 0,
+     "p": {
+      "forma": "nada"
+     }
+    },
+    {
+     "id": "columpio",
+     "nombre": "Columpio",
+     "en": "Swing",
+     "precio": 120,
+     "p": {
+      "forma": "columpio",
+      "c": "#ff6b6b"
+     }
+    },
+    {
+     "id": "tobogan",
+     "nombre": "Tobogán",
+     "en": "Slide",
+     "precio": 150,
+     "p": {
+      "forma": "tobogan",
+      "c": "#4aa8ff"
+     }
+    },
+    {
+     "id": "piscina",
+     "nombre": "Piscinita",
+     "en": "Kiddie Pool",
+     "precio": 130,
+     "p": {
+      "forma": "piscina",
+      "c": "#7fd8ff"
+     }
+    },
+    {
+     "id": "casita",
+     "nombre": "Casita de perro",
+     "en": "Doghouse",
+     "precio": 110,
+     "p": {
+      "forma": "casita",
+      "c": "#e2574c"
+     }
+    },
+    {
+     "id": "telescopio",
+     "nombre": "Telescopio",
+     "en": "Telescope",
+     "precio": 200,
+     "p": {
+      "forma": "telescopio",
+      "c": "#5b5f8f"
+     }
+    }
+   ]
+  },
+  "bano": {
+   "pared": [
+    {
+     "id": "liso_azulejo",
+     "nombre": "Pared azulejo",
+     "en": "Tile Wall",
+     "precio": 0,
+     "p": {
+      "patron": "liso",
+      "c1": "#dff3fb",
+      "c2": "#bfe1ee"
+     }
+    },
+    {
+     "id": "rayas_nube",
+     "nombre": "Pared nube a rayas",
+     "en": "Striped Cloud Wall",
+     "precio": 55,
+     "p": {
+      "patron": "rayas",
+      "c1": "#e8edf5",
+      "c2": "#ccd6e6"
+     }
+    },
+    {
+     "id": "lunares_arena",
+     "nombre": "Pared arena con lunares",
+     "en": "Polka Dot Sand Wall",
+     "precio": 70,
+     "p": {
+      "patron": "lunares",
+      "c1": "#fffbe6",
+      "c2": "#fff0b3"
+     }
+    },
+    {
+     "id": "cuadros_uva",
+     "nombre": "Pared uva a cuadros",
+     "en": "Checkered Grape Wall",
+     "precio": 85,
+     "p": {
+      "patron": "cuadros",
+      "c1": "#f0e6ff",
+      "c2": "#dccaff"
+     }
+    },
+    {
+     "id": "estrellas_pistacho",
+     "nombre": "Pared pistacho con estrellas",
+     "en": "Starry Pistachio Wall",
+     "precio": 100,
+     "p": {
+      "patron": "estrellas",
+      "c1": "#e2f7e1",
+      "c2": "#c3ebc0"
+     }
+    },
+    {
+     "id": "corazones_coral",
+     "nombre": "Pared coral con corazones",
+     "en": "Hearts Coral Wall",
+     "precio": 115,
+     "p": {
+      "patron": "corazones",
+      "c1": "#ffd1c4",
+      "c2": "#ffb7a3"
+     }
+    },
+    {
+     "id": "ladrillo_azulejo",
+     "nombre": "Pared azulejo de ladrillo",
+     "en": "Brick Tile Wall",
+     "precio": 40,
+     "p": {
+      "patron": "ladrillo",
+      "c1": "#dff3fb",
+      "c2": "#bfe1ee"
+     }
+    },
+    {
+     "id": "tablas_nube",
+     "nombre": "Pared nube de tablas",
+     "en": "Wood Panel Cloud Wall",
+     "precio": 55,
+     "p": {
+      "patron": "tablas",
+      "c1": "#e8edf5",
+      "c2": "#ccd6e6"
+     }
+    },
+    {
+     "id": "ondas_arena",
+     "nombre": "Pared arena con ondas",
+     "en": "Wavy Sand Wall",
+     "precio": 70,
+     "p": {
+      "patron": "ondas",
+      "c1": "#fffbe6",
+      "c2": "#fff0b3"
+     }
+    },
+    {
+     "id": "rombos_uva",
+     "nombre": "Pared uva con rombos",
+     "en": "Diamond Grape Wall",
+     "precio": 85,
+     "p": {
+      "patron": "rombos",
+      "c1": "#f0e6ff",
+      "c2": "#dccaff"
+     }
+    },
+    {
+     "id": "hojas_pistacho",
+     "nombre": "Pared pistacho con hojas",
+     "en": "Leafy Pistachio Wall",
+     "precio": 100,
+     "p": {
+      "patron": "hojas",
+      "c1": "#e2f7e1",
+      "c2": "#c3ebc0"
+     }
+    },
+    {
+     "id": "nubes_coral",
+     "nombre": "Pared coral con nubes",
+     "en": "Cloudy Coral Wall",
+     "precio": 115,
+     "p": {
+      "patron": "nubes",
+      "c1": "#ffd1c4",
+      "c2": "#ffb7a3"
+     }
+    }
+   ],
+   "piso": [
+    {
+     "id": "madera",
+     "nombre": "Madera",
+     "en": "Wood",
+     "precio": 0,
+     "p": {
+      "tipo": "tablas",
+      "c1": "#d4a373",
+      "c2": "#b9875a"
+     }
+    },
+    {
+     "id": "ajedrez",
+     "nombre": "Baldosa ajedrez",
+     "en": "Checker Tiles",
+     "precio": 50,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f4f1ec",
+      "c2": "#3c3f58"
+     }
+    },
+    {
+     "id": "ajedrez_rosa",
+     "nombre": "Baldosa rosa",
+     "en": "Pink Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#fff3f7",
+      "c2": "#ff9fb8"
+     }
+    },
+    {
+     "id": "ajedrez_menta",
+     "nombre": "Baldosa menta",
+     "en": "Mint Tiles",
+     "precio": 70,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f2fbf8",
+      "c2": "#7fd8be"
+     }
+    },
+    {
+     "id": "baldosa_blanca",
+     "nombre": "Baldosa blanca",
+     "en": "White Tiles",
+     "precio": 0,
+     "p": {
+      "tipo": "ajedrez",
+      "c1": "#f7f9fc",
+      "c2": "#e3e9f2"
+     }
+    }
+   ],
+   "banera": [
+    {
+     "id": "clasica",
+     "nombre": "Bañera clásica",
+     "en": "Classic Tub",
+     "precio": 0,
+     "p": {
+      "c": "#ffffff",
+      "patas": ""
+     }
+    },
+    {
+     "id": "dorada",
+     "nombre": "Bañera patas doradas",
+     "en": "Golden Feet Tub",
+     "precio": 150,
+     "p": {
+      "c": "#fff4f6",
+      "patas": "#ffcf4a"
+     }
+    },
+    {
+     "id": "rosa",
+     "nombre": "Bañera rosa",
+     "en": "Pink Tub",
+     "precio": 120,
+     "p": {
+      "c": "#ffc2d6",
+      "patas": ""
+     }
+    },
+    {
+     "id": "menta",
+     "nombre": "Bañera menta",
+     "en": "Mint Tub",
+     "precio": 120,
+     "p": {
+      "c": "#b4ecd9",
+      "patas": "#ffffff"
+     }
+    },
+    {
+     "id": "negra",
+     "nombre": "Bañera elegante",
+     "en": "Elegant Tub",
+     "precio": 200,
+     "p": {
+      "c": "#3a3d4a",
+      "patas": "#ffcf4a"
+     }
+    }
+   ],
+   "cortina": [
+    {
+     "id": "rayas",
+     "nombre": "Cortina a rayas",
+     "en": "Striped Curtain",
+     "precio": 0,
+     "p": {
+      "forma": "rayas",
+      "c1": "#7fc8ff",
+      "c2": "#ffffff"
+     }
+    },
+    {
+     "id": "burbujas",
+     "nombre": "Cortina burbujas",
+     "en": "Bubble Curtain",
+     "precio": 60,
+     "p": {
+      "forma": "burbujas",
+      "c1": "#b8f0ff",
+      "c2": "#ffffff"
+     }
+    },
+    {
+     "id": "estrellas",
+     "nombre": "Cortina estrellas",
+     "en": "Star Curtain",
+     "precio": 90,
+     "p": {
+      "forma": "estrellas",
+      "c1": "#4b4fa8",
+      "c2": "#ffd36e"
+     }
+    },
+    {
+     "id": "rayas_rosa",
+     "nombre": "Cortina rosa",
+     "en": "Pink Curtain",
+     "precio": 50,
+     "p": {
+      "forma": "rayas",
+      "c1": "#ff9fb8",
+      "c2": "#ffffff"
+     }
+    },
+    {
+     "id": "patitos",
+     "nombre": "Cortina patitos",
+     "en": "Duck Curtain",
+     "precio": 80,
+     "p": {
+      "forma": "burbujas",
+      "c1": "#fff3b0",
+      "c2": "#ffd84a"
+     }
+    },
+    {
+     "id": "mar",
+     "nombre": "Cortina del mar",
+     "en": "Sea Curtain",
+     "precio": 70,
+     "p": {
+      "forma": "rayas",
+      "c1": "#3cc9c0",
+      "c2": "#7fc8ff"
+     }
+    },
+    {
+     "id": "lila",
+     "nombre": "Cortina lila",
+     "en": "Lilac Curtain",
+     "precio": 50,
+     "p": {
+      "forma": "lisa",
+      "c1": "#c3a6ff",
+      "c2": "#c3a6ff"
+     }
+    },
+    {
+     "id": "noche",
+     "nombre": "Cortina noche",
+     "en": "Night Curtain",
+     "precio": 90,
+     "p": {
+      "forma": "estrellas",
+      "c1": "#2f3170",
+      "c2": "#ffffff"
+     }
+    }
+   ]
+  }
+ },
+ "juegos": [
+  {
+   "id": "salto",
+   "nombre": "Salto Nova",
+   "en": "Nova Jump",
+   "icono": "salto"
+  },
+  {
+   "id": "lluvia",
+   "nombre": "Lluvia de bellotas",
+   "en": "Acorn Rain",
+   "icono": "bellota"
+  },
+  {
+   "id": "memoria",
+   "nombre": "Memoria",
+   "en": "Memory",
+   "icono": "memoria"
+  },
+  {
+   "id": "cohete",
+   "nombre": "Cohete Avellana",
+   "en": "Hazel Rocket",
+   "icono": "cohete"
+  },
+  {
+   "id": "pelota",
+   "nombre": "Pelota",
+   "en": "Ball",
+   "icono": "pelota"
+  }
+ ],
+ "paquetes": [
+  {
+   "id": "bellotas_500",
+   "nombre": "Puñado de bellotas",
+   "en": "Handful of Acorns",
+   "bellotas": 500,
+   "precio": "$990",
+   "tag": ""
+  },
+  {
+   "id": "bellotas_1200",
+   "nombre": "Bolsa de bellotas",
+   "en": "Bag of Acorns",
+   "bellotas": 1200,
+   "precio": "$1.990",
+   "tag": "+20%"
+  },
+  {
+   "id": "bellotas_3500",
+   "nombre": "Cofre de bellotas",
+   "en": "Chest of Acorns",
+   "bellotas": 3500,
+   "precio": "$4.990",
+   "tag": "popular"
+  },
+  {
+   "id": "bellotas_8000",
+   "nombre": "Carreta de bellotas",
+   "en": "Cart of Acorns",
+   "bellotas": 8000,
+   "precio": "$9.990",
+   "tag": "+60%"
+  },
+  {
+   "id": "bellotas_20000",
+   "nombre": "Montaña de bellotas",
+   "en": "Mountain of Acorns",
+   "bellotas": 20000,
+   "precio": "$19.990",
+   "tag": "mejor"
+  }
+ ],
+ "especiales": [
+  {
+   "id": "pack_inicio",
+   "nombre": "Pack de bienvenida",
+   "en": "Welcome Pack",
+   "bellotas": 2500,
+   "pociones": {
+    "capibara": 3
+   },
+   "precio": "$990",
+   "una_vez": true
+  },
+  {
+   "id": "capibara_permanente",
+   "nombre": "Capibara para siempre",
+   "en": "Capybara Forever",
+   "bellotas": 0,
+   "precio": "$1.499",
+   "una_vez": true
+  }
+ ],
+ "regalo_diario": [
+  20,
+  30,
+  40,
+  50,
+  60,
+  80,
+  150
+ ],
+ "bellotas_gratis": {
+  "max": 5,
+  "minutos": 30
+ }
 }

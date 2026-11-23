@@ -27,11 +27,18 @@ var eyes: Array[Node3D] = []
 var ears: Array[Node3D] = []
 var scarf: Node3D
 var scarf_tails: Array[Node3D] = []
-var pin: MeshInstance3D
+var cola: MeshInstance3D
+var cola_mesh: ArrayMesh
 var arms: Array[Node3D] = []
 var legs: Array[Node3D] = []
 var tail: Array[Node3D] = []
 var zonas: Array[Area3D] = []
+var anim_ropa: Array = []          ## piezas de ropa animadas (Atuendos._an)
+var forma := "pip"                 ## "pip" o "capibara"
+var _partes_pip: Array = []
+var _capi: Array = []              ## piezas de la capibara
+var _pip_cara := {}
+var _capi_cara := {}
 
 # estado de la animación
 var t := 0.0
@@ -243,7 +250,6 @@ func _init() -> void:
 		_part(tt, _ball, M.scarf2 if i else M.scarf, Vector3(0, -0.025, 0), Vector3(0.03, 0.05, 0.012))
 		scarf_tails.append(tt)
 		parent = tt
-	pin = _part(scarf, _star, M.gold, Vector3(0.055, 0.0, 0.1), Vector3.ONE * 0.035)
 	# brazos y patas
 	for s in [-1.0, 1.0]:
 		var a := _pivot(torso, Vector3(s * 0.112, 0.09, 0.06))
@@ -255,22 +261,30 @@ func _init() -> void:
 		_part(l, _ball, M.fur, Vector3(0, -0.02, 0), Vector3(0.055, 0.065, 0.07))
 		_part(l, _ball, M.paw, Vector3(0, -0.11, 0.045), Vector3(0.035, 0.025, 0.06))
 		legs.append(l)
-	# cola: cadena de 8 segmentos en forma de S
+	# cola: cadena de 8 "huesos" en forma de S; la malla es un tubo suave y esponjoso que se rehace cada cuadro
 	parent = _pivot(torso, Vector3(0, 0.0, -0.14))
-	var sizes := [0.075, 0.095, 0.115, 0.13, 0.135, 0.125, 0.105, 0.075]
-	for i in sizes.size():
+	for i in 8:
 		var seg := _pivot(parent, Vector3.ZERO if i == 0 else Vector3(0, 0.085, -0.01))
-		var r: float = sizes[i]
-		var m: Material = M.tailTip if i == sizes.size() - 1 else (M.fur2 if i % 3 == 2 else M.fur)
-		_part(seg, _ball, m, Vector3(0, 0.04, 0), Vector3(r, r * 0.95, r * 0.9))
-		if i >= 3:
-			_part(seg, _ball, M.fur2, Vector3(0, 0.04, r * 0.45), Vector3(r * 0.6, r * 0.6, r * 0.4))
-		# mechones de la cola (se ve más peluda)
-		for k in 3:
-			var a := TAU * (k / 3.0) + i * 0.9
-			_part(seg, _low, m, Vector3(cos(a) * r * 0.55, 0.04 + (k - 1) * r * 0.2, sin(a) * r * 0.5), Vector3(r * 0.55, r * 0.5, r * 0.5))
 		tail.append(seg)
 		parent = seg
+	var cm := StandardMaterial3D.new()
+	cm.vertex_color_use_as_albedo = true
+	cm.albedo_color = Color.WHITE
+	cm.roughness = 0.92
+	cm.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT
+	cm.rim_enabled = true
+	cm.rim = 0.55
+	cm.rim_tint = 0.7
+	M["cola"] = cm
+	cola_mesh = ArrayMesh.new()
+	cola = MeshInstance3D.new()
+	cola.mesh = cola_mesh
+	cola.material_override = cm
+	torso.add_child(cola)
+	for mi in find_children("*", "MeshInstance3D", true, false):
+		_partes_pip.append(mi)
+	_pip_cara = {"eyes": eyes.duplicate(), "mouth": mouth, "tongue": tongue, "teeth": teeth.duplicate(), "blush": blush.duplicate()}
+	_armar_capibara()
 	_zonas()
 
 ## Zonas que se pueden tocar (el rayo del dedo las encuentra): cabeza, nariz, barriga, orejas, cola, pies y manos.
@@ -736,7 +750,8 @@ func animate(dt: float) -> void:
 	scarf_wave += dt * (6.0 + corriendo * 3.0)
 	scarf_tails[0].rotation.x = 0.6 + corriendo * 0.12 + sin(scarf_wave) * 0.15
 	scarf_tails[1].rotation.x = 0.3 + sin(scarf_wave - 1.0) * 0.25
-	pin.rotation.y = t * 2.0
+	_cola_tubo()
+	_animar_ropa()
 
 ## Bailes: devuelve la pose para el tiempo tt (a 120 pulsos por minuto: un pulso = 0.5 s).
 func _baile(id: String, tt: float) -> Dictionary:
@@ -832,3 +847,190 @@ func _pociones_reset() -> void:
 		if key != "gold" and key != "white":
 			m.emission_enabled = false
 	_colores_base.clear()
+
+# ---------------- cola: tubo suave ----------------
+const COLA_ANILLOS := 26
+const COLA_LADOS := 12
+
+## Rehace la malla de la cola siguiendo los huesos: curva suave (Catmull-Rom), grosor que crece hacia el medio,
+## borde ondulado (pelaje), lados más claros y punta crema.
+func _cola_tubo() -> void:
+	if not cola.visible:
+		return
+	var inv := torso.global_transform.affine_inverse()
+	var pts: Array[Vector3] = [Vector3(0, 0.03, -0.1)]
+	for i in tail.size():
+		pts.append(inv * (tail[i].global_transform * Vector3(0, 0.05, 0)))
+	pts.append(inv * (tail[tail.size() - 1].global_transform * Vector3(0, 0.15, -0.01)))
+	var n := pts.size()
+	var cen: Array[Vector3] = []
+	for k in COLA_ANILLOS:
+		var f := float(k) / (COLA_ANILLOS - 1) * (n - 1)
+		var j := mini(int(f), n - 2)
+		var u := f - j
+		var p0 := pts[maxi(0, j - 1)]
+		var p1 := pts[j]
+		var p2 := pts[j + 1]
+		var p3 := pts[mini(n - 1, j + 2)]
+		var u2 := u * u
+		var u3 := u2 * u
+		cen.append(0.5 * ((2.0 * p1) + (-p0 + p2) * u + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * u2 + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * u3))
+	var fur: Color = (M.fur as StandardMaterial3D).albedo_color
+	var fur2: Color = (M.fur2 as StandardMaterial3D).albedo_color
+	var tip: Color = (M.tailTip as StandardMaterial3D).albedo_color
+	var vs := PackedVector3Array()
+	var ns := PackedVector3Array()
+	var cs := PackedColorArray()
+	var idx := PackedInt32Array()
+	var ref := Vector3.RIGHT
+	for k in COLA_ANILLOS:
+		var u := float(k) / (COLA_ANILLOS - 1)
+		var tg := (cen[mini(k + 1, COLA_ANILLOS - 1)] - cen[maxi(k - 1, 0)]).normalized()
+		var b1 := (ref - tg * ref.dot(tg)).normalized()
+		ref = b1
+		var b2 := tg.cross(b1)
+		var r := 0.03 + 0.078 * pow(sin(PI * minf(1.0, u * 1.12) * 0.5 + 0.0), 0.7) * (1.0 - 0.35 * u)
+		if u > 0.86:
+			r *= sqrt(maxf(0.0, 1.0 - (u - 0.86) / 0.14))
+		for l in COLA_LADOS:
+			var a := TAU * l / COLA_LADOS
+			var dir := b1 * cos(a) + b2 * sin(a)
+			var rr := r * (1.0 + 0.09 * sin(a * 5.0 + u * 23.0))
+			vs.append(cen[k] + dir * rr)
+			ns.append(dir)
+			var c := fur.lerp(fur2, 0.35 + 0.35 * absf(cos(a)))
+			if u > 0.72:
+				c = c.lerp(tip, clampf((u - 0.72) / 0.16, 0.0, 1.0))
+			cs.append(c)
+	for k in COLA_ANILLOS - 1:
+		for l in COLA_LADOS:
+			var a := k * COLA_LADOS + l
+			var b := k * COLA_LADOS + (l + 1) % COLA_LADOS
+			idx.append_array([a, b, a + COLA_LADOS, b, b + COLA_LADOS, a + COLA_LADOS])
+	var arr := []
+	arr.resize(Mesh.ARRAY_MAX)
+	arr[Mesh.ARRAY_VERTEX] = vs
+	arr[Mesh.ARRAY_NORMAL] = ns
+	arr[Mesh.ARRAY_COLOR] = cs
+	arr[Mesh.ARRAY_INDEX] = idx
+	cola_mesh.clear_surfaces()
+	cola_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+
+# ---------------- ropa animada ----------------
+func _animar_ropa() -> void:
+	for a in anim_ropa:
+		var n: Node3D = a.n
+		if not is_instance_valid(n):
+			continue
+		var x: float = a.x
+		match a.tipo:
+			"girar":
+				n.rotation.y = t * x
+			"flotar":
+				n.position.y = (a.pos as Vector3).y + sin(t * 2.0) * 0.012
+				n.rotation.y = t * 0.8
+			"balancear":
+				n.rotation.z = (a.rot as Vector3).z + sin(t * 3.2) * 0.22 * x - body.rotation.z * 1.5
+			"aletear":
+				n.rotation.y = (a.rot as Vector3).y + sin(t * 9.0 * absf(x)) * 0.45 * signf(x)
+			"ondear":
+				n.rotation.x = (a.rot as Vector3).x + (0.06 + sin(t * 2.4) * 0.09) * x + corriendo * 0.08
+			"gelatina":
+				var w := sin(t * 5.0 * x)
+				n.scale = (a.sc as Vector3) * Vector3(1.0 + w * 0.05, 1.0 - w * 0.05, 1.0 + sin(t * 5.0 * x + 1.0) * 0.04)
+			"llama":
+				n.scale = (a.sc as Vector3) * Vector3(1.0, 0.7 + randf() * 0.6, 1.0)
+		var m = a.mat
+		if m != null:
+			var mm := m as StandardMaterial3D
+			match a.tipo:
+				"parpadear":
+					mm.emission_energy_multiplier = 0.3 + 1.4 * (0.5 + 0.5 * sin(t * 5.0 + x * 2.0))
+				"brillar":
+					mm.emission_energy_multiplier = 0.4 + 0.8 * (0.5 + 0.5 * sin(t * 2.2 + x * 1.7))
+				"llama":
+					mm.emission_energy_multiplier = 1.0 + randf() * 1.2
+				"flotar":
+					mm.emission_energy_multiplier = 1.0 + 0.4 * sin(t * 3.0)
+				"balancear":
+					mm.emission_energy_multiplier = 0.5 + 1.0 * (0.5 + 0.5 * sin(t * 4.0))
+
+# ---------------- capibara ----------------
+## La capibara usa el mismo esqueleto: así ríe, come, baila y duerme igual que Pip.
+func _armar_capibara() -> void:
+	var cafe := pip_mat("#a0703f")
+	var cafe2 := pip_mat("#b8875a")
+	var osc := pip_mat("#6e4a2a")
+	var hocico := pip_mat("#8a5a33")
+	var neg := gloss_mat("#1e1410")
+	var bl := pip_mat("#ffffff", Color(0.4, 0.4, 0.4), false)
+	M["capi"] = cafe
+	M["capi2"] = cafe2
+	var L: Array = []
+	L.append(_part(torso, _ball, cafe, Vector3(0, 0.04, -0.02), Vector3(0.175, 0.165, 0.19)))
+	L.append(_part(torso, _ball, cafe2, Vector3(0, 0.03, 0.08), Vector3(0.12, 0.12, 0.1)))
+	L.append(_part(head, _ball, cafe, Vector3(0, 0.0, 0.03), Vector3(0.15, 0.13, 0.17)))
+	L.append(_part(head, _ball, hocico, Vector3(0, -0.035, 0.15), Vector3(0.115, 0.095, 0.09)))
+	L.append(_part(head, _ball, cafe, Vector3(0, 0.03, 0.12), Vector3(0.12, 0.08, 0.1)))
+	for sx in [-1.0, 1.0]:
+		L.append(_part(head, _ball, neg, Vector3(sx * 0.03, -0.012, 0.232), Vector3(0.013, 0.008, 0.006)))
+		L.append(_part(head, _ball, osc, Vector3(sx * 0.1, 0.115, -0.03), Vector3(0.035, 0.03, 0.016)))
+	# ojos chiquitos y altos (tranquilos, como las capibaras)
+	var ce: Array[Node3D] = []
+	for sx in [-1.0, 1.0]:
+		var e := _pivot(head, Vector3(sx * 0.085, 0.055, 0.13))
+		L.append(_part(e, _ball, neg, Vector3.ZERO, Vector3(0.019, 0.022, 0.013)))
+		L.append(_part(e, _low, bl, Vector3(sx * -0.005, 0.008, 0.01), Vector3.ONE * 0.006))
+		e.rotation.y = sx * 0.4
+		ce.append(e)
+	var bo := _pivot(head, Vector3(0, -0.09, 0.2))
+	L.append(_part(bo, _ball, M.mouth, Vector3.ZERO, Vector3(0.026, 0.018, 0.01)))
+	var len := _part(bo, _low, M.pink, Vector3(0, -0.006, 0.004), Vector3(0.014, 0.008, 0.008))
+	L.append(len)
+	bo.scale = Vector3(1.0, 0.12, 1.0)
+	var dts: Array[MeshInstance3D] = []
+	for sx in [-1.0, 1.0]:
+		var th := _part(head, _low, bl, Vector3(sx * 0.008, -0.078, 0.213), Vector3(0.007, 0.011, 0.004))
+		L.append(th)
+		dts.append(th)
+	var rub: Array[MeshInstance3D] = []
+	for sx in [-1.0, 1.0]:
+		var b := _part(head, _ball, M.blush, Vector3(sx * 0.11, -0.03, 0.12), Vector3(0.026, 0.016, 0.01))
+		L.append(b)
+		rub.append(b)
+	# la mandarina en la cabeza
+	L.append(_part(head, _ball, pip_mat("#ff9f2e", Color(0.15, 0.06, 0.0), false), Vector3(0, 0.15, 0.0), Vector3(0.05, 0.045, 0.05)))
+	L.append(_part(head, _ball, pip_mat("#4cae4c", Color.BLACK, false), Vector3(0.015, 0.2, 0.0), Vector3(0.025, 0.006, 0.014)))
+	for a in arms:
+		L.append(_part(a, _ball, osc, Vector3(0, -0.05, 0.01), Vector3(0.034, 0.045, 0.038)))
+	for l in legs:
+		L.append(_part(l, _ball, cafe, Vector3(0, -0.02, 0), Vector3(0.06, 0.065, 0.075)))
+		L.append(_part(l, _ball, osc, Vector3(0, -0.11, 0.04), Vector3(0.04, 0.022, 0.055)))
+	for mi in L:
+		(mi as MeshInstance3D).visible = false
+	_capi = L
+	_capi_cara = {"eyes": ce, "mouth": bo, "tongue": len, "teeth": dts, "blush": rub}
+
+func set_forma(f: String) -> void:
+	if f == forma:
+		return
+	forma = f
+	var capi := f == "capibara"
+	for mi in _partes_pip:
+		if is_instance_valid(mi):
+			(mi as Node3D).visible = not capi
+	for mi in _capi:
+		(mi as Node3D).visible = capi
+	cola.visible = not capi
+	scarf.visible = not capi
+	for o in get_meta("ropa", []):
+		if is_instance_valid(o):
+			(o as Node3D).visible = not capi
+	for e in ears:
+		e.visible = not capi
+	var cara: Dictionary = _capi_cara if capi else _pip_cara
+	eyes.assign(cara.eyes)
+	mouth = cara.mouth
+	tongue = cara.tongue
+	teeth.assign(cara.teeth)
+	blush.assign(cara.blush)

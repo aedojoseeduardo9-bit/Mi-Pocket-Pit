@@ -11,10 +11,10 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 1.5 Firma fija: cada APK nueva se instala encima de la anterior sin perder la partida.
 - [x] 1.6 "Los ojos": el juego se prueba solo y saca 30 capturas en cada cambio.
 - [ ] 1.7 Botón "Actualizar" dentro del juego cuando hay una APK nueva en GitHub (como Star Nova).
-- [ ] 1.8 Pantalla de ajustes: música, sonidos, vibración, idioma, créditos, privacidad.
-- [ ] 1.9 Vibración suave al tocar a Pip y en los botones.
-- [ ] 1.10 Idiomas: español, inglés, portugués (Brasil es un mercado enorme para este género).
-- [ ] 1.11 Modo de bajo consumo para teléfonos viejos (sombras simples, 30 cuadros).
+- [x] 1.8 Ajustes: música, efectos, gráficos, idioma y vibración (falta: créditos y privacidad).
+- [x] 1.9 Opción de vibración en Ajustes.
+- [x] 1.10 Español e inglés (falta portugués).
+- [x] 1.11 Gráficos baja/media/alta (baja: sin sombras, 30 cuadros, 75% de resolución).
 - [ ] 1.12 Nube: guardar la partida en Google Play Juegos (cambiar de teléfono sin perder nada).
 
 ## 2. Pip (el personaje)
@@ -40,7 +40,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 3.3 Acariciar la cabeza → cierra los ojos, ronronea, corazones.
 - [x] 3.4 Cola → salta y se mira la cola. Orejas → las sacude. Pies → cosquillas.
 - [x] 3.5 Si lo pinchas muchas veces seguidas se enoja (cachetes, brazos cruzados, pisotón).
-- [x] 3.6 Premio pequeño de bellotas por cariño (con pausa, no es una fuente infinita).
+- [x] 3.6 ~~Premio de bellotas por cariño~~ (quitado: el dueño no lo quiere).
 - [ ] 3.7 Empujarlo: se tambalea y se cae de poto (física).
 - [ ] 3.8 Hacerle cosquillas con un plumero (objeto de la tienda).
 - [ ] 3.9 Cepillarle la cola (barra de "brillo de pelaje").
@@ -53,7 +53,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 4.4 Patio: fondo (día, atardecer, noche, galaxia Nova), cerca (2), árbol (2).
 - [x] 4.5 Baño: pared (2), bañera (2), cortina (3).
 - [x] 4.6 Probar la decoración antes de comprarla (se ve en vivo; si no compras, vuelve como estaba).
-- [ ] 4.7 Más estilos por ranura (meta: 8–12 por ranura).
+- [x] 4.7 127 decoraciones: 30+ por habitación (paredes con 12 patrones, pisos, plantas, camas, lámparas, cielos, juegos del patio…).
 - [ ] 4.8 Temas completos: "Casa del árbol", "Nave espacial", "Castillo", "Playa", "Dulces", "Star Nova".
 - [ ] 4.9 Ventanas con día y noche reales (hora del teléfono) y clima (lluvia, nieve).
 - [ ] 4.10 Muebles que se mueven con el dedo (poner/quitar cuadros, plantas, juguetes).
@@ -76,8 +76,8 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 6.1 17 prendas en 4 zonas: cabeza (6), ojos (3), cuerpo (4), cuello (4). Se mueven con el esqueleto.
 - [x] 6.2 Probar antes de comprar (Pip festeja al ponérsela).
 - [x] 6.3 Prendas con nivel mínimo (candado).
-- [ ] 6.4 Mejor costura: pliegues, costuras y telas con textura (polerón con capucha de verdad, capa que ondea).
-- [ ] 6.5 Zonas nuevas: zapatos, guantes, mochila, cola (lazo), alas.
+- [x] 6.4 137 prendas en 6 zonas, con capas que ondean, alas que aletean, hélices que giran, luces que parpadean y slime que tiembla.
+- [x] 6.5 Zona espalda (alas, mochilas, jetpack, caparazón) y trajes completos (ninja, robot, slime, astronauta…). Faltan zapatos.
 - [ ] 6.6 Trajes completos de Star Nova (los de las tiendas de cada mundo) — coherencia entre juegos.
 - [ ] 6.7 Conjuntos (set de 4 piezas con descuento).
 - [ ] 6.8 Ropa de temporada: Halloween, Navidad, verano, Fiestas Patrias, San Valentín.
@@ -92,6 +92,11 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [ ] 7.4 Poción Gemelo (aparece un segundo Pip).
 - [ ] 7.5 Combinar dos pociones en el caldero (receta secreta).
 
+## 7b. Capibara
+- [x] 7b.1 Poción capibara: 3 minutos por 120 bellotas.
+- [x] 7b.2 Capibara para siempre ($1.499, compra con dinero real; en la prueba es gratis) con botón para cambiar.
+- [ ] 7b.3 Ropa para la capibara.
+
 ## 8. Bailes
 - [x] 8.1 4 bailes con su música: Saltitos (gratis), Robot Nova, Trompo, Aplausos.
 - [ ] 8.2 Más bailes de moda (sin copiar coreografías con nombre).
@@ -100,14 +105,14 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 
 ## 9. Minijuegos (para ganar bellotas)
 - [x] 9.1 Pelota (toques).
-- [ ] 9.2 Salto entre islas flotantes (estilo Star Nova, vertical infinito).
-- [ ] 9.3 Atrapa bellotas que caen del árbol (evitar piñas).
-- [ ] 9.4 Carrera en el Cohete Avellana esquivando meteoritos.
-- [ ] 9.5 Memoria con cartas de los personajes de Star Nova.
+- [x] 9.2 Salto Nova (de nube en nube, infinito).
+- [x] 9.3 Lluvia de bellotas (evitar piñas, 3 vidas).
+- [x] 9.4 Cohete Avellana (tocar para subir entre asteroides).
+- [x] 9.5 Memoria (16 cartas, 60 segundos).
 - [ ] 9.6 Burbujas: conecta 3 del mismo color.
 - [ ] 9.7 Pesca en el Lago Espejo de Verdalia.
 - [ ] 9.8 Cocina rápida (pedidos con tiempo).
-- [ ] 9.9 Récords y medallas por minijuego.
+- [x] 9.9 Récords por minijuego (faltan medallas).
 
 ## 10. Bellotas (moneda del juego) y progreso
 - [x] 10.1 Bellotas doradas: se ganan con regalo diario, cariño, pelota y subir de nivel.
@@ -120,13 +125,19 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [ ] 10.8 Segunda moneda "Estrellas Nova" solo para ropa exclusiva (se gana poco jugando, se puede comprar).
 - [ ] 10.9 Álbum de recuerdos (fotos que saca Pip en momentos especiales).
 
+## 10b. Economía (pedido del dueño, APK 2)
+- [x] 10b.1 Bellotas gratis para comer limitadas (5, se recarga 1 cada 30 min).
+- [x] 10b.2 Sin bellotas por hacer cariño.
+- [x] 10b.3 Cuando faltan bellotas se ofrece ir a la tienda; botón "+" que late junto al contador.
+- [x] 10b.4 Pip baja sus necesidades más rápido y también con la app cerrada (en ~8 h pide atención).
+
 ## 11. Micropagos con Google Play (sin anuncios, nunca)
-- [x] 11.1 Tienda de bellotas: 5 paquetes (US$0,99 a US$19,99) — **en prueba se compran gratis**.
+- [x] 11.1 Tienda de bellotas: 5 paquetes ($990 a $19.990 CLP) + especiales — **en prueba se compran gratis**.
 - [x] 11.2 Todo pasa por `Pagos.gd`: cambiar a Google Play no toca el resto del juego.
 - [ ] 11.3 Conectar Google Play Billing (plugin oficial de Godot) y productos en Play Console.
 - [ ] 11.4 Verificar las compras (anti-trampas) y "Restaurar compras".
 - [ ] 11.5 Pase mensual "Club Nova" (bellotas diarias + ropa exclusiva del mes).
-- [ ] 11.6 Ofertas de inicio (una sola vez) y paquetes de temporada.
+- [x] 11.6 Pack de bienvenida (una vez) y etiquetas "Más popular" / "Mejor valor" (faltan paquetes de temporada).
 - [ ] 11.7 Paquete "Sin espera" o paquetes de pociones.
 - [ ] 11.8 Control parental: confirmación antes de pagar y límite de gasto (público infantil).
 
