@@ -208,7 +208,7 @@ static func vestir(pip: PipModel, puesto: Dictionary) -> void:
 	# la pancita crema se esconde bajo la ropa (si no, atraviesa la tela)
 	for c in pip.torso.get_children():
 		if c is MeshInstance3D and (c as MeshInstance3D).material_override == pip.M.cream:
-			c.visible = cuerpo == "" and traje == ""
+			c.visible = cuerpo == "" and traje == "" and pip.forma == "pip"
 	var orejas := true
 	for zona in ZONAS:
 		var id := str(puesto.get(zona, ""))
