@@ -8,6 +8,11 @@ El dueño habla **español**: responde siempre en español, claro y sin tecnicis
 > **Sin anuncios, nunca.** Ingresos solo por micropagos (bellotas) con Google Play.
 
 ## Reglas del dueño
+- Menús: **dock inferior** (Armario, Tienda, Juegos, Decorar, Más) y puntitos de habitación arriba (lo eligió el dueño).
+- Economía: nada de bellotas por cariño; bellotas gratis para comer limitadas; empujar suave a la tienda cuando faltan.
+  Pip debe necesitar atención (sus necesidades bajan también con la app cerrada).
+- Rendimiento: **sin luces puntuales** (cada una redibuja todo en teléfonos); materiales en caché; todo material nuevo
+  se precalienta en `main._precalentar()` durante la intro.
 - Toda app del dueño empieza con la **intro "nioro"** (la de Color Flow, `scripts/intro.gd`) y **no se puede saltar**.
 - Animaciones fluidas en todo: botones con rebote, paneles con resorte, cámara suave, Pip siempre vivo.
 - Hacerlo bien y sin apuro: revisar las capturas de "los ojos" después de cada cambio visual.
@@ -39,5 +44,11 @@ El dueño habla **español**: responde siempre en español, claro y sin tecnicis
 - `ui.gd` — colores, tipografía (Fredoka), íconos dibujados, `Boton`, `Tarjeta`, `Fx` (efectos 2D).
 - `estado.gd` (autoload `Estado`) — partida y catálogo. `pagos.gd` (autoload `Pagos`). `sfx.gd` (autoload `Sfx`,
   con sonidos de Pip sintetizados). `intro.gd` — intro nioro. `ojos.gd` — pruebas y capturas.
-- Datos: `godot/data/catalogo.json` (ropa, pociones, bailes, comida, decoración, paquetes, regalo diario).
+- `minijuegos.gd` (`Minijuego`) — Salto Nova, Lluvia de bellotas, Memoria y Cohete Avellana (2D, pantalla completa).
+- `l.gd` (`L`) — idiomas: los textos van en español en el código; `data/en.json` tiene el inglés. `UI.texto` traduce
+  solo; textos con números: `L.f("¡Nivel %d!", [n])`. Los "ojos" listan los textos sin traducir: debe quedar vacío.
+- Datos: `godot/data/catalogo.json` lo **genera** `python3 godot/tools/generar_catalogo.py` (no editar a mano): ropa
+  (137, con forma + colores + animación), decoración (30+ por habitación), pociones, bailes, comida, minijuegos,
+  paquetes en pesos chilenos y especiales (pack de bienvenida, capibara para siempre). También escribe `docs/CATALOGO.md`.
+- Revisión de errores: `docs/REVISION.md` (actualizarla en cada versión).
 - Sonidos y música en `godot/audio/` (de Star Nova y Color Flow, del mismo dueño).

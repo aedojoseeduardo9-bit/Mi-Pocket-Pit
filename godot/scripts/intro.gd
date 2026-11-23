@@ -219,28 +219,38 @@ func _glow(ci: CanvasItem, x: float, y: float, r: float, col: Color, a: int) -> 
 	c.a = clampf(a / 255.0, 0.0, 1.0)
 	ci.draw_texture_rect(_glow_tex, Rect2(x - r, y - r, r * 2.0, r * 2.0), false, c)
 
-## círculo con sombreado de esfera: degradado radial que nace en el punto de luz (hx, hy) y llega hasta rk·r
-func _shaded_circle(x: float, y: float, r: float, hx: float, hy: float, rk: float, cols: Array, stops: Array) -> void:
-	var hp := Vector2(x + hx * r, y + hy * r)
-	var rings := 7
-	var segs := 64
-	var rr := rk * r
-	var pts := PackedVector2Array()
-	var cs := PackedColorArray()
-	for ri in rings:
-		var f0 := float(ri) / rings
-		var f1 := float(ri + 1) / rings
-		for si in segs:
-			var a0 := TAU * si / segs
-			var a1 := TAU * (si + 1) / segs
-			var e0 := Vector2(x, y) + Vector2(cos(a0), sin(a0)) * r
-			var e1 := Vector2(x, y) + Vector2(cos(a1), sin(a1)) * r
-			var q := [hp.lerp(e0, f0), hp.lerp(e1, f0), hp.lerp(e1, f1), hp.lerp(e0, f1)]
-			var quad := PackedVector2Array(q)
-			var qc := PackedColorArray()
-			for v in q:
-				qc.append(_grad(cols, stops, (v as Vector2).distance_to(hp) / rr))
-			draw_polygon(quad, qc)
+## Esfera sombreada: degradado radial que nace en el punto de luz (hx, hy) y llega hasta rk·r.
+## La malla se arma UNA vez (círculo de radio 1) y cada cuadro solo se dibuja escalada: así la intro no se traba.
+var _esfera: ArrayMesh
+
+func _shaded_circle(x: float, y: float, r: float, hx: float, hy: float, rk: float, cols: Array, stops: Array, alfa := 1.0) -> void:
+	if _esfera == null:
+		var hp := Vector2(hx, hy)
+		var rings := 10
+		var segs := 72
+		var vs := PackedVector2Array()
+		var cs := PackedColorArray()
+		for ri in rings:
+			var f0 := float(ri) / rings
+			var f1 := float(ri + 1) / rings
+			for si in segs:
+				var a0 := TAU * si / segs
+				var a1 := TAU * (si + 1) / segs
+				var e0 := Vector2(cos(a0), sin(a0))
+				var e1 := Vector2(cos(a1), sin(a1))
+				var q := [hp.lerp(e0, f0), hp.lerp(e1, f0), hp.lerp(e1, f1), hp.lerp(e0, f1)]
+				for t3 in [[0, 1, 2], [0, 2, 3]]:
+					for k in t3:
+						var v: Vector2 = q[k]
+						vs.append(v)
+						cs.append(_grad(cols, stops, v.distance_to(hp) / rk))
+		var arr := []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = vs
+		arr[Mesh.ARRAY_COLOR] = cs
+		_esfera = ArrayMesh.new()
+		_esfera.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	draw_mesh(_esfera, null, Transform2D(0.0, Vector2(r, r), 0.0, Vector2(x, y)), Color(1, 1, 1, alfa))
 
 static func _grad(cols: Array, stops: Array, u: float) -> Color:
 	u = clampf(u, 0.0, 1.0)
@@ -276,9 +286,7 @@ func _draw() -> void:
 		var la := logoA
 		_glow(self, ox, cy, r * 2.5 * s, Color("#3F5FFF"), int((70 + 110 * pulse) * la))
 		var cols := [Color("#7A95FF"), Color("#2B3FC4"), Color("#0A1352")]
-		for i in cols.size():
-			cols[i] = Color(cols[i], la)
-		_shaded_circle(ox, cy, r * s, -0.38, -0.48, 1.6, cols, [0.0, 0.45, 1.0])
+		_shaded_circle(ox, cy, r * s, -0.38, -0.48, 1.6, cols, [0.0, 0.45, 1.0], la)
 		# brillo de vidrio arriba
 		draw_arc(Vector2(ox, cy), r * s * 0.8, deg_to_rad(212.0), deg_to_rad(282.0), 24, Color(1, 1, 1, 80.0 / 255.0 * la), r * s * 0.11, true)
 		# luna y su puntito

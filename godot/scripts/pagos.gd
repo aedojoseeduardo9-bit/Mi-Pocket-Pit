@@ -13,6 +13,8 @@ const MODO_PRUEBA := true
 func comprar(id: String) -> void:
 	var p: Dictionary = Estado.busca(Estado.cat.paquetes, id)
 	if p.is_empty():
+		p = Estado.busca(Estado.cat.especiales, id)
+	if p.is_empty():
 		compra_fallida.emit(id, "Ese paquete no existe")
 		return
 	if MODO_PRUEBA:
@@ -23,7 +25,14 @@ func comprar(id: String) -> void:
 	compra_fallida.emit(id, "La tienda todavía no está conectada")
 
 func _entregar(p: Dictionary) -> void:
-	var n := int(p.bellotas)
-	Estado.dar_bellotas(n)
+	var n := int(p.get("bellotas", 0))
+	if n > 0:
+		Estado.dar_bellotas(n)
+	var po: Dictionary = p.get("pociones", {})
+	for k in po:
+		Estado.sumar_pocion(str(k), int(po[k]))
+	if p.get("una_vez", false):
+		Estado.d.compras[str(p.id)] = true
+		Estado.marcar()
 	Estado.guardar()
 	compra_lista.emit(str(p.id), n)
