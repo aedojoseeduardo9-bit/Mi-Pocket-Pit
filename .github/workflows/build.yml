@@ -137,7 +137,7 @@ jobs:
         run: |
           gh release delete latest --yes --cleanup-tag || true
           gh release create latest dist/* \
-            --title "Pocket Pip 0.2 (compilación ${GITHUB_RUN_NUMBER})" \
+            --title "Pocket Pip 0.3 (compilación ${GITHUB_RUN_NUMBER})" \
             --notes "APK de prueba para Android (se instala encima de la anterior). Compras simuladas: no cobran nada." \
             --latest --target "$(git rev-parse HEAD)"
 

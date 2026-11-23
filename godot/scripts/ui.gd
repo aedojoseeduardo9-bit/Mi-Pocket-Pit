@@ -800,9 +800,14 @@ class Fx extends Control:
 				"nota":
 					UI.icono(self, "nota", p, s * 1.1, Color(q.col, a))
 				"zzz":
-					UI.texto_borde(self, p, "z", int(s), Color(1, 1, 1, a), Color(0.3, 0.3, 0.6, a * 0.6), 6)
+					# tamaño de letra fijo y escalado con la transformación (cambiar el tamaño cada cuadro traba el juego)
+					draw_set_transform(p, 0.0, Vector2.ONE * s / 40.0)
+					UI.texto_borde(self, Vector2.ZERO, "z", 40, Color(1, 1, 1, a), Color(0.3, 0.3, 0.6, a * 0.6), 6)
+					draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 				"texto":
-					UI.texto_borde(self, p, q.txt, int(s), Color(q.col, a), Color(0.35, 0.18, 0.08, a), 8)
+					draw_set_transform(p, 0.0, Vector2.ONE * s / 34.0)
+					UI.texto_borde(self, Vector2.ZERO, q.txt, 34, Color(q.col, a), Color(0.35, 0.18, 0.08, a), 8)
+					draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 				"vuela":
 					UI.icono(self, "bellota", p, s * (1.0 - 0.3 * k))
 

@@ -370,7 +370,9 @@ func _draw() -> void:
 	if _cuenta > 0.0 and not fin:
 		var n := int(ceil(_cuenta / 0.8))
 		var k := fmod(_cuenta, 0.8) / 0.8
-		UI.texto_borde(self, Vector2(W * 0.5, H * 0.42), str(n), int(140 * (0.8 + 0.4 * k)), UI.ORO, UI.CAFE, 18)
+		draw_set_transform(Vector2(W * 0.5, H * 0.42), 0.0, Vector2.ONE * (0.8 + 0.4 * k))
+		UI.texto_borde(self, Vector2.ZERO, str(n), 140, UI.ORO, UI.CAFE, 18)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		UI.texto_borde(self, Vector2(W * 0.5, H * 0.52), _ayuda(), 30, Color.WHITE, UI.CAFE, 10)
 	if fin:
 		var a := minf(1.0, _fin_t * 4.0)

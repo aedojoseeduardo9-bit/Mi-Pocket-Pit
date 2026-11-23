@@ -39,6 +39,8 @@ var _partes_pip: Array = []
 var _capi: Array = []              ## piezas de la capibara
 var _pip_cara := {}
 var _capi_cara := {}
+var capi_mandarina: Array = []
+var capi_orejas: Array = []
 
 # estado de la animación
 var t := 0.0
@@ -235,10 +237,12 @@ func _init() -> void:
 	for s in [-1.0, 1.0]:
 		var ear := _pivot(head, Vector3(s * 0.085, 0.11, -0.01))
 		ear.rotation.z = -s * 0.22
-		_part(ear, _cone, M.fur, Vector3(0, 0.06, 0), Vector3(0.05, 0.13, 0.032))
-		_part(ear, _cone, M.pink, Vector3(0, 0.055, 0.014), Vector3(0.03, 0.085, 0.01))
-		var tuft := _part(ear, _cone, M.furDark, Vector3(s * 0.006, 0.135, 0), Vector3(0.022, 0.06, 0.016))
-		tuft.rotation.z = -s * 0.3
+		# oreja de ardilla: hoja gruesa y redondeada, curvada hacia atrás, con el interior rosado y un mechón en la punta
+		_part(ear, _oreja_malla(1.0, 0.016, 0.0), M.fur, Vector3(0, -0.005, 0), Vector3.ONE)
+		_part(ear, _oreja_malla(0.62, 0.006, 0.0), M.pink, Vector3(0, 0.008, 0.012), Vector3.ONE)
+		for k in 3:
+			var tuft := _part(ear, _cone, M.furDark, Vector3(s * (0.004 + (k - 1) * 0.006), 0.13, -0.012), Vector3(0.012, 0.05 - absf(k - 1) * 0.012, 0.01))
+			tuft.rotation = Vector3(-0.35, 0, -s * 0.25 + (k - 1) * 0.35)
 		ears.append(ear)
 	# bufanda con dos puntas que ondean y broche de estrella
 	scarf = _pivot(torso, Vector3(0, 0.145, 0.03))
@@ -253,13 +257,19 @@ func _init() -> void:
 	# brazos y patas
 	for s in [-1.0, 1.0]:
 		var a := _pivot(torso, Vector3(s * 0.112, 0.09, 0.06))
-		_part(a, _ball, M.fur, Vector3(0, -0.035, 0.01), Vector3(0.026, 0.048, 0.028))
-		_part(a, _ball, M.fur2, Vector3(0, -0.078, 0.018), Vector3(0.022, 0.019, 0.022))
+		# brazo: tubo suave que se afina hacia la muñeca + manito redonda con tres deditos
+		_part(a, _brazo_malla(), M.fur, Vector3.ZERO, Vector3.ONE)
+		_part(a, _ball, M.fur2, Vector3(0, -0.08, 0.022), Vector3(0.024, 0.02, 0.023))
+		for k in 3:
+			_part(a, _low, M.fur2, Vector3((k - 1) * 0.011, -0.094, 0.034), Vector3(0.008, 0.009, 0.009))
 		arms.append(a)
 	for s in [-1.0, 1.0]:
 		var l := _pivot(body, Vector3(s * 0.085, -0.03, -0.04))
 		_part(l, _ball, M.fur, Vector3(0, -0.02, 0), Vector3(0.055, 0.065, 0.07))
-		_part(l, _ball, M.paw, Vector3(0, -0.11, 0.045), Vector3(0.035, 0.025, 0.06))
+		_part(l, _ball, M.fur, Vector3(0, -0.075, 0.025), Vector3(0.03, 0.04, 0.03))
+		_part(l, _ball, M.paw, Vector3(0, -0.11, 0.045), Vector3(0.035, 0.022, 0.06))
+		for k in 3:
+			_part(l, _low, M.paw, Vector3((k - 1) * 0.016, -0.112, 0.1), Vector3(0.011, 0.012, 0.012))
 		legs.append(l)
 	# cola: cadena de 8 "huesos" en forma de S; la malla es un tubo suave y esponjoso que se rehace cada cuadro
 	parent = _pivot(torso, Vector3(0, 0.0, -0.14))
@@ -974,7 +984,9 @@ func _armar_capibara() -> void:
 	L.append(_part(head, _ball, cafe, Vector3(0, 0.03, 0.12), Vector3(0.12, 0.08, 0.1)))
 	for sx in [-1.0, 1.0]:
 		L.append(_part(head, _ball, neg, Vector3(sx * 0.03, -0.012, 0.232), Vector3(0.013, 0.008, 0.006)))
-		L.append(_part(head, _ball, osc, Vector3(sx * 0.1, 0.115, -0.03), Vector3(0.035, 0.03, 0.016)))
+		var oc := _part(head, _ball, osc, Vector3(sx * 0.1, 0.115, -0.03), Vector3(0.035, 0.03, 0.016))
+		capi_orejas.append(oc)
+		L.append(oc)
 	# ojos chiquitos y altos (tranquilos, como las capibaras)
 	var ce: Array[Node3D] = []
 	for sx in [-1.0, 1.0]:
@@ -999,8 +1011,9 @@ func _armar_capibara() -> void:
 		L.append(b)
 		rub.append(b)
 	# la mandarina en la cabeza
-	L.append(_part(head, _ball, pip_mat("#ff9f2e", Color(0.15, 0.06, 0.0), false), Vector3(0, 0.15, 0.0), Vector3(0.05, 0.045, 0.05)))
-	L.append(_part(head, _ball, pip_mat("#4cae4c", Color.BLACK, false), Vector3(0.015, 0.2, 0.0), Vector3(0.025, 0.006, 0.014)))
+	capi_mandarina = [_part(head, _ball, pip_mat("#ff9f2e", Color(0.15, 0.06, 0.0), false), Vector3(0, 0.15, 0.0), Vector3(0.05, 0.045, 0.05)),
+		_part(head, _ball, pip_mat("#4cae4c", Color.BLACK, false), Vector3(0.015, 0.2, 0.0), Vector3(0.025, 0.006, 0.014))]
+	L.append_array(capi_mandarina)
 	for a in arms:
 		L.append(_part(a, _ball, osc, Vector3(0, -0.05, 0.01), Vector3(0.034, 0.045, 0.038)))
 	for l in legs:
@@ -1023,9 +1036,6 @@ func set_forma(f: String) -> void:
 		(mi as Node3D).visible = capi
 	cola.visible = not capi
 	scarf.visible = not capi
-	for o in get_meta("ropa", []):
-		if is_instance_valid(o):
-			(o as Node3D).visible = not capi
 	for e in ears:
 		e.visible = not capi
 	var cara: Dictionary = _capi_cara if capi else _pip_cara
@@ -1034,3 +1044,78 @@ func set_forma(f: String) -> void:
 	tongue = cara.tongue
 	teeth.assign(cara.teeth)
 	blush.assign(cara.blush)
+
+# ---------------- mallas suaves (brazos y orejas) ----------------
+## Tubo suave a lo largo de unos puntos, con un radio por punto (sección elíptica rx·rz). Se arma una vez.
+static func loft(pts: Array, rx: Array, rz: Array, lados := 14) -> ArrayMesh:
+	var n := pts.size()
+	var vs := PackedVector3Array()
+	var ns := PackedVector3Array()
+	var idx := PackedInt32Array()
+	var ref := Vector3.RIGHT
+	for k in n:
+		var p: Vector3 = pts[k]
+		var tg := ((pts[mini(k + 1, n - 1)] as Vector3) - (pts[maxi(k - 1, 0)] as Vector3)).normalized()
+		var b1 := (ref - tg * ref.dot(tg)).normalized()
+		ref = b1
+		var b2 := tg.cross(b1)
+		for l in lados:
+			var a := TAU * l / lados
+			var ca := cos(a)
+			var sa := sin(a)
+			vs.append(p + b1 * ca * float(rx[k]) + b2 * sa * float(rz[k]))
+			ns.append((b1 * ca * float(rz[k]) + b2 * sa * float(rx[k])).normalized())
+	for k in n - 1:
+		for l in lados:
+			var a := k * lados + l
+			var b := k * lados + (l + 1) % lados
+			idx.append_array([a, b, a + lados, b, b + lados, a + lados])
+	var arr := []
+	arr.resize(Mesh.ARRAY_MAX)
+	arr[Mesh.ARRAY_VERTEX] = vs
+	arr[Mesh.ARRAY_NORMAL] = ns
+	arr[Mesh.ARRAY_INDEX] = idx
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	return m
+
+static var _mallas := {}
+
+## Brazo: del hombro a la muñeca, un poco curvado hacia adelante (en el espacio del hueso del brazo).
+static func _brazo_malla() -> ArrayMesh:
+	if _mallas.has("brazo"):
+		return _mallas.brazo
+	var pts: Array = []
+	var rx: Array = []
+	var rz: Array = []
+	var n := 9
+	for k in n:
+		var u := float(k) / (n - 1)
+		pts.append(Vector3(0, 0.012 - u * 0.088, 0.004 + u * u * 0.02))
+		var r := 0.027 - 0.008 * u
+		if k == 0 or k == n - 1:
+			r *= 0.55   # extremos redondeados
+		rx.append(r)
+		rz.append(r * 1.06)
+	_mallas.brazo = loft(pts, rx, rz)
+	return _mallas.brazo
+
+## Oreja: hoja redondeada que termina en punta, curvada hacia atrás. `k` = tamaño, `grosor` en la base.
+static func _oreja_malla(k: float, grosor: float, _x: float) -> ArrayMesh:
+	var key := "oreja%s/%s" % [k, grosor]
+	if _mallas.has(key):
+		return _mallas[key]
+	var pts: Array = []
+	var rx: Array = []
+	var rz: Array = []
+	var n := 14
+	for i in n:
+		var u := float(i) / (n - 1)
+		pts.append(Vector3(0, u * 0.14 * k, -0.016 * sin(u * PI) * k - 0.012 * u * u * k))
+		var w := 0.05 * k * pow(sin(PI * clampf(0.1 + u * 0.9, 0.0, 1.0)), 0.75) * (1.0 - 0.45 * u)
+		if i == 0:
+			w *= 0.85
+		rx.append(maxf(0.0005, w))
+		rz.append(maxf(0.0005, grosor * (1.0 - 0.7 * u) + 0.004 * k))
+	_mallas[key] = loft(pts, rx, rz, 16)
+	return _mallas[key]

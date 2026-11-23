@@ -33,6 +33,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [ ] 2.13 Elegir colores de pelaje (naranjo, gris, café, blanco, negro, galaxia...).
 - [ ] 2.14 Nombre propio de la mascota y cumpleaños de Pip (regalo especial).
 - [ ] 2.15 Modelo HD hecho en Blender (con IA gratuita para bocetos) para reemplazar las formas simples.
+- [x] 2.16 Cola, brazos, orejas y patitas con mallas suaves (versión 0.3).
 
 ## 3. Caricias y toques
 - [x] 3.1 Barriga → se ríe (risita sintetizada) y se tapa la panza.
@@ -54,6 +55,8 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 4.5 Baño: pared (2), bañera (2), cortina (3).
 - [x] 4.6 Probar la decoración antes de comprarla (se ve en vivo; si no compras, vuelve como estaba).
 - [x] 4.7 127 decoraciones: 30+ por habitación (paredes con 12 patrones, pisos, plantas, camas, lámparas, cielos, juegos del patio…).
+- [x] 4.13 Efectos en la decoración (partículas, luces, animaciones) y 13 diseños nuevos con efecto.
+- [x] 4.14 Burbuja de habitaciones junto a Más (tocar o mantener y deslizar).
 - [ ] 4.8 Temas completos: "Casa del árbol", "Nave espacial", "Castillo", "Playa", "Dulces", "Star Nova".
 - [ ] 4.9 Ventanas con día y noche reales (hora del teléfono) y clima (lluvia, nieve).
 - [ ] 4.10 Muebles que se mueven con el dedo (poner/quitar cuadros, plantas, juguetes).
@@ -95,7 +98,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 ## 7b. Capibara
 - [x] 7b.1 Poción capibara: 3 minutos por 120 bellotas.
 - [x] 7b.2 Capibara para siempre ($1.499, compra con dinero real; en la prueba es gratis) con botón para cambiar.
-- [ ] 7b.3 Ropa para la capibara.
+- [x] 7b.3 Toda la ropa se acomoda a la capibara.
 
 ## 8. Bailes
 - [x] 8.1 4 bailes con su música: Saltitos (gratis), Robot Nova, Trompo, Aplausos.

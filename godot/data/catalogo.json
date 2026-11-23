@@ -2298,6 +2298,18 @@
       "c": "#ffd86a",
       "r": 0.18
      }
+    },
+    {
+     "id": "magica",
+     "nombre": "Nevera mágica",
+     "en": "Magic Fridge",
+     "precio": 260,
+     "p": {
+      "c": "#b49cff",
+      "r": 0.18,
+      "magia": true
+     },
+     "fx": true
     }
    ],
    "mesa": [
@@ -2350,6 +2362,17 @@
       "forma": "hongo",
       "c": "#ff6b6b"
      }
+    },
+    {
+     "id": "dulces",
+     "nombre": "Mesa de cumpleaños",
+     "en": "Birthday Table",
+     "precio": 220,
+     "p": {
+      "forma": "dulces",
+      "c": "#ffadc4"
+     },
+     "fx": true
     }
    ],
    "planta": [
@@ -2390,7 +2413,19 @@
      "p": {
       "forma": "girasol",
       "c": "#ffcf4a"
-     }
+     },
+     "fx": true
+    },
+    {
+     "id": "flor_magica",
+     "nombre": "Flor mágica",
+     "en": "Magic Flower",
+     "precio": 180,
+     "p": {
+      "forma": "flor_magica",
+      "c": "#c77dff"
+     },
+     "fx": true
     }
    ]
   },
@@ -2654,6 +2689,16 @@
       "forma": "castillo",
       "c": "#c9b8f0"
      }
+    },
+    {
+     "id": "nube_magica",
+     "nombre": "Nube mágica",
+     "en": "Magic Cloud Bed",
+     "precio": 320,
+     "p": {
+      "forma": "nube_magica"
+     },
+     "fx": true
     }
    ],
    "lampara": [
@@ -2675,7 +2720,8 @@
      "p": {
       "forma": "luna",
       "c": "#e9f0ff"
-     }
+     },
+     "fx": true
     },
     {
      "id": "estrella",
@@ -2685,7 +2731,8 @@
      "p": {
       "forma": "estrella",
       "c": "#ffd36e"
-     }
+     },
+     "fx": true
     },
     {
      "id": "hongo_azul",
@@ -2705,7 +2752,19 @@
      "p": {
       "forma": "lava",
       "c": "#ff7ac0"
-     }
+     },
+     "fx": true
+    },
+    {
+     "id": "disco",
+     "nombre": "Bola disco",
+     "en": "Disco Ball",
+     "precio": 280,
+     "p": {
+      "forma": "disco",
+      "c": "#e8eef7"
+     },
+     "fx": true
     }
    ],
    "alfombra": [
@@ -2727,7 +2786,8 @@
      "p": {
       "forma": "estrella",
       "c": "#ffd36e"
-     }
+     },
+     "fx": true
     },
     {
      "id": "redonda_azul",
@@ -2757,6 +2817,16 @@
      "p": {
       "forma": "nube",
       "c": "#f4f6ff"
+     }
+    },
+    {
+     "id": "arcoiris",
+     "nombre": "Alfombra arcoíris",
+     "en": "Rainbow Rug",
+     "precio": 120,
+     "p": {
+      "forma": "arcoiris",
+      "c": "#ff6b6b"
      }
     }
    ]
@@ -2788,7 +2858,8 @@
      "precio": 100,
      "p": {
       "cielo": "noche"
-     }
+     },
+     "fx": true
     },
     {
      "id": "galaxia",
@@ -2797,7 +2868,8 @@
      "precio": 200,
      "p": {
       "cielo": "galaxia"
-     }
+     },
+     "fx": true
     },
     {
      "id": "aurora",
@@ -2806,7 +2878,8 @@
      "precio": 180,
      "p": {
       "cielo": "aurora"
-     }
+     },
+     "fx": true
     },
     {
      "id": "nublado",
@@ -2834,6 +2907,16 @@
      "p": {
       "cielo": "dulce"
      }
+    },
+    {
+     "id": "lluvia_estrellas",
+     "nombre": "Lluvia de estrellas",
+     "en": "Star Shower",
+     "precio": 260,
+     "p": {
+      "cielo": "lluvia_estrellas"
+     },
+     "fx": true
     }
    ],
    "cerca": [
@@ -2907,7 +2990,8 @@
      "p": {
       "forma": "redondo",
       "c": "#ffc2d6"
-     }
+     },
+     "fx": true
     },
     {
      "id": "pino",
@@ -2937,7 +3021,8 @@
      "p": {
       "forma": "redondo",
       "c": "#ff9f43"
-     }
+     },
+     "fx": true
     },
     {
      "id": "magico",
@@ -2947,7 +3032,8 @@
      "p": {
       "forma": "redondo",
       "c": "#b49cff"
-     }
+     },
+     "fx": true
     }
    ],
    "pasto": [
@@ -2976,7 +3062,8 @@
      "precio": 60,
      "p": {
       "c": "#c9c46a"
-     }
+     },
+     "fx": true
     },
     {
      "id": "nieve",
@@ -2985,7 +3072,8 @@
      "precio": 120,
      "p": {
       "c": "#f2f6fb"
-     }
+     },
+     "fx": true
     },
     {
      "id": "arena",
@@ -3015,7 +3103,8 @@
      "p": {
       "forma": "columpio",
       "c": "#ff6b6b"
-     }
+     },
+     "fx": true
     },
     {
      "id": "tobogan",
@@ -3035,7 +3124,8 @@
      "p": {
       "forma": "piscina",
       "c": "#7fd8ff"
-     }
+     },
+     "fx": true
     },
     {
      "id": "casita",
@@ -3056,6 +3146,28 @@
       "forma": "telescopio",
       "c": "#5b5f8f"
      }
+    },
+    {
+     "id": "fuente",
+     "nombre": "Fuente",
+     "en": "Fountain",
+     "precio": 220,
+     "p": {
+      "forma": "fuente",
+      "c": "#e9e4dc"
+     },
+     "fx": true
+    },
+    {
+     "id": "fogata",
+     "nombre": "Fogata",
+     "en": "Campfire",
+     "precio": 200,
+     "p": {
+      "forma": "fogata",
+      "c": "#7a4b2a"
+     },
+     "fx": true
     }
    ]
   },
@@ -3192,6 +3304,18 @@
       "c1": "#ffd1c4",
       "c2": "#ffb7a3"
      }
+    },
+    {
+     "id": "acuario",
+     "nombre": "Pared acuario",
+     "en": "Aquarium Wall",
+     "precio": 300,
+     "p": {
+      "patron": "acuario",
+      "c1": "#dff3fb",
+      "c2": "#ffffff"
+     },
+     "fx": true
     }
    ],
    "piso": [
@@ -3260,7 +3384,8 @@
      "p": {
       "c": "#ffffff",
       "patas": ""
-     }
+     },
+     "fx": true
     },
     {
      "id": "dorada",
@@ -3270,7 +3395,8 @@
      "p": {
       "c": "#fff4f6",
       "patas": "#ffcf4a"
-     }
+     },
+     "fx": true
     },
     {
      "id": "rosa",
@@ -3280,7 +3406,8 @@
      "p": {
       "c": "#ffc2d6",
       "patas": ""
-     }
+     },
+     "fx": true
     },
     {
      "id": "menta",
@@ -3290,7 +3417,8 @@
      "p": {
       "c": "#b4ecd9",
       "patas": "#ffffff"
-     }
+     },
+     "fx": true
     },
     {
      "id": "negra",
@@ -3300,7 +3428,20 @@
      "p": {
       "c": "#3a3d4a",
       "patas": "#ffcf4a"
-     }
+     },
+     "fx": true
+    },
+    {
+     "id": "jacuzzi",
+     "nombre": "Jacuzzi de luz",
+     "en": "Glow Jacuzzi",
+     "precio": 260,
+     "p": {
+      "c": "#e8f4ff",
+      "patas": "",
+      "jacuzzi": true
+     },
+     "fx": true
     }
    ],
    "cortina": [
@@ -3391,6 +3532,18 @@
       "c1": "#2f3170",
       "c2": "#ffffff"
      }
+    },
+    {
+     "id": "luces",
+     "nombre": "Cortina de luces",
+     "en": "Fairy Light Curtain",
+     "precio": 160,
+     "p": {
+      "forma": "luces",
+      "c1": "#fff3f8",
+      "c2": "#fff3f8"
+     },
+     "fx": true
     }
    ]
   }

@@ -69,6 +69,38 @@ func _correr() -> void:
 	main.hud.cerrar_modal()
 	await _esperar(1.0)
 	await foto("habitacion")
+	# brazos y orejas nuevos, de cerca
+	main.zoom_panel = 1.0
+	main.pip.hacer("saludo")
+	await _esperar(0.9)
+	await foto("pip_cerca")
+	main.zoom_panel = 0.0
+	# burbuja de habitaciones: tocar = siguiente, mantener y deslizar = elegir
+	var bb: Control = main.hud.burbuja
+	ok(bb.visible, "la burbuja de habitaciones está junto a Más")
+	var e1 := InputEventMouseButton.new()
+	e1.button_index = MOUSE_BUTTON_LEFT
+	e1.pressed = true
+	e1.position = bb.size * 0.5
+	bb._gui_input(e1)
+	var e2 := e1.duplicate()
+	e2.pressed = false
+	bb._gui_input(e2)
+	await _esperar(1.8)
+	ok(main.hab == 2, "tocar la burbuja lleva a la siguiente habitación (%d)" % main.hab)
+	bb._gui_input(e1)
+	await _esperar(0.45)
+	var mv := InputEventMouseMotion.new()
+	mv.position = bb.size * 0.5 + Vector2(-112 * 2, 0)
+	bb._gui_input(mv)
+	await _esperar(0.3)
+	await foto("burbuja_deslizando")
+	mv.position = bb.size * 0.5 + Vector2(-112 * 3, 0)
+	bb._gui_input(mv)
+	bb._gui_input(e2)
+	await _esperar(3.4)
+	ok(main.hab == 0, "deslizar en la burbuja lleva a la cocina (%d)" % main.hab)
+	await _ir(1)
 	# caricias: ya no dan bellotas
 	var b0 := Estado.bellotas()
 	for i in 3:
@@ -183,6 +215,18 @@ func _correr() -> void:
 	await _esperar(1.2)
 	ok(main.pip.forma == "capibara", "la poción capibara transforma a Pip")
 	await foto("capibara")
+	# la ropa se acomoda a la capibara
+	main.zoom_panel = 1.0
+	for i in 6:
+		var lk: Dictionary = [{"traje": "ninja_rojo"}, {"traje": "robot_oro"}, {"cabeza": "corona_oro", "ojos": "lentes_corazon_rosa", "cuerpo": "capa_azul"},
+			{"cabeza": "gorra_azul", "ojos": "lentes_sol_negro", "cuerpo": "poleron_rosa", "espalda": "alas_hada_celeste"},
+			{"traje": "dino_lila"}, {"cabeza": "vaquero_cafe", "cuello": "panuelo_rojo", "cuerpo": "overol_azul"}][i]
+		_vestir(lk)
+		main.pip.hacer("saludo")
+		await _esperar(0.7)
+		await foto("capibara_ropa_%d" % i)
+	_vestir({"cuello": "bufanda_nova"})
+	main.zoom_panel = 0.0
 	main.pip.toque("barriga")
 	await _esperar(0.5)
 	await foto("capibara_risa")
@@ -228,13 +272,18 @@ func _correr() -> void:
 				main.casa.rearmar(h, s, v.id)
 	ok(true, "todas las decoraciones se arman")
 	var combos := {
-		"habitacion": [{"pared": "corazones_noche", "cama": "castillo", "lampara": "lava", "alfombra": "corazon", "piso": "alfombra_lila"},
+		"habitacion": [{"pared": "corazones_noche", "cama": "nube_magica", "lampara": "disco", "alfombra": "arcoiris", "piso": "alfombra_lila"},
+			{"pared": "corazones_noche", "cama": "castillo", "lampara": "lava", "alfombra": "corazon", "piso": "alfombra_lila"},
 			{"pared": "lunares_algodon", "cama": "concha", "lampara": "estrella", "alfombra": "nube", "piso": "madera_oscura"}],
-		"cocina": [{"pared": "ladrillo_crema", "piso": "ajedrez_menta", "nevera": "amarilla", "mesa": "hongo", "planta": "girasol"}],
-		"patio": [{"fondo": "aurora", "cerca": "seto", "arbol": "pino", "pasto": "nieve", "juguete": "telescopio"},
+		"cocina": [{"pared": "ladrillo_crema", "piso": "ajedrez_menta", "nevera": "magica", "mesa": "dulces", "planta": "flor_magica"},
+			{"pared": "ladrillo_crema", "piso": "ajedrez_menta", "nevera": "amarilla", "mesa": "hongo", "planta": "girasol"}],
+		"patio": [{"fondo": "lluvia_estrellas", "cerca": "seto", "arbol": "magico", "pasto": "nieve", "juguete": "fogata"},
+			{"fondo": "dia", "cerca": "blanca", "arbol": "cerezo", "pasto": "primavera", "juguete": "fuente"},
+			{"fondo": "aurora", "cerca": "seto", "arbol": "pino", "pasto": "nieve", "juguete": "telescopio"},
 			{"fondo": "dulce", "cerca": "rosa", "arbol": "palmera", "pasto": "arena", "juguete": "piscina"},
 			{"fondo": "galaxia", "cerca": "piedra", "arbol": "magico", "pasto": "primavera", "juguete": "columpio"}],
-		"bano": [{"pared": "corazones_coral", "banera": "negra", "cortina": "noche", "piso": "ajedrez_rosa"}],
+		"bano": [{"pared": "acuario", "banera": "jacuzzi", "cortina": "luces", "piso": "ajedrez_rosa"},
+			{"pared": "corazones_coral", "banera": "negra", "cortina": "noche", "piso": "ajedrez_rosa"}],
 	}
 	for h in combos:
 		await _ir(Casa.HABS.find(h))
@@ -242,7 +291,7 @@ func _correr() -> void:
 		for c in combos[h]:
 			for s in Estado.cat.deco[h]:
 				main.casa.rearmar(h, s, c.get(s, ""))
-			await _esperar(0.3)
+			await _esperar(1.6)
 			await foto("deco_%s_%d" % [h, k])
 			k += 1
 	# patio: pelota

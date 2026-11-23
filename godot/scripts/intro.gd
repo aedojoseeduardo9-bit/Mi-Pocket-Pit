@@ -18,6 +18,7 @@ var _stars: Array = []
 var _sparks: Array = []          ## [x, y, vx, vy, vida, max, r]
 var _chimed := false
 var _done := false
+var listo := false            ## la escena sigue en negro hasta que el juego terminó de cargar
 var _bold: SystemFont
 var _thin: SystemFont
 var _glow_tex: GradientTexture2D
@@ -175,7 +176,7 @@ static func backOut(x: float) -> float:
 	return 1.0 + (k + 1.0) * u * u * u + k * u * u
 
 func _process(dt: float) -> void:
-	if _done:
+	if _done or not listo:
 		return
 	dt = minf(dt, 0.05)   # si el teléfono se traba al arrancar, la animación no da saltos
 	t += dt
@@ -319,10 +320,10 @@ func _draw_text() -> void:
 	if t >= SWEEP_A:
 		# resplandor azul (en Android era una sombra difusa)
 		var gc := Color("#6F8CFF")
-		for i in 4:
-			var w := (18.0 + 26.0 * pulse) * (1.0 - i * 0.22) * 1.4
-			var a := (150.0 + 100.0 * pulse) / 255.0 * 0.12 * (1.0 + i * 0.5) * fa
-			_txt.draw_string_outline(_bold, Vector2(tx, ty), "nioro", HORIZONTAL_ALIGNMENT_LEFT, -1, ts, int(w), Color(gc, a))
+		# grosores FIJOS (si cambian cada cuadro el teléfono redibuja las letras cada vez: era el tirón de la intro)
+		for w: int in [56, 38, 22]:
+			var a: float = (150.0 + 100.0 * pulse) / 255.0 * (0.09 + 0.12 * (56 - w) / 34.0) * (0.75 + 0.5 * pulse) * fa
+			_txt.draw_string_outline(_bold, Vector2(tx, ty), "nioro", HORIZONTAL_ALIGNMENT_LEFT, -1, ts, w, Color(gc, a))
 		_txt.draw_string(_bold, Vector2(tx, ty), "nioro", HORIZONTAL_ALIGNMENT_LEFT, -1, ts, Color(Color("#EEF1FF"), fa))
 	var sa := easeOut((t - 2.1) / 0.5)
 	if sa > 0.0:

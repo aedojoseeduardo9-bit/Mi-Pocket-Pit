@@ -153,34 +153,34 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Disfraz de panda / Panda Costume — 650 (nivel 4)
 - [x] Disfraz de tiburón / Shark Costume — 700 (nivel 5)
 
-## Decoración: cocina (33 estilos)
+## Decoración: cocina (36 estilos)
 - **pared** (12): Pared crema, Pared lavanda a rayas, Pared cielo con lunares, Pared limón a cuadros, Pared cerezo con estrellas, Pared menta con corazones, Pared crema de ladrillo, Pared lavanda de tablas, Pared cielo con ondas, Pared limón con rombos, Pared cerezo con hojas, Pared menta con nubes
 - **piso** (7): Madera, Madera oscura, Baldosa ajedrez, Baldosa rosa, Baldosa menta, Alfombra azul, Alfombra lila
-- **nevera** (5): Nevera clásica, Nevera retro rosa, Nevera menta, Nevera moderna, Nevera amarilla
-- **mesa** (5): Mesa de madera, Mesa redonda azul, Mesa redonda rosa, Mesa blanca, Mesa hongo
-- **planta** (4): Sin planta, Cactus, Helecho, Girasol
+- **nevera** (6): Nevera clásica, Nevera retro rosa, Nevera menta, Nevera moderna, Nevera amarilla, Nevera mágica
+- **mesa** (6): Mesa de madera, Mesa redonda azul, Mesa redonda rosa, Mesa blanca, Mesa hongo, Mesa de cumpleaños
+- **planta** (5): Sin planta, Cactus, Helecho, Girasol, Flor mágica
 
-## Decoración: habitacion (34 estilos)
+## Decoración: habitacion (37 estilos)
 - **pared** (12): Pared lavanda, Pared vainilla a rayas, Pared algodón con lunares, Pared menta a cuadros, Pared durazno con estrellas, Pared noche con corazones, Pared lavanda de ladrillo, Pared vainilla de tablas, Pared algodón con ondas, Pared menta con rombos, Pared durazno con hojas, Pared noche con nubes
 - **piso** (6): Madera, Madera oscura, Baldosa ajedrez, Baldosa rosa, Baldosa menta, Alfombra azul
-- **cama** (6): Nido, Cama nube, Cohete Avellana, Cama concha, Cama hoja, Cama castillo
-- **lampara** (5): Lámpara hongo, Lámpara luna, Lámpara estrella, Lámpara hongo azul, Lámpara de lava
-- **alfombra** (5): Alfombra redonda, Alfombra estrella, Alfombra celeste, Alfombra corazón, Alfombra nube
+- **cama** (7): Nido, Cama nube, Cohete Avellana, Cama concha, Cama hoja, Cama castillo, Nube mágica
+- **lampara** (6): Lámpara hongo, Lámpara luna, Lámpara estrella, Lámpara hongo azul, Lámpara de lava, Bola disco
+- **alfombra** (6): Alfombra redonda, Alfombra estrella, Alfombra celeste, Alfombra corazón, Alfombra nube, Alfombra arcoíris
 
-## Decoración: patio (30 estilos)
-- **fondo** (8): Día, Atardecer, Noche, Galaxia Nova, Aurora, Nublado, Amanecer, Cielo de algodón
+## Decoración: patio (33 estilos)
+- **fondo** (9): Día, Atardecer, Noche, Galaxia Nova, Aurora, Nublado, Amanecer, Cielo de algodón, Lluvia de estrellas
 - **cerca** (5): Cerca blanca, Cerca de troncos, Cerca rosa, Seto, Muro de piedra
 - **arbol** (6): Roble, Cerezo, Pino, Palmera, Árbol de otoño, Árbol mágico
 - **pasto** (5): Pasto, Pasto con flores, Pasto de otoño, Nieve, Arena de playa
-- **juguete** (6): Nada, Columpio, Tobogán, Piscinita, Casita de perro, Telescopio
+- **juguete** (8): Nada, Columpio, Tobogán, Piscinita, Casita de perro, Telescopio, Fuente, Fogata
 
-## Decoración: bano (30 estilos)
-- **pared** (12): Pared azulejo, Pared nube a rayas, Pared arena con lunares, Pared uva a cuadros, Pared pistacho con estrellas, Pared coral con corazones, Pared azulejo de ladrillo, Pared nube de tablas, Pared arena con ondas, Pared uva con rombos, Pared pistacho con hojas, Pared coral con nubes
+## Decoración: bano (33 estilos)
+- **pared** (13): Pared azulejo, Pared nube a rayas, Pared arena con lunares, Pared uva a cuadros, Pared pistacho con estrellas, Pared coral con corazones, Pared azulejo de ladrillo, Pared nube de tablas, Pared arena con ondas, Pared uva con rombos, Pared pistacho con hojas, Pared coral con nubes, Pared acuario
 - **piso** (5): Madera, Baldosa ajedrez, Baldosa rosa, Baldosa menta, Baldosa blanca
-- **banera** (5): Bañera clásica, Bañera patas doradas, Bañera rosa, Bañera menta, Bañera elegante
-- **cortina** (8): Cortina a rayas, Cortina burbujas, Cortina estrellas, Cortina rosa, Cortina patitos, Cortina del mar, Cortina lila, Cortina noche
+- **banera** (6): Bañera clásica, Bañera patas doradas, Bañera rosa, Bañera menta, Bañera elegante, Jacuzzi de luz
+- **cortina** (9): Cortina a rayas, Cortina burbujas, Cortina estrellas, Cortina rosa, Cortina patitos, Cortina del mar, Cortina lila, Cortina noche, Cortina de luces
 
-Total decoración: 127
+Total decoración: 139
 
 ## Pociones (6)
 - [x] Poción gigante — 30 bellotas, 40 s

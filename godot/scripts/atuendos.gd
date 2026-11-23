@@ -220,6 +220,9 @@ static func vestir(pip: PipModel, puesto: Dictionary) -> void:
 		if def.is_empty():
 			continue
 		var res := _armar(pip, str(def.forma), def.c, str(def.get("anim", "")))
+		if pip.forma == "capibara":
+			for nd in res:
+				_ajustar_capibara(pip, nd as Node3D, zona)
 		piezas.append_array(res)
 		if str(def.forma) in ["robot", "astronauta", "caballero", "casco_astronauta"]:
 			orejas = false
@@ -227,9 +230,40 @@ static func vestir(pip: PipModel, puesto: Dictionary) -> void:
 		e.visible = orejas and pip.forma == "pip"
 	if pip.forma != "pip":
 		pip.scarf.visible = false
-		for o in piezas:
-			(o as Node3D).visible = false
+		# la capibara guarda la mandarina bajo los sombreros y esconde sus orejitas bajo los cascos
+		var con_sombrero := str(puesto.get("cabeza", "")) != "" or traje != ""
+		for m in pip.capi_mandarina:
+			(m as Node3D).visible = not con_sombrero
+		for o in pip.capi_orejas:
+			(o as Node3D).visible = orejas
 	pip.set_meta("ropa", piezas)
+
+## La ropa está hecha a la medida de Pip; para la capibara (cabeza más larga, cuerpo más ancho, ojos más altos y
+## separados) cada pieza se reacomoda según el hueso del que cuelga.
+static func _ajustar_capibara(pip: PipModel, nd: Node3D, zona: String) -> void:
+	var par := nd.get_parent()
+	var t := Transform3D.IDENTITY
+	if par == pip.head:
+		if zona == "ojos":
+			t = Transform3D(Basis.from_scale(Vector3(1.24, 1.0, 1.0)), Vector3(0, 0.03, 0.05))
+		else:
+			t = Transform3D(Basis.from_scale(Vector3(0.98, 0.93, 1.14)), Vector3(0, -0.006, 0.03))
+	elif par == pip.torso:
+		var sc := Vector3(1.17, 1.18, 1.12)
+		var c_pip := Vector3(0, 0.05, -0.01)
+		var c_capi := Vector3(0, 0.04, -0.02)
+		t = Transform3D(Basis.from_scale(sc), c_capi - c_pip * sc)
+	elif par in pip.arms:
+		t = Transform3D(Basis.from_scale(Vector3(1.3, 1.0, 1.35)), Vector3(0, -0.012, 0.0))
+	elif par in pip.legs:
+		t = Transform3D(Basis.from_scale(Vector3(1.08, 1.0, 1.08)), Vector3.ZERO)
+	nd.transform = t * nd.transform
+	# la base de las animaciones de la ropa también se mueve
+	for a in pip.anim_ropa:
+		if a.n == nd:
+			a.rot = nd.rotation
+			a.pos = nd.position
+			a.sc = nd.scale
 
 static func _c(cs: Array, i: int, def := "#ffffff") -> String:
 	return str(cs[i]) if i < cs.size() else def
@@ -670,7 +704,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_piernas(pip, c))
 			_capucha(hg, c)
 			# rendija de los ojos: la capucha se abre al frente (franja de piel) + cinta
-			_p(hg, _ball, pip.M.fur, Vector3(0, 0.025, 0.11), Vector3(0.12, 0.045, 0.06))
+			_p(hg, _ball, _piel(pip), Vector3(0, 0.025, 0.11), Vector3(0.12, 0.045, 0.06))
 			_p(hg, _torus, tela("#e23b4e" if c0 != "#e85d6f" else "#2b2633"), Vector3(0, 0.07, -0.005), Vector3(0.162, 0.2, 0.157), Vector3(0.15, 0, 0))
 			var cinta := _g(hg, "cinta", Vector3(0, 0.07, -0.15))
 			for s in [-1.0, 1.0]:
@@ -736,7 +770,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_piernas(pip, c))
 			_p(g, _ball, tela(c1), Vector3(0, 0.03, 0.1), Vector3(0.1, 0.11, 0.08))
 			_capucha(hg, c, 0.012)
-			_p(hg, _ball, pip.M.fur, Vector3(0, 0.0, 0.1), Vector3(0.12, 0.1, 0.07))
+			_p(hg, _ball, _piel(pip), Vector3(0, 0.0, 0.1), Vector3(0.12, 0.1, 0.07))
 			# dientes de la capucha
 			for i in 6:
 				_p(hg, _cone, tela("#ffffff"), Vector3(-0.08 + i * 0.032, 0.09, 0.115), Vector3(0.01, 0.022, 0.01), Vector3(PI, 0, 0))
@@ -805,7 +839,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 				out.append(_p(a, _ball, n, Vector3(0, -0.05, 0.0), Vector3(0.025, 0.08, 0.045)))
 			out.append_array(_piernas(pip, tela(c2)))
 			_capucha(hg, n, 0.01)
-			_p(hg, _ball, pip.M.fur, Vector3(0, -0.01, 0.1), Vector3(0.12, 0.11, 0.07))
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.11, 0.07))
 			_p(hg, _cone, tela(c2), Vector3(0, 0.12, 0.13), Vector3(0.03, 0.05, 0.02), Vector3(PI / 2 + 0.6, 0, 0))
 		"rana":
 			var v := tela(c0)
@@ -814,7 +848,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_piernas(pip, v))
 			_p(g, _ball, tela(c1), Vector3(0, 0.03, 0.1), Vector3(0.1, 0.11, 0.08))
 			_capucha(hg, v, 0.01)
-			_p(hg, _ball, pip.M.fur, Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
 			for s in [-1.0, 1.0]:
 				_p(hg, _ball, v, Vector3(s * 0.07, 0.15, 0.04), Vector3.ONE * 0.05)
 				_p(hg, _ball, tela("#ffffff"), Vector3(s * 0.07, 0.16, 0.08), Vector3.ONE * 0.03)
@@ -825,7 +859,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_mangas(pip, c))
 			out.append_array(_piernas(pip, c))
 			_capucha(hg, c, 0.01)
-			_p(hg, _ball, pip.M.fur, Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
 			var cm := luz(c2)
 			cm.emission_energy_multiplier = 0.5
 			var u := _g(hg, "cuerno", Vector3(0, 0.15, 0.07), Vector3(0.4, 0, 0))
@@ -904,7 +938,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_mangas(pip, n))
 			out.append_array(_piernas(pip, n))
 			_capucha(hg, b, 0.01)
-			_p(hg, _ball, pip.M.fur, Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
 			for s in [-1.0, 1.0]:
 				_p(hg, _ball, n, Vector3(s * 0.11, 0.13, 0.0), Vector3.ONE * 0.045)
 				_p(hg, _ball, n, Vector3(s * 0.065, 0.03, 0.155), Vector3(0.03, 0.035, 0.01), Vector3(0, 0, s * 0.4))
@@ -915,7 +949,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			out.append_array(_mangas(pip, gr))
 			out.append_array(_piernas(pip, gr))
 			_capucha(hg, gr, 0.014)
-			_p(hg, _ball, pip.M.fur, Vector3(0, -0.04, 0.11), Vector3(0.11, 0.08, 0.06))
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.04, 0.11), Vector3(0.11, 0.08, 0.06))
 			for i in 7:
 				_p(hg, _cone, tela("#ffffff"), Vector3(-0.09 + i * 0.03, 0.035, 0.14), Vector3(0.011, 0.025, 0.011), Vector3(PI, 0, 0))
 			var aleta := _g(hg, "aleta", Vector3(0, 0.15, -0.02))
@@ -954,3 +988,7 @@ static func rbox(s: Vector3, r: float) -> ArrayMesh:
 	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
 	_rb[key] = m
 	return m
+
+## Color de la cara que asoma por las capuchas (naranjo de Pip o café de la capibara).
+static func _piel(pip: PipModel) -> Material:
+	return pip.M.capi if pip.forma == "capibara" else pip.M.fur

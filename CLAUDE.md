@@ -8,11 +8,16 @@ El dueño habla **español**: responde siempre en español, claro y sin tecnicis
 > **Sin anuncios, nunca.** Ingresos solo por micropagos (bellotas) con Google Play.
 
 ## Reglas del dueño
-- Menús: **dock inferior** (Armario, Tienda, Juegos, Decorar, Más) y puntitos de habitación arriba (lo eligió el dueño).
+- Menús: **dock inferior** (Armario, Tienda, Juegos, Decorar, Más) y **burbuja de habitaciones** junto a Más
+  (tocar = siguiente; mantener y deslizar = elegir). Lo eligió el dueño.
 - Economía: nada de bellotas por cariño; bellotas gratis para comer limitadas; empujar suave a la tienda cuando faltan.
   Pip debe necesitar atención (sus necesidades bajan también con la app cerrada).
 - Rendimiento: **sin luces puntuales** (cada una redibuja todo en teléfonos); materiales en caché; todo material nuevo
-  se precalienta en `main._precalentar()` durante la intro.
+  se precalienta en `main._precalentar()` con la pantalla en negro, ANTES de que corra la intro. Durante la intro y los
+  minijuegos `disable_3d = true`. Nunca cambiar tamaño de letra ni grosor de contorno cada cuadro (el teléfono redibuja
+  las letras): usar tamaños fijos y escalar con `draw_set_transform`.
+- Decoración con efectos: `Casa.efecto(nodo, tipo)` y `Casa.particulas_en(...)`; solo se anima la habitación activa
+  (`Casa.activar`). La ropa se reacomoda a la capibara en `Atuendos._ajustar_capibara`.
 - Toda app del dueño empieza con la **intro "nioro"** (la de Color Flow, `scripts/intro.gd`) y **no se puede saltar**.
 - Animaciones fluidas en todo: botones con rebote, paneles con resorte, cámara suave, Pip siempre vivo.
 - Hacerlo bien y sin apuro: revisar las capturas de "los ojos" después de cada cambio visual.
