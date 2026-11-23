@@ -1,0 +1,592 @@
+## Pocket Pip — núcleo: arma el mundo (luz, cámara, casa, Pip), muestra la intro "nioro" (no se salta),
+## maneja los toques sobre Pip (toques, caricias, mirar el dedo), el paso entre habitaciones y las actividades:
+## comer (cocina), dormir (habitación), pelota (patio), jabón y ducha (baño), bailes y pociones.
+extends Node
+
+const ESCALA_PIP := 2.3
+
+var mundo: Node3D
+var cam: Camera3D
+var sol: DirectionalLight3D
+var env: Environment
+var casa: Casa
+var pip: PipModel
+var hud: Hud
+var fx: UI.Fx
+var capa_ui: CanvasLayer
+var intro: IntroNioro
+var negro: ColorRect
+
+var hab := 1                  ## habitación actual (0 cocina, 1 habitación, 2 patio, 3 baño)
+var modo := "intro"           ## intro, juego, viaje, panel, pelota, baile, dormir, ducha
+var cam_pos := Vector3.ZERO
+var cam_mira := Vector3.ZERO
+var cam_pos_obj := Vector3.ZERO
+var cam_mira_obj := Vector3.ZERO
+var zoom_panel := 0.0         ## 0..1: acerca la cámara a Pip cuando hay un panel abierto
+var _zoom_k := 0.0
+var luz_apagada := false
+var _noche_k := 0.0
+
+# toque
+var _toque := false
+var _t0 := 0.0
+var _p0 := Vector2.ZERO
+var _p_ult := Vector2.ZERO
+var _zona := ""
+var _arrastre := 0.0
+var _car_acum := 0.0
+var _t_corazon := 0.0
+var _premio_caricia := 0.0
+
+# actividades
+var jabon := false
+var espuma := 0.0
+var _ducha_t := 0.0
+var _zzz_t := 0.0
+var pelota: MeshInstance3D
+var _pel_v := Vector2.ZERO
+var _pel_p := Vector2.ZERO
+var toques_pelota := 0
+var _baile_t := 0.0
+var _nota_t := 0.0
+var _musica_hab := ""
+var tiempo := 0.0
+
+func _ready() -> void:
+	get_viewport().physics_object_picking = false
+	_armar_mundo()
+	capa_ui = CanvasLayer.new()
+	add_child(capa_ui)
+	fx = UI.Fx.new()
+	hud = Hud.new(self)
+	capa_ui.add_child(hud)
+	capa_ui.add_child(fx)
+	hud.visible = false
+	# la intro del estudio va encima de todo y no se puede saltar
+	var capa_intro := CanvasLayer.new()
+	capa_intro.layer = 50
+	add_child(capa_intro)
+	negro = ColorRect.new()
+	negro.color = Color.BLACK
+	negro.set_anchors_preset(Control.PRESET_FULL_RECT)
+	negro.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	capa_intro.add_child(negro)
+	intro = IntroNioro.new()
+	capa_intro.add_child(intro)
+	intro.terminada.connect(_fin_intro)
+	Estado.subio_nivel.connect(_subio_nivel)
+	Pagos.compra_lista.connect(_compra_lista)
+	if OS.get_cmdline_user_args().has("--sin-intro"):
+		intro.t = IntroNioro.LEN - 0.01
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--ojos="):
+			var o := Ojos.new(self, a.substr(7))
+			add_child(o)
+
+func _armar_mundo() -> void:
+	mundo = Node3D.new()
+	mundo.name = "Mundo"
+	add_child(mundo)
+	var we := WorldEnvironment.new()
+	env = Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color("#2a1f2e")
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color("#fff1e6")
+	env.ambient_light_energy = 0.32
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_exposure = 0.95
+	env.glow_enabled = true
+	env.glow_intensity = 0.35
+	env.glow_bloom = 0.04
+	env.glow_hdr_threshold = 1.1
+	env.adjustment_enabled = true
+	env.adjustment_saturation = 1.08
+	we.environment = env
+	mundo.add_child(we)
+	sol = DirectionalLight3D.new()
+	sol.rotation = Vector3(deg_to_rad(-52), deg_to_rad(-28), 0)
+	sol.light_energy = 0.42
+	sol.light_color = Color("#fff4e2")
+	sol.shadow_enabled = true
+	sol.shadow_blur = 1.6
+	sol.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sol.directional_shadow_max_distance = 14.0
+	mundo.add_child(sol)
+	casa = Casa.new()
+	mundo.add_child(casa)
+	casa.construir()
+	pip = PipModel.new()
+	pip.base_scale = ESCALA_PIP
+	mundo.add_child(pip)
+	Atuendos.vestir(pip, Estado.d.puesto)
+	hab = clampi(int(Estado.d.get("habitacion", 1)), 0, 3)
+	pip.position = Vector3(casa.centro(hab), 0, 0)
+	pip.accion_terminada.connect(_accion_terminada)
+	# pelota del patio
+	pelota = MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.16
+	sm.height = 0.32
+	pelota.mesh = sm
+	var pm := StandardMaterial3D.new()
+	pm.albedo_color = Color("#ff6b6b")
+	pm.roughness = 0.35
+	pelota.material_override = pm
+	pelota.visible = false
+	mundo.add_child(pelota)
+	cam = Camera3D.new()
+	cam.fov = 50.0
+	cam.near = 0.1
+	cam.far = 60.0
+	mundo.add_child(cam)
+	_objetivo_camara()
+	cam_pos = cam_pos_obj
+	cam_mira = cam_mira_obj
+	cam.position = cam_pos
+	cam.look_at(cam_mira)
+
+func _fin_intro() -> void:
+	modo = "juego"
+	hud.visible = true
+	hud.refrescar()
+	_musica()
+	var tw := create_tween()
+	tw.tween_property(negro, "color:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE)
+	intro.queue_free()
+	await get_tree().create_timer(0.9).timeout
+	pip.hacer("saludo")
+	Sfx.play("feliz")
+	if Estado.regalo_disponible():
+		await get_tree().create_timer(0.6).timeout
+		hud.abrir_regalo()
+
+# ---------------- cámara ----------------
+func _objetivo_camara() -> void:
+	var x := pip.position.x if modo == "viaje" else casa.centro(hab)
+	var base := Vector3(x, 1.55, 4.7)
+	var mira := Vector3(x, 1.02, 0.0)
+	# con un panel abierto (armario) Pip queda entero arriba del panel
+	var cerca := Vector3(pip.position.x, 1.15, 5.3)
+	var mira_cerca := Vector3(pip.position.x, 0.05, 0.0)
+	if modo == "dormir":
+		base = Vector3(x + 0.75, 1.75, 3.9)
+		mira = Vector3(x + 1.0, 0.85, -1.0)
+	elif modo == "pelota":
+		base = Vector3(x, 1.7, 5.2)
+		mira = Vector3(x, 1.35, 0.0)
+	cam_pos_obj = base.lerp(cerca, _zoom_k)
+	cam_mira_obj = mira.lerp(mira_cerca, _zoom_k)
+
+func _process(dt: float) -> void:
+	tiempo += dt
+	_zoom_k = move_toward(_zoom_k, zoom_panel, dt * 2.5)
+	var zk := _zoom_k * _zoom_k * (3.0 - 2.0 * _zoom_k)
+	_objetivo_camara()
+	var k := minf(1.0, dt * 5.0)
+	cam_pos = cam_pos.lerp(cam_pos_obj, k)
+	cam_mira = cam_mira.lerp(cam_mira_obj, k)
+	# pequeña "respiración" de la cámara: la escena nunca se ve congelada
+	var vaiven := Vector3(sin(tiempo * 0.35) * 0.03, sin(tiempo * 0.5) * 0.02, 0.0) * (1.0 - zk)
+	cam.position = cam_pos + vaiven
+	cam.look_at(cam_mira)
+	pip.feliz = Estado.animo() / 100.0
+	pip.animate(dt)
+	_noche_k = move_toward(_noche_k, 1.0 if luz_apagada else 0.0, dt * 1.6)
+	_aplicar_noche()
+	match modo:
+		"dormir":
+			Estado.subir("energia", dt * 1.4)
+			_zzz_t -= dt
+			if _zzz_t < 0.0:
+				_zzz_t = 1.3
+				fx.emitir("zzz", _pantalla(pip.head.global_position) + Vector2(30, -40))
+		"pelota":
+			_pelota(dt)
+		"baile":
+			_baile_t += dt
+			_nota_t -= dt
+			if _nota_t < 0.0:
+				_nota_t = 0.45
+				var cols := [UI.ROSA, UI.LILA, UI.AZUL, UI.MENTA, UI.ORO]
+				fx.emitir("nota", _pantalla(pip.global_position + Vector3(randf_range(-0.6, 0.6), 1.4, 0)), 1, cols[randi() % cols.size()])
+		"ducha":
+			_ducha_t += dt
+			if _ducha_t > 4.0:
+				_fin_ducha()
+	if casa.ducha:
+		var y := 2.35 if modo == "ducha" else 4.6
+		casa.ducha.position.y = lerpf(casa.ducha.position.y, y, minf(1.0, dt * 4.0))
+	# la cola de bellotas que vuelan
+	if _premio_caricia > 0.0:
+		_premio_caricia -= dt
+
+func _aplicar_noche() -> void:
+	var k := _noche_k
+	sol.light_energy = lerpf(0.42, 0.06, k)
+	env.ambient_light_energy = lerpf(0.32, 0.16, k)
+	env.ambient_light_color = Color("#fff1e6").lerp(Color("#6b78c9"), k)
+	if casa.lampara:
+		casa.lampara.light_energy = lerpf(0.35, 0.0, k)
+	if casa.lampara_mat:
+		casa.lampara_mat.emission_energy_multiplier = lerpf(0.6, 0.05, k)
+	var vm = casa.get_meta("ventana_habitacion", null)
+	if vm:
+		(vm as StandardMaterial3D).emission = Color("#9fc8ff").lerp(Color("#1a2266"), k)
+	for h in casa.luces:
+		(casa.luces[h] as OmniLight3D).light_energy = lerpf(0.22, 0.0, k)
+
+func _pantalla(p: Vector3) -> Vector2:
+	# de 3D a coordenadas de la interfaz (el lienzo está escalado)
+	return _a_ui(cam.unproject_position(p))
+
+func _a_ui(sp: Vector2) -> Vector2:
+	return hud.get_global_transform_with_canvas().affine_inverse() * sp
+
+func pip_en_pantalla() -> Vector2:
+	return _pantalla(pip.global_position + Vector3(0, 0.3 * pip.scale.y, 0))
+
+func boca_en_pantalla() -> Vector2:
+	return _pantalla(pip.mouth.global_position)
+
+# ---------------- habitaciones ----------------
+func ir_a(i: int) -> void:
+	if i == hab or modo == "viaje" or modo == "intro":
+		return
+	if modo == "dormir":
+		apagar_luz(false)
+	if modo in ["pelota", "baile", "ducha"]:
+		_terminar_actividad()
+	var desde := hab
+	hab = i
+	Estado.d.habitacion = i
+	modo = "viaje"
+	Sfx.play("swipe", 1.0, -3.0)
+	pip.dormir(false)
+	pip.accion = ""
+	pip.yaw_obj = PI / 2.0 if i > desde else -PI / 2.0
+	pip.corriendo = 6.0
+	hud.cambio_habitacion()
+	var x := casa.centro(i)
+	var dist := absf(x - pip.position.x)
+	var tw := create_tween()
+	tw.tween_property(pip, "position:x", x, clampf(0.55 + dist * 0.07, 0.6, 1.4)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tw.finished
+	pip.corriendo = 0.0
+	pip.yaw_obj = 0.0
+	pip.land_t = 0.15
+	modo = "juego"
+	_musica()
+	hud.refrescar()
+	await get_tree().create_timer(0.35).timeout
+	if modo == "juego" and not pip.ocupado():
+		pip.hacer("saludo" if randf() < 0.5 else "celebrar")
+
+func _musica() -> void:
+	var m := "musica_dia_0"
+	if hab == 1:
+		m = "musica_cuento_0"
+	if modo == "dormir":
+		m = "musica_noche_0"
+	Sfx.musica(m)
+
+# ---------------- toques sobre Pip ----------------
+func _unhandled_input(e: InputEvent) -> void:
+	if modo == "intro":
+		return
+	if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
+		if e.pressed:
+			_toque = true
+			_t0 = tiempo
+			_p0 = e.position
+			_p_ult = e.position
+			_arrastre = 0.0
+			_zona = zona_en(e.position)
+			_mirar(e.position)
+			if modo == "pelota":
+				_golpe_pelota(e.position)
+		elif _toque:
+			_toque = false
+			pip.mirar_a = null
+			var corto := tiempo - _t0 < 0.35 and _arrastre < 18.0
+			var dx: float = e.position.x - _p0.x
+			if _zona == "" and absf(dx) > 140.0 and absf(dx) > absf(e.position.y - _p0.y) * 1.5 and modo in ["juego", "dormir"]:
+				ir_a(clampi(hab + (-1 if dx > 0 else 1), 0, 3))
+			elif corto and _zona != "" and modo in ["juego", "dormir", "ducha"]:
+				_tocar(_zona, e.position)
+	elif e is InputEventMouseMotion and _toque:
+		var d: float = e.position.distance_to(_p_ult)
+		_arrastre += d
+		_p_ult = e.position
+		_mirar(e.position)
+		var z := zona_en(e.position)
+		if z != "" and _arrastre > 18.0:
+			_frotar(z, e.position, d)
+
+func zona_en(p: Vector2) -> String:
+	var desde := cam.project_ray_origin(p)
+	var hacia := desde + cam.project_ray_normal(p) * 30.0
+	var q := PhysicsRayQueryParameters3D.create(desde, hacia, 2)
+	q.collide_with_areas = true
+	q.collide_with_bodies = false
+	var r := mundo.get_world_3d().direct_space_state.intersect_ray(q)
+	if r.is_empty():
+		return ""
+	return str((r.collider as Node).get_meta("zona", ""))
+
+func _mirar(p: Vector2) -> void:
+	if modo in ["viaje", "baile", "dormir"]:
+		return
+	var o := cam.project_ray_origin(p)
+	var n := cam.project_ray_normal(p)
+	var plano := Plane(Vector3(0, 0, 1), 0.9)
+	var hit = plano.intersects_ray(o, n)
+	if hit != null:
+		pip.mirar_a = hit
+
+func _tocar(zona: String, p: Vector2) -> void:
+	if modo == "dormir":
+		pip.hacer_queja()
+		fx.emitir("zzz", p)
+		return
+	pip.toque(zona)
+	if pip.accion == "enojo":
+		Estado.subir("diversion", -3)
+		hud.toast("¡Pip se enojó! Mejor hazle cariño", UI.ROJO)
+		return
+	fx.emitir("estrella" if zona != "barriga" else "corazon", p, 3)
+	Estado.subir("diversion", 1.5)
+	Estado.dar_xp(1)
+
+func _frotar(zona: String, p: Vector2, d: float) -> void:
+	if modo == "ducha" or (hab == 3 and jabon):
+		# jabón: espuma donde se frota
+		espuma = minf(100.0, espuma + d * 0.06)
+		if randf() < 0.35:
+			fx.emitir("burbuja", p, 1)
+			if randf() < 0.3:
+				Sfx.play("burbuja", randf_range(0.8, 1.4), -10.0)
+		return
+	if modo != "juego" or zona in ["pie", "nariz"]:
+		return
+	if pip.accion == "enojo":
+		pip.accion = ""
+	pip.caricia = minf(1.0, pip.caricia + d * 0.0035)
+	_car_acum += d
+	_t_corazon -= d
+	if _t_corazon < 0.0:
+		_t_corazon = 90.0
+		fx.emitir("corazon", p + Vector2(0, -30), 1)
+	if _car_acum > 900.0:
+		_car_acum = 0.0
+		Estado.subir("diversion", 3.0)
+		Estado.dar_xp(2)
+		# un premio chiquito por cariño (con pausa: no es una fuente infinita)
+		if _premio_caricia <= 0.0:
+			_premio_caricia = 25.0
+			fx.volar(p, hud.pos_bellotas(), 3)
+			Estado.dar_bellotas(3)
+
+func _accion_terminada(nombre: String) -> void:
+	if nombre == "enojo":
+		pip.hacer("no")
+
+# ---------------- cocina ----------------
+func alimentar(id: String, desde: Vector2) -> void:
+	if modo != "juego" or hab != 0:
+		return
+	var c: Dictionary = Estado.busca(Estado.cat.comida, id)
+	if Estado.nec("hambre") >= 97.0:
+		pip.hacer("no")
+		Sfx.play("queja", 1.1, -4.0)
+		hud.toast("Pip está lleno", UI.NARANJO)
+		return
+	if Estado.comida(id) <= 0:
+		if not Estado.gastar(int(c.precio)):
+			hud.sin_bellotas()
+			return
+	else:
+		if id != "bellota":
+			Estado.sumar_comida(id, -1)
+	var boca := boca_en_pantalla()
+	pip.mirar_a = pip.mouth.global_position + Vector3(0, 0.3, 1.0)
+	hud.volar_icono("comida_" + id, desde, boca, 0.55, func():
+		pip.mirar_a = null
+		pip.hacer("comer")
+		Estado.subir("hambre", float(c.llena))
+		Estado.dar_xp(3)
+		fx.emitir("corazon", boca + Vector2(0, -40), 2)
+		hud.refrescar())
+
+# ---------------- habitación: dormir ----------------
+func apagar_luz(on: bool) -> void:
+	if on == luz_apagada:
+		return
+	luz_apagada = on
+	Sfx.play("tic", 0.7)
+	if on:
+		modo = "dormir"
+		pip.yaw_obj = 0.0
+		var cama := Vector3(casa.centro(1), 0, 0) + casa.cama_pos + Vector3(0, casa.cama_alto, 0.15)
+		var tw := create_tween()
+		pip.corriendo = 3.0
+		tw.tween_property(pip, "position", cama, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		await tw.finished
+		pip.corriendo = 0.0
+		if luz_apagada:
+			pip.dormir(true)
+	else:
+		pip.dormir(false)
+		if modo == "dormir":
+			modo = "juego"
+		var tw := create_tween()
+		tw.tween_interval(0.6)
+		tw.tween_property(pip, "position", Vector3(casa.centro(hab), 0, 0), 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		Estado.dar_xp(4)
+	_musica()
+	hud.refrescar()
+
+# ---------------- baño ----------------
+func usar_jabon() -> void:
+	jabon = not jabon
+	if jabon:
+		hud.toast("Frota a Pip para hacer espuma", UI.AZUL)
+	hud.refrescar()
+
+func ducha() -> void:
+	if modo != "juego" or hab != 3:
+		return
+	modo = "ducha"
+	jabon = false
+	_ducha_t = 0.0
+	casa.gotas.emitting = true
+	Sfx.set_agua(true)
+	pip.hacer("bostezo")
+	hud.refrescar()
+
+func _fin_ducha() -> void:
+	casa.gotas.emitting = false
+	Sfx.set_agua(false)
+	modo = "juego"
+	var gana := 18.0 + espuma * 0.45
+	Estado.subir("higiene", gana)
+	Estado.dar_xp(4)
+	pip.mojado = 1.0
+	pip.hacer("sacudir")
+	pip.hacer("celebrar", true)
+	espuma = 0.0
+	var p := pip_en_pantalla()
+	fx.emitir("chispa", p + Vector2(0, -120), 16, Color("#bfe9ff"))
+	fx.emitir("estrella", p + Vector2(0, -160), 4)
+	hud.refrescar()
+
+# ---------------- patio: pelota ----------------
+func jugar_pelota() -> void:
+	if modo != "juego" or hab != 2:
+		return
+	modo = "pelota"
+	toques_pelota = 0
+	_pel_p = Vector2(0.0, 2.6)
+	_pel_v = Vector2(randf_range(-0.4, 0.4), 0.0)
+	pelota.visible = true
+	hud.refrescar()
+
+func _pelota(dt: float) -> void:
+	_pel_v.y -= 5.2 * dt
+	_pel_p += _pel_v * dt
+	if absf(_pel_p.x) > 0.95:
+		_pel_p.x = signf(_pel_p.x) * 0.95
+		_pel_v.x = -_pel_v.x * 0.8
+	pelota.position = Vector3(casa.centro(2) + _pel_p.x, _pel_p.y, 0.8)
+	pelota.rotation.z -= _pel_v.x * dt * 4.0
+	pip.mirar_a = pelota.global_position
+	if _pel_p.y < 0.16:
+		_fin_pelota()
+
+func _golpe_pelota(p: Vector2) -> void:
+	var sp := cam.unproject_position(pelota.global_position)
+	var borde := cam.unproject_position(pelota.global_position + Vector3(0.16, 0, 0))
+	var r := absf(borde.x - sp.x)
+	var real_p := p
+	if real_p.distance_to(sp) < r * 2.4 + 30.0:
+		toques_pelota += 1
+		_pel_v.y = 4.6 + randf() * 0.4
+		_pel_v.x = clampf((sp.x - real_p.x) / maxf(1.0, r) * 0.5 + randf_range(-0.3, 0.3), -1.4, 1.4)
+		Sfx.play("pop", 0.9 + minf(0.6, toques_pelota * 0.03))
+		fx.emitir("chispa", _a_ui(sp), 6, UI.ORO)
+		if toques_pelota % 5 == 0:
+			fx.emitir("texto", _a_ui(sp) + Vector2(0, -60), 1, UI.ORO, "¡%d!" % toques_pelota)
+			pip.hacer("celebrar")
+		hud.refrescar()
+
+func _fin_pelota() -> void:
+	modo = "juego"
+	pelota.visible = false
+	pip.mirar_a = null
+	var premio := toques_pelota
+	if premio > 0:
+		Estado.subir("diversion", minf(30.0, 4.0 + premio * 1.5))
+		Estado.dar_xp(2 + premio / 2)
+		Estado.dar_bellotas(premio)
+		fx.volar(pip_en_pantalla(), hud.pos_bellotas(), mini(premio, 12))
+		hud.toast("¡%d toques! +%d bellotas" % [premio, premio], UI.MENTA)
+		pip.hacer("celebrar")
+	else:
+		pip.hacer("no")
+	hud.refrescar()
+
+# ---------------- bailes y pociones ----------------
+func bailar(id: String) -> void:
+	if modo not in ["juego"]:
+		return
+	var b: Dictionary = Estado.busca(Estado.cat.bailes, id)
+	modo = "baile"
+	_baile_t = 0.0
+	Sfx.musica(str(b.get("musica", "musica_dia_0")))
+	pip.mirar_a = null
+	pip.hacer("baile_" + id)
+	hud.refrescar()
+
+func _terminar_actividad() -> void:
+	match modo:
+		"pelota":
+			pelota.visible = false
+		"ducha":
+			casa.gotas.emitting = false
+			Sfx.set_agua(false)
+		"baile":
+			pip.accion = ""
+	modo = "juego"
+
+func pocion(id: String) -> void:
+	var p: Dictionary = Estado.busca(Estado.cat.pociones, id)
+	if Estado.pociones(id) <= 0:
+		return
+	Estado.sumar_pocion(id, -1)
+	pip.tomar_pocion(id, float(p.segundos))
+	Sfx.play("crystal")
+	var c := pip_en_pantalla()
+	fx.emitir("chispa", c + Vector2(0, -100), 22, Color(str(p.color)))
+	Estado.dar_xp(2)
+
+func _subio_nivel(n: int) -> void:
+	hud.toast("¡Nivel %d! +%d bellotas" % [n, 50 + n * 10], UI.ORO)
+	Sfx.play("level")
+	pip.hacer("celebrar", true)
+	fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -150), 10)
+
+func _compra_lista(_id: String, n: int) -> void:
+	Sfx.play("chest")
+	fx.volar(hud.size * 0.5, hud.pos_bellotas(), 16)
+	hud.toast("+%d bellotas (compra de prueba)" % n, UI.MENTA)
+	pip.hacer("celebrar")
+
+## Llamado cada cuadro por Pip al terminar un baile (ver _process).
+func _physics_process(_dt: float) -> void:
+	if modo == "baile" and pip.accion == "":
+		modo = "juego"
+		Estado.subir("diversion", 12.0)
+		Estado.dar_xp(5)
+		_musica()
+		hud.refrescar()

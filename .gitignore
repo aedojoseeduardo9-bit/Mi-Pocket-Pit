@@ -1,0 +1,6 @@
+godot/.godot/
+godot/build/
+*.jks
+*.keystore
+dist/
+ojos/

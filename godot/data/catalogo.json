@@ -1,0 +1,85 @@
+{
+  "_nota": "Catálogo de Pocket Pip. Precios en bellotas doradas. 'nivel' = nivel mínimo para comprarlo. Para añadir contenido basta editar este archivo (y, si es ropa nueva, su forma en atuendos.gd).",
+
+  "ropa": [
+    {"id": "bufanda_nova",      "nombre": "Bufanda Nova",       "zona": "cuello", "precio": 0,   "nivel": 1},
+    {"id": "mono_rojo",         "nombre": "Moño rojo",          "zona": "cuello", "precio": 40,  "nivel": 1},
+    {"id": "collar_bellotas",   "nombre": "Collar de bellotas", "zona": "cuello", "precio": 70,  "nivel": 2},
+    {"id": "panuelo_azul",      "nombre": "Pañuelo vaquero",    "zona": "cuello", "precio": 45,  "nivel": 1},
+
+    {"id": "gorro_lana",        "nombre": "Gorro de lana",      "zona": "cabeza", "precio": 60,  "nivel": 1},
+    {"id": "gorra_nova",        "nombre": "Gorra Star Nova",    "zona": "cabeza", "precio": 80,  "nivel": 1},
+    {"id": "sombrero_copa",     "nombre": "Sombrero de copa",   "zona": "cabeza", "precio": 150, "nivel": 2},
+    {"id": "corona",            "nombre": "Corona real",        "zona": "cabeza", "precio": 300, "nivel": 3},
+    {"id": "flor",              "nombre": "Flor de cerezo",     "zona": "cabeza", "precio": 35,  "nivel": 1},
+    {"id": "audifonos",         "nombre": "Audífonos",          "zona": "cabeza", "precio": 120, "nivel": 2},
+
+    {"id": "lentes_sol",        "nombre": "Lentes de sol",      "zona": "ojos",   "precio": 55,  "nivel": 1},
+    {"id": "lentes_corazon",    "nombre": "Lentes corazón",     "zona": "ojos",   "precio": 90,  "nivel": 2},
+    {"id": "lentes_redondos",   "nombre": "Lentes de lectura",  "zona": "ojos",   "precio": 65,  "nivel": 1},
+
+    {"id": "poleron_menta",     "nombre": "Polerón menta",      "zona": "cuerpo", "precio": 110, "nivel": 1},
+    {"id": "camiseta_estrella", "nombre": "Polera estrella",    "zona": "cuerpo", "precio": 75,  "nivel": 1},
+    {"id": "overol",            "nombre": "Overol de jardín",   "zona": "cuerpo", "precio": 130, "nivel": 2},
+    {"id": "capa_real",         "nombre": "Capa real",          "zona": "cuerpo", "precio": 260, "nivel": 3}
+  ],
+
+  "pociones": [
+    {"id": "gigante",  "nombre": "Poción gigante",  "precio": 30, "color": "#ff8a5c", "segundos": 40},
+    {"id": "mini",     "nombre": "Poción mini",     "precio": 30, "color": "#6cc9ff", "segundos": 40},
+    {"id": "arcoiris", "nombre": "Poción arcoíris", "precio": 50, "color": "#c77dff", "segundos": 40},
+    {"id": "fantasma", "nombre": "Poción fantasma", "precio": 40, "color": "#d9e4ff", "segundos": 40},
+    {"id": "brillo",   "nombre": "Poción estelar",  "precio": 45, "color": "#ffd36e", "segundos": 40}
+  ],
+
+  "bailes": [
+    {"id": "saltitos", "nombre": "Saltitos",     "precio": 0,   "musica": "musica_dia_0"},
+    {"id": "robot",    "nombre": "Robot Nova",   "precio": 90,  "musica": "musica_prisma_0"},
+    {"id": "trompo",   "nombre": "Trompo",       "precio": 140, "musica": "musica_prisma_0"},
+    {"id": "aplausos", "nombre": "Aplausos",     "precio": 60,  "musica": "musica_cuento_0"}
+  ],
+
+  "comida": [
+    {"id": "bellota", "nombre": "Bellota",  "precio": 0,  "llena": 8,  "color": "#c58a4a"},
+    {"id": "fresa",   "nombre": "Frutilla", "precio": 4,  "llena": 14, "color": "#ff5a6e"},
+    {"id": "galleta", "nombre": "Galleta",  "precio": 6,  "llena": 18, "color": "#e2a95f"},
+    {"id": "nuez",    "nombre": "Nuez",     "precio": 3,  "llena": 12, "color": "#a8743f"},
+    {"id": "pastel",  "nombre": "Pastel",   "precio": 15, "llena": 35, "color": "#ffc2d6"},
+    {"id": "helado",  "nombre": "Helado",   "precio": 10, "llena": 22, "color": "#bff0e4"}
+  ],
+
+  "deco": {
+    "cocina": {
+      "pared":  [{"id": "crema", "nombre": "Crema", "precio": 0}, {"id": "menta", "nombre": "Menta", "precio": 60}, {"id": "cerezo", "nombre": "Cerezo", "precio": 80}],
+      "piso":   [{"id": "madera", "nombre": "Madera", "precio": 0}, {"id": "ajedrez", "nombre": "Baldosa", "precio": 50}],
+      "nevera": [{"id": "clasica", "nombre": "Clásica", "precio": 0}, {"id": "retro", "nombre": "Retro rosa", "precio": 120}],
+      "mesa":   [{"id": "madera", "nombre": "De madera", "precio": 0}, {"id": "azul", "nombre": "Redonda azul", "precio": 90}]
+    },
+    "habitacion": {
+      "pared":    [{"id": "lavanda", "nombre": "Lavanda", "precio": 0}, {"id": "noche", "nombre": "Cielo de noche", "precio": 100}, {"id": "durazno", "nombre": "Durazno", "precio": 60}],
+      "cama":     [{"id": "nido", "nombre": "Nido", "precio": 0}, {"id": "nube", "nombre": "Nube", "precio": 150}, {"id": "cohete", "nombre": "Cohete Avellana", "precio": 220}],
+      "lampara":  [{"id": "hongo", "nombre": "Hongo", "precio": 0}, {"id": "luna", "nombre": "Luna", "precio": 90}],
+      "alfombra": [{"id": "redonda", "nombre": "Redonda", "precio": 0}, {"id": "estrella", "nombre": "Estrella", "precio": 70}]
+    },
+    "patio": {
+      "fondo": [{"id": "dia", "nombre": "Día", "precio": 0}, {"id": "atardecer", "nombre": "Atardecer", "precio": 80}, {"id": "noche", "nombre": "Noche", "precio": 100}, {"id": "galaxia", "nombre": "Galaxia Nova", "precio": 200}],
+      "cerca": [{"id": "blanca", "nombre": "Blanca", "precio": 0}, {"id": "madera", "nombre": "Troncos", "precio": 50}],
+      "arbol": [{"id": "roble", "nombre": "Roble", "precio": 0}, {"id": "cerezo", "nombre": "Cerezo", "precio": 120}]
+    },
+    "bano": {
+      "pared":   [{"id": "azulejo", "nombre": "Azulejo", "precio": 0}, {"id": "coral", "nombre": "Coral", "precio": 70}],
+      "banera":  [{"id": "clasica", "nombre": "Clásica", "precio": 0}, {"id": "dorada", "nombre": "Patas doradas", "precio": 150}],
+      "cortina": [{"id": "rayas", "nombre": "Rayas", "precio": 0}, {"id": "burbujas", "nombre": "Burbujas", "precio": 60}, {"id": "estrellas", "nombre": "Estrellas", "precio": 90}]
+    }
+  },
+
+  "paquetes": [
+    {"id": "bellotas_500",   "nombre": "Puñado de bellotas", "bellotas": 500,   "precio": "US$0,99"},
+    {"id": "bellotas_1200",  "nombre": "Bolsa de bellotas",  "bellotas": 1200,  "precio": "US$1,99"},
+    {"id": "bellotas_3500",  "nombre": "Cofre de bellotas",  "bellotas": 3500,  "precio": "US$4,99"},
+    {"id": "bellotas_8000",  "nombre": "Carreta de bellotas", "bellotas": 8000, "precio": "US$9,99"},
+    {"id": "bellotas_20000", "nombre": "Montaña de bellotas", "bellotas": 20000, "precio": "US$19,99"}
+  ],
+
+  "regalo_diario": [30, 40, 50, 60, 80, 100, 200]
+}

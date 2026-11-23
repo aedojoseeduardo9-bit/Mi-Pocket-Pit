@@ -1,0 +1,152 @@
+# Pocket Pip (Godot 4.7, carpeta godot/): prueba el juego con "los ojos" (capturas + pruebas automáticas) y
+# compila la APK de Android. En ramas: prueba y compila (artefacto). En main: publica el release "latest"
+# con PocketPip.apk (enlace fijo) y las capturas en el release "diagnostico".
+name: Compilar Pocket Pip
+on:
+  push:
+    paths-ignore: ['**.md', 'docs/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GODOT_VERSION: "4.7"
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Godot y plantillas de exportación (caché)
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-stable-v1
+
+      - name: Descargar Godot ${{ env.GODOT_VERSION }}
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          V="$GODOT_VERSION-stable"
+          mkdir -p ~/godot ~/.local/share/godot/export_templates/$GODOT_VERSION.stable
+          curl -sSL -f -o g.zip "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_linux.x86_64.zip"
+          unzip -q g.zip -d ~/godot && rm g.zip
+          curl -sSL -f -o t.tpz "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_export_templates.tpz"
+          unzip -q t.tpz -d tpl && mv tpl/templates/* ~/.local/share/godot/export_templates/$GODOT_VERSION.stable/ && rm -rf t.tpz tpl
+
+      - name: Pantalla virtual y OpenGL por software
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl1 qrencode imagemagick
+          echo "GODOT=$(ls ~/godot/Godot_v*_linux.x86_64)" >> "$GITHUB_ENV"
+
+      - name: Los ojos (capturas y pruebas)
+        run: bash godot/tools/ojos.sh "$GODOT" ojos
+
+      - name: Publicar capturas (release diagnostico)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -d ojos ] || exit 0
+          (cd ojos && ls *.png > /dev/null 2>&1 && zip -q capturas.zip *.png)
+          gh release delete diagnostico --yes --cleanup-tag || true
+          F="ojos/report.txt"; [ -f ojos/capturas.zip ] && F="$F ojos/capturas.zip"
+          gh release create diagnostico $F ojos/*.png \
+            --title "Diagnóstico (ojos) · ${GITHUB_REF_NAME}" --notes "Capturas y pruebas automáticas de Pocket Pip." \
+            --prerelease --latest=false --target "$(git rev-parse HEAD)" || true
+
+      - name: Java 17 y Android SDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-36 build-tools;36.0.0"
+
+      # La llave de firma vive en Secrets (SIGNING_KEYSTORE_B64...) o en la caché privada de Actions; nunca en el
+      # repositorio. Siempre la misma: así cada APK nueva se instala encima de la anterior sin perder la partida.
+      - name: Recuperar llave de firma (caché privada)
+        uses: actions/cache@v4
+        with:
+          path: ~/.pocketpip-signing
+          key: pocketpip-signing-v1
+
+      - name: Preparar firma y número de compilación
+        env:
+          KS_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.SIGNING_PASSWORD }}
+          KS_ALIAS: ${{ secrets.SIGNING_ALIAS }}
+        run: |
+          D="$HOME/.pocketpip-signing"
+          mkdir -p "$D"
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$D/secret.jks"; KS="$D/secret.jks"; P="$KS_PASS"; A="${KS_ALIAS:-pocketpip}"
+          else
+            if [ ! -f "$D/release.jks" ]; then
+              openssl rand -hex 16 > "$D/pass.txt"
+              keytool -genkeypair -keystore "$D/release.jks" -storepass "$(cat "$D/pass.txt")" -keypass "$(cat "$D/pass.txt")" \
+                -alias pocketpip -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Pocket Pip, O=nioro, C=CL"
+            fi
+            KS="$D/release.jks"; P="$(cat "$D/pass.txt")"; A="pocketpip"
+          fi
+          echo "::add-mask::$P"
+          {
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$KS"
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$A"
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$P"
+          } >> "$GITHUB_ENV"
+          S="$HOME/.config/godot/editor_settings-${GODOT_VERSION}.tres"
+          mkdir -p "$(dirname "$S")"; touch "$S"
+          grep -q "^export/android/android_sdk_path" "$S" && sed -i "s#^export/android/android_sdk_path = .*#export/android/android_sdk_path = \"$ANDROID_HOME\"#" "$S" \
+            || echo "export/android/android_sdk_path = \"$ANDROID_HOME\"" >> "$S"
+          grep -q "^export/android/java_sdk_path" "$S" && sed -i "s#^export/android/java_sdk_path = .*#export/android/java_sdk_path = \"$JAVA_HOME\"#" "$S" \
+            || echo "export/android/java_sdk_path = \"$JAVA_HOME\"" >> "$S"
+          N="${GITHUB_RUN_NUMBER}"
+          sed -i "s/^config\/build=.*/config\/build=$N/" godot/project.godot
+          sed -i "s/^version\/code=.*/version\/code=$(( $(date +%s) / 60 ))/" godot/export_presets.cfg
+          sed -i "s/^version\/name=.*/version\/name=\"0.1.$N\"/" godot/export_presets.cfg
+
+      - name: Exportar Android
+        run: |
+          cd godot
+          mkdir -p build/android
+          "$GODOT" --headless --path . --export-release Android build/android/PocketPip.apk 2>&1 | tee build/export.log
+          [ -s build/android/PocketPip.apk ] || { echo "::error::No se pudo exportar la APK"; grep -iE "error" build/export.log | head -30; exit 1; }
+          mkdir -p ../dist && cp build/android/PocketPip.apk ../dist/
+          qrencode -o ../dist/qr.png -s 14 -m 3 "https://github.com/${{ github.repository }}/releases/latest/download/PocketPip.apk"
+          ls -la ../dist
+
+      - name: Guardar APK (artefacto)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocketpip
+          path: dist/
+          retention-days: 14
+
+      - name: Publicar release "latest" (solo main)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest dist/* \
+            --title "Pocket Pip 0.1 (compilación ${GITHUB_RUN_NUMBER})" \
+            --notes "APK de prueba para Android (se instala encima de la anterior). Compras simuladas: no cobran nada." \
+            --latest --target "$(git rev-parse HEAD)"
+
+      - name: Publicar APK de prueba de la rama
+        if: github.ref != 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete rama --yes --cleanup-tag || true
+          gh release create rama dist/PocketPip.apk \
+            --title "Pocket Pip · prueba de rama ${GITHUB_REF_NAME} (${GITHUB_RUN_NUMBER})" --notes "APK de la rama en desarrollo." \
+            --prerelease --latest=false --target "$(git rev-parse HEAD)" || true
