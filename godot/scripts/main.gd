@@ -38,6 +38,7 @@ var _arrastre := 0.0
 var _car_acum := 0.0
 var _t_corazon := 0.0
 var _t_forma := 0.0
+var listo := false
 var _vitrina: Node3D
 
 # actividades
@@ -56,15 +57,7 @@ var tiempo := 0.0
 
 func _ready() -> void:
 	get_viewport().physics_object_picking = false
-	_armar_mundo()
-	capa_ui = CanvasLayer.new()
-	add_child(capa_ui)
-	fx = UI.Fx.new()
-	hud = Hud.new(self)
-	capa_ui.add_child(hud)
-	capa_ui.add_child(fx)
-	hud.visible = false
-	# la intro del estudio va encima de todo y no se puede saltar
+	# 1) primero la pantalla negra de la intro (el arranque pesado ocurre detrás, sin que se note)
 	var capa_intro := CanvasLayer.new()
 	capa_intro.layer = 50
 	add_child(capa_intro)
@@ -76,11 +69,28 @@ func _ready() -> void:
 	intro = IntroNioro.new()
 	capa_intro.add_child(intro)
 	intro.terminada.connect(_fin_intro)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	# 2) se arma todo con la pantalla en negro
+	_armar_mundo()
+	capa_ui = CanvasLayer.new()
+	add_child(capa_ui)
+	fx = UI.Fx.new()
+	hud = Hud.new(self)
+	capa_ui.add_child(hud)
+	capa_ui.add_child(fx)
+	hud.visible = false
 	Estado.subio_nivel.connect(_subio_nivel)
 	Estado.cambio.connect(_revisar_forma)
 	Pagos.compra_lista.connect(_compra_lista)
 	aplicar_ajustes()
-	_precalentar()
+	# 3) se preparan los sombreadores (todavía en negro) y recién entonces corre la intro, sin el 3D detrás:
+	#    así la animación nioro va fluida
+	await _precalentar()
+	casa.activar(Casa.HABS[hab])
+	get_viewport().disable_3d = true
+	listo = true
+	intro.listo = true
 	if OS.get_cmdline_user_args().has("--sin-intro"):
 		intro.t = IntroNioro.LEN - 0.01
 	for a in OS.get_cmdline_user_args():
@@ -152,6 +162,7 @@ func _armar_mundo() -> void:
 	cam.look_at(cam_mira)
 
 func _fin_intro() -> void:
+	get_viewport().disable_3d = false
 	modo = "juego"
 	hud.visible = true
 	hud.refrescar()
@@ -188,6 +199,8 @@ func _objetivo_camara() -> void:
 	cam_mira_obj = mira.lerp(mira_cerca, _zoom_k)
 
 func _process(dt: float) -> void:
+	if not listo or (hud and hud.juego != null):
+		return   # cargando, o con un minijuego abierto (el 3D no se dibuja)
 	tiempo += dt
 	_zoom_k = move_toward(_zoom_k, zoom_panel, dt * 2.5)
 	var zk := _zoom_k * _zoom_k * (3.0 - 2.0 * _zoom_k)
@@ -256,8 +269,13 @@ func boca_en_pantalla() -> Vector2:
 	return _pantalla(pip.mouth.global_position)
 
 # ---------------- habitaciones ----------------
+var _pendiente := -1
+
 func ir_a(i: int) -> void:
-	if i == hab or modo == "viaje" or modo == "intro":
+	if modo == "viaje":
+		_pendiente = i    # al llegar sigue hacia la habitación señalada (burbuja deslizada)
+		return
+	if i == hab or modo == "intro":
 		return
 	if modo == "dormir":
 		apagar_luz(false)
@@ -281,6 +299,14 @@ func ir_a(i: int) -> void:
 	pip.corriendo = 0.0
 	pip.yaw_obj = 0.0
 	pip.land_t = 0.15
+	casa.activar(Casa.HABS[hab])
+	if _pendiente >= 0 and _pendiente != hab:
+		var sig := _pendiente
+		_pendiente = -1
+		modo = "juego"
+		ir_a(sig)
+		return
+	_pendiente = -1
 	modo = "juego"
 	_musica()
 	hud.refrescar()
@@ -595,6 +621,8 @@ func _compra_lista(id: String, n: int) -> void:
 
 ## Llamado cada cuadro por Pip al terminar un baile (ver _process).
 func _physics_process(_dt: float) -> void:
+	if not listo:
+		return
 	if modo == "baile" and pip.accion == "":
 		modo = "juego"
 		Estado.subir("diversion", 12.0)
@@ -629,8 +657,7 @@ func _revisar_forma() -> void:
 	if quiere == pip.forma:
 		return
 	pip.set_forma(quiere)
-	if quiere == "pip":
-		Atuendos.vestir(pip, Estado.d.puesto)
+	Atuendos.vestir(pip, Estado.d.puesto)
 	Sfx.play("crystal", 0.8)
 	fx.emitir("chispa", pip_en_pantalla() + Vector2(0, -60), 28, Color("#ffd9a8"))
 	fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -90), 6)
@@ -666,9 +693,24 @@ func _precalentar() -> void:
 	capi.position.x = 0.5
 	_vitrina.add_child(capi)
 	capi.set_forma("capibara")
+	if casa.cielo_mat:
+		var q := MeshInstance3D.new()
+		q.mesh = QuadMesh.new()
+		q.material_override = casa.cielo_mat
+		q.position = Vector3(0.6, 0.8, 0)
+		q.scale = Vector3.ONE * 0.2
+		_vitrina.add_child(q)
+	for m in casa.muestras():
+		var e := MeshInstance3D.new()
+		e.mesh = esfera
+		e.material_override = m
+		e.position = Vector3(randf_range(-0.6, 0.6), 0.9, 0)
+		_vitrina.add_child(e)
+	casa.muestras_particulas(_vitrina)
 	casa.gotas.emitting = true
 	pelota.visible = true
-	await get_tree().create_timer(1.2).timeout
+	for i in 6:
+		await RenderingServer.frame_post_draw
 	casa.gotas.emitting = false
 	pelota.visible = false
 	_vitrina.queue_free()

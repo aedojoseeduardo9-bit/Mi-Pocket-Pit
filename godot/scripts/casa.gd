@@ -57,6 +57,7 @@ func construir() -> void:
 		n.position.x = i * ANCHO
 		add_child(n)
 		nodos[h] = n
+		_h = h
 		call("_fijo_" + h, n)
 		for slot in Estado.cat.deco[h]:
 			rearmar(h, slot)
@@ -162,6 +163,7 @@ func _slot(h: String, slot: String) -> Node3D:
 
 ## Vuelve a armar una ranura con el estilo guardado (o `prueba` para probarlo sin comprarlo).
 func rearmar(h: String, slot: String, prueba := "") -> void:
+	_h = h
 	var n := _slot(h, slot)
 	var id := prueba if prueba != "" else Estado.deco(h, slot)
 	var v: Dictionary = Estado.busca(Estado.cat.deco[h][slot], id)
@@ -244,6 +246,27 @@ func pared(n: Node3D, p: Dictionary) -> void:
 				while x < 4.0:
 					xs.append(Transform3D(Basis(Vector3(0, 0, 1), PI / 4).scaled(Vector3(0.18, 0.18, 0.01)), Vector3(x, 0.5 + f * 0.45, z)))
 					x += 0.6
+		"acuario":
+			# un acuario empotrado con peces que nadan y burbujas
+			var vid := StandardMaterial3D.new()
+			vid.albedo_color = Color(0.35, 0.7, 1.0, 0.9)
+			vid.emission_enabled = true
+			vid.emission = Color("#3a8fd6")
+			vid.emission_energy_multiplier = 0.5
+			_rb(n, Vector3(3.2, 1.6, 0.12), Vector3(0, 2.6, FONDO + 0.02), c2, 0.06)
+			_mi(n, BoxMesh.new(), vid, Vector3(0, 2.6, FONDO + 0.09), Vector3(3.0, 1.4, 0.02), Vector3.ZERO, false)
+			for i in 6:
+				_bola(n, Vector3(-1.3 + i * 0.5, 1.95, FONDO + 0.1), Vector3(0.12, 0.08 + (i % 2) * 0.05, 0.02), "#4cae4c")
+			var pez_c := ["#ff9f43", "#ffcf4a", "#ff6b9a", "#7fffd4"]
+			for i in 4:
+				var pez := Node3D.new()
+				pez.position = Vector3(0, 2.25 + i * 0.22, FONDO + 0.11)
+				n.add_child(pez)
+				_bola(pez, Vector3.ZERO, Vector3(0.1, 0.06, 0.02), pez_c[i], 0.4)
+				_mi(pez, _cone, mat(pez_c[i]), Vector3(-0.11, 0, 0), Vector3(0.05, 0.07, 0.015), Vector3(0, 0, PI / 2))
+				_bola(pez, Vector3(0.05, 0.015, 0.012), Vector3.ONE * 0.012, "#1e1410")
+				efecto(pez, "nadar", 0.7 + i * 0.25)
+			particulas_en(n, Vector3(0.8, 2.0, FONDO + 0.12), "burbujas", 8, 0.1)
 		"nubes":
 			mesh = _ball
 			for f in 4:
@@ -259,7 +282,7 @@ func pared(n: Node3D, p: Dictionary) -> void:
 func piso(n: Node3D, p: Dictionary) -> void:
 	var c1 := str(p.get("c1", "#d4a373"))
 	var c2 := str(p.get("c2", "#b9875a"))
-	_rb(n, Vector3(ANCHO, 0.2, 5.0), Vector3(0, -0.1, 0.0), c1, 0.04)
+	_rb(n, Vector3(ANCHO, 0.2, 10.0), Vector3(0, -0.1, 2.5), c1, 0.04)
 	var xs: Array = []
 	match str(p.get("tipo", "tablas")):
 		"tablas":
@@ -293,6 +316,12 @@ func _cocina_nevera(n: Node3D, p: Dictionary) -> void:
 	_bola(n, Vector3(x - 0.12, 1.85, z + 0.43), Vector3(0.08, 0.08, 0.01), "#cf7a3e")
 	_bola(n, Vector3(x + 0.12, 1.2, z + 0.42), Vector3(0.04, 0.04, 0.02), "#ffcf4a", 0.3)
 	_bola(n, Vector3(x - 0.2, 1.05, z + 0.42), Vector3(0.035, 0.035, 0.02), "#6cc9b2", 0.3)
+	if p.get("magia", false):
+		# nevera mágica: borde de luz que late y destellos
+		var lm := mat(c, 0.4, 0.8).duplicate()
+		var marco := _mi(n, rbox_mesh(Vector3(1.0, 2.15, 0.06), 0.08), lm, Vector3(x, 1.06, z + 0.37))
+		efecto(marco, "titilar", 0.6, lm)
+		particulas_en(n, Vector3(x, 1.2, z + 0.5), "brillos", 14, 0.5)
 
 func _cocina_mesa(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(1.55, 0, -0.9)
@@ -309,6 +338,20 @@ func _cocina_mesa(n: Node3D, p: Dictionary) -> void:
 			for i in 6:
 				var a := TAU * i / 6.0
 				_bola(n, q + Vector3(cos(a) * 0.38, 0.84, sin(a) * 0.32), Vector3(0.07, 0.03, 0.07), "#ffffff")
+		"dulces":
+			_cil(n, q + Vector3(0, 0.78, 0), 0.55, 0.06, c, Vector3.ZERO, 0.4)
+			_cil(n, q + Vector3(0, 0.4, 0), 0.06, 0.76, osc)
+			# pastel con vela encendida
+			_cil(n, q + Vector3(0, 0.92, 0), 0.24, 0.22, "#ffc2d6")
+			_cil(n, q + Vector3(0, 1.04, 0), 0.25, 0.04, "#fff3f7")
+			for i in 8:
+				var a := TAU * i / 8.0
+				_bola(n, q + Vector3(cos(a) * 0.2, 1.07, sin(a) * 0.2), Vector3.ONE * 0.03, "#ff4d6d", 0.3)
+			_cil(n, q + Vector3(0, 1.13, 0), 0.015, 0.14, "#7fc8ff")
+			var fm := mat("#ffb347", 0.5, 2.5).duplicate()
+			var llama := _mi(n, _ball, fm, q + Vector3(0, 1.23, 0), Vector3(0.022, 0.045, 0.022), Vector3.ZERO, false)
+			efecto(llama, "llama", 1.0, fm)
+			return
 		_:
 			_rb(n, Vector3(1.1, 0.08, 0.8), q + Vector3(0, 0.78, 0), c, 0.03)
 			for sx in [-1.0, 1.0]:
@@ -340,12 +383,20 @@ func _planta(n: Node3D, q: Vector3, p: Dictionary) -> void:
 			for i in 7:
 				var a := TAU * i / 7.0
 				_mi(n, _ball, mat(c), q + Vector3(cos(a) * 0.12, 0.55, sin(a) * 0.12), Vector3(0.06, 0.25, 0.03), Vector3(sin(a) * 0.6, a, cos(a) * 0.6))
-		"girasol":
-			_cil(n, q + Vector3(0, 0.7, 0), 0.025, 0.7, "#5fae4a")
+		"girasol", "flor_magica":
+			var tallo := Node3D.new()
+			tallo.position = q + Vector3(0, 0.37, 0)
+			n.add_child(tallo)
+			_cil(tallo, Vector3(0, 0.33, 0), 0.025, 0.7, "#5fae4a")
+			var magia := f == "flor_magica"
+			var pm: StandardMaterial3D = mat(c, 0.6, 1.2).duplicate() if magia else mat(c)
 			for i in 12:
 				var a := TAU * i / 12.0
-				_mi(n, _ball, mat(c), q + Vector3(cos(a) * 0.12, 1.08 + sin(a) * 0.12, 0.03), Vector3(0.06, 0.03, 0.02), Vector3(0, 0, a))
-			_cil(n, q + Vector3(0, 1.08, 0.04), 0.08, 0.03, "#7a4b2a", Vector3(PI / 2, 0, 0))
+				_mi(tallo, _ball, pm, Vector3(cos(a) * 0.12, 0.71 + sin(a) * 0.12, 0.03), Vector3(0.06, 0.03, 0.02), Vector3(0, 0, a))
+			_cil(tallo, Vector3(0, 0.71, 0.04), 0.08, 0.03, "#7a4b2a" if not magia else "#fff3c4", Vector3(PI / 2, 0, 0))
+			efecto(tallo, "balancear", 0.6, pm if magia else null)
+			if magia:
+				particulas_en(n, q + Vector3(0, 1.1, 0), "luciernagas", 10, 0.3)
 
 # ================= HABITACIÓN =================
 func _habitacion_cama(n: Node3D, p: Dictionary) -> void:
@@ -357,6 +408,14 @@ func _habitacion_cama(n: Node3D, p: Dictionary) -> void:
 			for v in [Vector3(-0.45, 0.3, 0), Vector3(0, 0.33, 0.05), Vector3(0.45, 0.3, 0), Vector3(-0.2, 0.32, -0.3), Vector3(0.25, 0.32, -0.3)]:
 				_bola(n, q + v, Vector3(0.42, 0.22, 0.42), "#ffffff", 0.9)
 			_bola(n, q + Vector3(0, 0.55, -0.45), Vector3(0.35, 0.14, 0.18), "#dfe9ff")
+		"nube_magica":
+			cama_alto = 0.55
+			var g := Node3D.new()
+			n.add_child(g)
+			for v in [Vector3(-0.45, 0.35, 0), Vector3(0, 0.38, 0.05), Vector3(0.45, 0.35, 0), Vector3(-0.2, 0.37, -0.3), Vector3(0.25, 0.37, -0.3)]:
+				_bola(g, q + v, Vector3(0.42, 0.22, 0.42), "#f4ecff", 0.9, 0.25)
+			efecto(g, "flotar_suave")
+			particulas_en(n, q + Vector3(0, 0.9, 0), "brillos", 18, 0.8, "#c9b8ff")
 		"cohete":
 			cama_alto = 0.5
 			_rb(n, Vector3(1.5, 0.45, 1.0), q + Vector3(0, 0.25, 0), "#e8eef7", 0.18, Vector3.ZERO, 0.4)
@@ -403,11 +462,24 @@ func _habitacion_lampara(n: Node3D, p: Dictionary) -> void:
 		"luna":
 			_cil(n, q + Vector3(0, 0.03, 0), 0.12, 0.06, "#c9c3e8")
 			_cil(n, q + Vector3(0, 0.22, 0), 0.02, 0.36, "#c9c3e8")
-			_mi(n, _ball, lampara_mat, q + Vector3(0, 0.55, 0), Vector3.ONE * 0.2)
+			efecto(_mi(n, _ball, lampara_mat, q + Vector3(0, 0.55, 0), Vector3.ONE * 0.2), "latir", 0.8)
 		"estrella":
 			_cil(n, q + Vector3(0, 0.03, 0), 0.12, 0.06, "#b48a62")
 			_cil(n, q + Vector3(0, 0.25, 0), 0.02, 0.42, "#b48a62")
-			_mi(n, Atuendos.extruir(_estrella(), 0.2), lampara_mat, q + Vector3(0, 0.58, 0), Vector3.ONE * 0.2)
+			efecto(_mi(n, Atuendos.extruir(_estrella(), 0.2), lampara_mat, q + Vector3(0, 0.58, 0), Vector3.ONE * 0.2), "girar", 0.8)
+		"disco":
+			_cil(n, q + Vector3(0, 0.03, 0), 0.12, 0.06, "#3a3d4a")
+			_cil(n, q + Vector3(0, 0.25, 0), 0.015, 0.42, "#c9d1dc")
+			var esp := StandardMaterial3D.new()
+			esp.albedo_color = Color("#e8eef7")
+			esp.metallic = 1.0
+			esp.roughness = 0.15
+			esp.emission_enabled = true
+			esp.emission = Color("#b49cff")
+			esp.emission_energy_multiplier = 0.4
+			var bola := _mi(n, _ball, esp, q + Vector3(0, 0.6, 0), Vector3.ONE * 0.17)
+			efecto(bola, "girar", 2.0, esp)
+			particulas_en(n, q + Vector3(0.8, 1.6, 0.6), "brillos", 22, 1.6, "#ff8fe0")
 		"lava":
 			_cil(n, q + Vector3(0, 0.06, 0), 0.1, 0.12, "#4b4fa8")
 			var vi := StandardMaterial3D.new()
@@ -415,7 +487,7 @@ func _habitacion_lampara(n: Node3D, p: Dictionary) -> void:
 			vi.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			_mi(n, _ball, vi, q + Vector3(0, 0.38, 0), Vector3(0.1, 0.25, 0.1))
 			for i in 3:
-				_mi(n, _ball, lampara_mat, q + Vector3(sin(i * 2.0) * 0.03, 0.25 + i * 0.12, 0), Vector3.ONE * (0.05 - i * 0.008))
+				efecto(_mi(n, _ball, lampara_mat, q + Vector3(sin(i * 2.0) * 0.03, 0.25 + i * 0.12, 0), Vector3.ONE * (0.05 - i * 0.008)), "flotar", 0.6 + i * 0.3)
 			_cil(n, q + Vector3(0, 0.64, 0), 0.06, 0.06, "#4b4fa8")
 		_:
 			_cil(n, q + Vector3(0, 0.17, 0), 0.06, 0.34, "#fff1dc")
@@ -434,6 +506,10 @@ func _habitacion_alfombra(n: Node3D, p: Dictionary) -> void:
 		"corazon":
 			Atuendos._geos()
 			_mi(n, Atuendos._heart, mat(c), q, Vector3(1.0, 1.0, 0.05), Vector3(-PI / 2, 0, 0), false)
+		"arcoiris":
+			var cols := ["#ff6b6b", "#ffb347", "#ffe066", "#7be08a", "#6fb8ff", "#b49cff"]
+			for i in cols.size():
+				_cil(n, q + Vector3(0, i * 0.003, 0), 1.1 - i * 0.16, 0.02, cols[i])
 		"nube":
 			for v in [Vector3(-0.5, 0, 0), Vector3(0, 0, -0.1), Vector3(0.5, 0, 0), Vector3(0, 0, 0.25)]:
 				_mi(n, _cyl, mat(c), q + v, Vector3(0.55, 0.02, 0.45), Vector3.ZERO, false)
@@ -459,10 +535,13 @@ func _fijo_patio(n: Node3D) -> void:
 
 func _patio_pasto(n: Node3D, p: Dictionary) -> void:
 	var c := str(p.get("c", "#8fd16a"))
-	_rb(n, Vector3(ANCHO, 0.2, 6.0), Vector3(0, -0.1, -0.5), c, 0.04)
+	_rb(n, Vector3(ANCHO, 0.2, 11.0), Vector3(0, -0.1, 2.0), c, 0.04)
 	var cc := Color(c)
-	if cc.s < 0.15 or c == "#f5dfa8":
-		return   # nieve o arena: sin matas
+	if cc.s < 0.15:
+		particulas_en(n, Vector3(0, 3.6, -0.6), "nieve", 70, 3.4)
+		return   # nieve: copos cayendo, sin matas
+	if c == "#f5dfa8":
+		return   # arena: sin matas
 	var rnd := RandomNumberGenerator.new()
 	rnd.seed = 3
 	var flores := {"#ffffff": [], "#ffd36e": [], "#ff9fb0": [], "#b9a6ff": []}
@@ -513,7 +592,7 @@ void fragment(){
 }"""
 	cielo_mat = ShaderMaterial.new()
 	cielo_mat.shader = sh
-	var cols := {"dia": ["#7cc4ff", "#e4f5ff", 0.0, 0.0], "atardecer": ["#7b5cff", "#ffb38a", 0.25, 0.0],
+	var cols := {"lluvia_estrellas": ["#060a2a", "#2b2266", 1.0, 0.0], "dia": ["#7cc4ff", "#e4f5ff", 0.0, 0.0], "atardecer": ["#7b5cff", "#ffb38a", 0.25, 0.0],
 		"noche": ["#0d1340", "#3a3f8f", 1.0, 0.0], "galaxia": ["#1a0b3d", "#6a2c91", 1.0, 0.0],
 		"aurora": ["#071a35", "#1d3a5c", 0.8, 1.0], "nublado": ["#9fb3c8", "#e3eaf2", 0.0, 0.0],
 		"amanecer": ["#8fb8ff", "#ffc9a8", 0.0, 0.0], "dulce": ["#ffb8e1", "#b8f0ff", 0.0, 0.0]}
@@ -525,7 +604,7 @@ void fragment(){
 	var qm := QuadMesh.new()
 	qm.size = Vector2(30, 14)
 	_mi(n, qm, cielo_mat, Vector3(0, 5.5, -9.0), Vector3.ONE, Vector3.ZERO, false)
-	var colina := {"dia": "#79b960", "atardecer": "#8a6aa8", "noche": "#2c3a6a", "galaxia": "#3a2468", "aurora": "#1f3550",
+	var colina := {"lluvia_estrellas": "#1d2450", "dia": "#79b960", "atardecer": "#8a6aa8", "noche": "#2c3a6a", "galaxia": "#3a2468", "aurora": "#1f3550",
 		"nublado": "#7fa06a", "amanecer": "#8fbf72", "dulce": "#ff9fd0"}
 	for q in [Vector3(-4.0, -1.2, -7.5), Vector3(1.5, -1.6, -7.8), Vector3(5.5, -1.3, -7.6)]:
 		_bola(n, q, Vector3(4.0, 2.6, 1.0), str(colina.get(id, "#79b960")), 1.0)
@@ -542,11 +621,18 @@ void fragment(){
 		"noche", "aurora":
 			_bola(n, Vector3(2.0, 5.0, -8.5), Vector3.ONE * 0.55, "#fff6d8", 0.5, 1.5)
 			_bola(n, Vector3(2.25, 5.15, -8.4), Vector3.ONE * 0.5, str(cc[0]), 1.0)
+			particulas_en(n, Vector3(0, 0.8, -1.2), "luciernagas", 24, 3.0)
+		"lluvia_estrellas":
+			for i in 4:
+				_fugaz(n, Vector3(4.0 + i * 1.5, 7.0 - i * 0.5, -8.4), 0.8 + i * 0.25)
+			particulas_en(n, Vector3(0, 0.9, -1.2), "luciernagas", 18, 3.0, "#c9e4ff")
 		"galaxia":
 			_bola(n, Vector3(-2.2, 5.3, -8.6), Vector3.ONE * 0.8, "#ff9a6b", 0.6, 0.5)
 			_mi(n, _torus, mat("#ffd9a8", 0.6, 0.6), Vector3(-2.2, 5.3, -8.6), Vector3(1.3, 0.2, 1.3), Vector3(0.4, 0, 0.3), false)
 			_bola(n, Vector3(2.6, 4.2, -8.6), Vector3.ONE * 0.4, "#7fd8ff", 0.6, 0.6)
 			_mi(n, Atuendos.extruir(_estrella(), 0.1), mat("#fff3c4", 0.5, 3.0), Vector3(0.6, 6.0, -8.5), Vector3.ONE * 0.35, Vector3.ZERO, false)
+			_fugaz(n, Vector3(5.0, 6.6, -8.4), 1.0)
+			_fugaz(n, Vector3(7.0, 5.8, -8.4), 0.7)
 		"nublado":
 			for c in [Vector3(-3.0, 4.2, -8.0), Vector3(-0.5, 5.4, -8.2), Vector3(2.2, 4.6, -8.1), Vector3(4.0, 5.8, -8.3)]:
 				_nube(n, c, "#f4f6fa")
@@ -556,6 +642,15 @@ void fragment(){
 			_mi(n, _torus, mat("#ff8fb3", 0.6, 0.4), Vector3(0.5, 2.0, -8.6), Vector3(3.5, 0.6, 3.5), Vector3(PI / 2, 0, 0), false)
 			_mi(n, _torus, mat("#ffe08a", 0.6, 0.4), Vector3(0.5, 2.0, -8.55), Vector3(3.2, 0.6, 3.2), Vector3(PI / 2, 0, 0), false)
 			_mi(n, _torus, mat("#a8e6ff", 0.6, 0.4), Vector3(0.5, 2.0, -8.5), Vector3(2.9, 0.6, 2.9), Vector3(PI / 2, 0, 0), false)
+
+## Estrella fugaz: una estela brillante que cruza el cielo de vez en cuando.
+func _fugaz(n: Node3D, p: Vector3, vel: float) -> void:
+	var g := Node3D.new()
+	g.position = p
+	n.add_child(g)
+	_mi(g, _ball, mat("#fff8d8", 0.5, 4.0), Vector3.ZERO, Vector3(0.09, 0.09, 0.09), Vector3.ZERO, false)
+	_mi(g, _cone, mat("#bfd8ff", 0.5, 2.0), Vector3(0.6, 0.2, 0), Vector3(0.06, 1.2, 0.06), Vector3(0, 0, PI / 2 + 0.32), false)
+	efecto(g, "estrella_fugaz", vel)
 
 func _nube(n: Node3D, c: Vector3, col: String) -> void:
 	for k in 4:
@@ -615,6 +710,7 @@ func _patio_arbol(n: Node3D, p: Dictionary) -> void:
 				var m := mat(col, 0.95, 0.35 if c == "#b49cff" else 0.0)
 				_mi(n, _ball, m, q + bolas[i], Vector3.ONE * (0.55 - i * 0.03))
 			if c == "#ffc2d6" or c == "#ff9f43":
+				particulas_en(n, q + Vector3(0, 2.6, 0.3), "petalos", 18, 0.9, "#ffc2d6" if c == "#ffc2d6" else "#ff9f43")
 				var rnd := RandomNumberGenerator.new()
 				rnd.seed = 5
 				var xs: Array = []
@@ -622,6 +718,7 @@ func _patio_arbol(n: Node3D, p: Dictionary) -> void:
 					xs.append(Transform3D(Basis.from_scale(Vector3(0.035, 0.008, 0.035)), q + Vector3(rnd.randf_range(-1.2, 1.4), 0.012, rnd.randf_range(-0.6, 1.4))))
 				_multi(n, _ball, mat(c), xs)
 			elif c == "#b49cff":
+				particulas_en(n, q + Vector3(0, 2.2, 0.3), "brillos", 20, 0.9, "#e2d6ff")
 				for i in 8:
 					_bola(n, q + Vector3(sin(i * 1.7) * 0.6, 2.0 + cos(i * 2.3) * 0.5, 0.5), Vector3.ONE * 0.04, "#fff3c4", 0.5, 2.0)
 			else:
@@ -630,16 +727,20 @@ func _patio_arbol(n: Node3D, p: Dictionary) -> void:
 
 ## Juegos del patio (lado derecho).
 func _patio_juguete(n: Node3D, p: Dictionary) -> void:
-	var q := Vector3(1.85, 0, -0.9)
+	var q := Vector3(1.4, 0, -1.25)
 	var c := str(p.get("c", "#ff6b6b"))
 	match str(p.get("forma", "nada")):
 		"columpio":
 			for s in [-1.0, 1.0]:
 				_cil(n, q + Vector3(s * 0.55, 0.8, 0), 0.04, 1.6, "#8d5d32", Vector3(0, 0, s * 0.12))
 			_cil(n, q + Vector3(0, 1.6, 0), 0.04, 1.3, "#8d5d32", Vector3(0, 0, PI / 2))
+			var col := Node3D.new()
+			col.position = q + Vector3(0, 1.6, 0)
+			n.add_child(col)
 			for s in [-1.0, 1.0]:
-				_cil(n, q + Vector3(s * 0.2, 1.15, 0), 0.008, 0.9, "#cfd6e2")
-			_rb(n, Vector3(0.5, 0.05, 0.22), q + Vector3(0, 0.7, 0), c, 0.02)
+				_cil(col, Vector3(s * 0.2, -0.45, 0), 0.008, 0.9, "#cfd6e2")
+			_rb(col, Vector3(0.5, 0.05, 0.22), Vector3(0, -0.9, 0), c, 0.02)
+			efecto(col, "columpio", 1.0)
 		"tobogan":
 			_rb(n, Vector3(0.4, 1.0, 0.4), q + Vector3(0.35, 0.5, -0.3), "#ffcf4a", 0.05)
 			_rb(n, Vector3(0.36, 0.05, 1.3), q + Vector3(0.35, 0.55, 0.25), c, 0.02, Vector3(-0.75, 0, 0))
@@ -650,7 +751,27 @@ func _patio_juguete(n: Node3D, p: Dictionary) -> void:
 			ag.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			ag.roughness = 0.05
 			_mi(n, _cyl, ag, q + Vector3(0, 0.25, 0.1), Vector3(0.53, 0.04, 0.53), Vector3.ZERO, false)
-			_mi(n, _torus, mat("#ff8fb3"), q + Vector3(0.2, 0.3, 0.2), Vector3(0.15, 0.4, 0.15))
+			efecto(_mi(n, _torus, mat("#ff8fb3"), q + Vector3(0.2, 0.3, 0.2), Vector3(0.15, 0.4, 0.15)), "flotar_suave")
+		"fuente":
+			_cil(n, q + Vector3(0, 0.15, 0.1), 0.55, 0.3, c)
+			var ag := StandardMaterial3D.new()
+			ag.albedo_color = Color(0.55, 0.85, 1.0, 0.85)
+			ag.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			_mi(n, _cyl, ag, q + Vector3(0, 0.26, 0.1), Vector3(0.48, 0.04, 0.48), Vector3.ZERO, false)
+			_cil(n, q + Vector3(0, 0.55, 0.1), 0.06, 0.6, c)
+			_cil(n, q + Vector3(0, 0.85, 0.1), 0.22, 0.08, c)
+			particulas_en(n, q + Vector3(0, 0.9, 0.1), "agua", 40, 0.03)
+		"fogata":
+			for i in 5:
+				_cil(n, q + Vector3(0, 0.06, 0.1), 0.05, 0.55, "#7a4b2a", Vector3(PI / 2, TAU * i / 5.0, 0))
+			for i in 7:
+				var a := TAU * i / 7.0
+				_bola(n, q + Vector3(cos(a) * 0.32, 0.05, sin(a) * 0.32 + 0.1), Vector3(0.09, 0.06, 0.08), "#9aa0ad")
+			for k in 3:
+				var fm := mat(["#ff7a2e", "#ffb347", "#ffe066"][k], 0.5, 2.5).duplicate()
+				var fl := _mi(n, _cone, fm, q + Vector3((k - 1) * 0.05, 0.22 + k * 0.03, 0.1), Vector3(0.12 - k * 0.03, 0.36 - k * 0.06, 0.12 - k * 0.03), Vector3.ZERO, false)
+				efecto(fl, "llama", 1.0, fm)
+			particulas_en(n, q + Vector3(0, 0.4, 0.1), "chispas", 16)
 		"casita":
 			_rb(n, Vector3(0.7, 0.55, 0.6), q + Vector3(0, 0.28, -0.3), c, 0.05)
 			_mi(n, _cone, mat("#7a4b2a"), q + Vector3(0, 0.72, -0.3), Vector3(0.55, 0.35, 0.45), Vector3(0, PI / 4, 0))
@@ -682,9 +803,19 @@ func _bano_banera(n: Node3D, p: Dictionary) -> void:
 	_mi(n, rbox_mesh(Vector3(1.7, 0.04, 0.75), 0.02), agua, q + Vector3(0, y0 + 0.72, 0), Vector3.ONE, Vector3.ZERO, false)
 	for i in 6:
 		_bola(n, q + Vector3(-0.6 + i * 0.25, y0 + 0.76, sin(i * 1.7) * 0.2), Vector3.ONE * (0.08 + (i % 3) * 0.03), "#ffffff", 0.9)
-	_bola(n, q + Vector3(0.5, y0 + 0.82, 0.1), Vector3(0.11, 0.09, 0.13), "#ffd84a", 0.4)
-	_bola(n, q + Vector3(0.5, y0 + 0.95, 0.17), Vector3.ONE * 0.065, "#ffd84a", 0.4)
-	_bola(n, q + Vector3(0.5, y0 + 0.94, 0.24), Vector3(0.035, 0.015, 0.03), "#ff8c3a", 0.4)
+	var pato := Node3D.new()
+	pato.position = q + Vector3(0.5, y0 + 0.82, 0.1)
+	n.add_child(pato)
+	_bola(pato, Vector3.ZERO, Vector3(0.11, 0.09, 0.13), "#ffd84a", 0.4)
+	_bola(pato, Vector3(0, 0.13, 0.07), Vector3.ONE * 0.065, "#ffd84a", 0.4)
+	_bola(pato, Vector3(0, 0.12, 0.14), Vector3(0.035, 0.015, 0.03), "#ff8c3a", 0.4)
+	efecto(pato, "flotar_suave")
+	var jac: bool = p.get("jacuzzi", false)
+	particulas_en(n, q + Vector3(0, y0 + 0.74, 0), "burbujas", 30 if jac else 10, 0.7)
+	if jac:
+		var lz := mat("#7fd8ff", 0.4, 1.0).duplicate()
+		var luz := _mi(n, rbox_mesh(Vector3(1.6, 0.02, 0.7), 0.02), lz, q + Vector3(0, y0 + 0.705, 0), Vector3.ONE, Vector3.ZERO, false)
+		efecto(luz, "titilar", 0.5, lz)
 
 func _bano_cortina(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(1.45, 0, -1.55)
@@ -703,6 +834,14 @@ func _bano_cortina(n: Node3D, p: Dictionary) -> void:
 	elif forma == "estrellas":
 		for i in 5:
 			_mi(n, Atuendos.extruir(_estrella(), 0.1), mat(c2, 0.5, 0.6), Vector3(q.x - 0.9 + (i % 2) * 0.3, 1.2 + i * 0.25, q.z + 0.57), Vector3.ONE * 0.06)
+	elif forma == "luces":
+		# guirnalda de luces que titilan a lo largo de la barra y bajando por la cortina
+		var cols := ["#ff8fb3", "#ffe066", "#7fd8ff", "#b49cff", "#7be08a"]
+		for i in 14:
+			var lm := mat(cols[i % cols.size()], 0.4, 1.5).duplicate()
+			var y := 2.5 - absf(sin(i * 0.45)) * 0.12
+			var b := _mi(n, _ball, lm, Vector3(q.x - 1.0 + i * 0.15, y, q.z + 0.56), Vector3(0.028, 0.038, 0.028), Vector3.ZERO, false)
+			efecto(b, "titilar", 0.6 + (i % 4) * 0.35, lm)
 
 func _ventana(n: Node3D, pos: Vector3, w: float, h: float, marco: String, cielo: StandardMaterial3D) -> void:
 	_rb(n, Vector3(w + 0.16, h + 0.16, 0.1), pos + Vector3(0, 0, 0.0), marco, 0.05)
@@ -725,6 +864,7 @@ func _fijo_cocina(n: Node3D) -> void:
 	_cil(n, Vector3(0.75, 1.22, FONDO + 0.45), 0.17, 0.24, "#e2574c", Vector3.ZERO, 0.35)
 	_cil(n, Vector3(0.75, 1.35, FONDO + 0.45), 0.18, 0.03, "#c94236", Vector3.ZERO, 0.35)
 	_bola(n, Vector3(0.75, 1.39, FONDO + 0.45), Vector3.ONE * 0.035, "#2f2f37")
+	particulas_en(n, Vector3(0.75, 1.42, FONDO + 0.45), "vapor", 10, 0.06)
 	# repisa con frascos
 	_rb(n, Vector3(1.5, 0.06, 0.3), Vector3(0.4, 2.35, FONDO + 0.16), "#9a7a5c", 0.02)
 	var frascos := ["#ffcf6a", "#ff8f8f", "#9fe0b8", "#a9c7ff"]
@@ -822,3 +962,240 @@ func _fijo_bano(n: Node3D) -> void:
 	gotas.mesh = gm
 	ducha.add_child(gotas)
 
+
+
+# ================= EFECTOS (animaciones y partículas de la decoración) =================
+## Cada efecto se registra con su habitación: solo se animan los de la habitación donde está Pip (ahorra batería).
+var efectos: Array = []          ## {n, tipo, h, x, rot, pos, sc, mat, fase}
+var particulas: Array = []       ## [CPUParticles3D, hab]
+var hab_activa := "habitacion"
+var t_fx := 0.0
+var _h := ""                     ## habitación que se está armando
+var _pmats := {}
+var _pmesh := {}
+
+func efecto(n: Node3D, tipo: String, x := 1.0, m: StandardMaterial3D = null) -> void:
+	efectos.append({"n": n, "tipo": tipo, "h": _h, "x": x, "rot": n.rotation, "pos": n.position, "sc": n.scale, "mat": m,
+		"fase": randf() * TAU})
+
+func _process(dt: float) -> void:
+	t_fx += dt
+	var i := efectos.size() - 1
+	while i >= 0:
+		var e: Dictionary = efectos[i]
+		if not is_instance_valid(e.n):
+			efectos.remove_at(i)
+			i -= 1
+			continue
+		if e.h == hab_activa:
+			_animar(e)
+		i -= 1
+
+func _animar(e: Dictionary) -> void:
+	var n: Node3D = e.n
+	var t: float = t_fx + e.fase
+	var x: float = e.x
+	match e.tipo:
+		"girar":
+			n.rotation.y = (e.rot as Vector3).y + t_fx * x
+		"balancear":
+			n.rotation.z = (e.rot as Vector3).z + sin(t * 1.6) * 0.12 * x
+		"columpio":
+			n.rotation.x = (e.rot as Vector3).x + sin(t * 1.8) * 0.35 * x
+		"flotar":
+			n.position.y = (e.pos as Vector3).y + sin(t * 1.3 * x) * 0.05
+		"flotar_suave":
+			n.position.y = (e.pos as Vector3).y + sin(t * 1.1) * 0.02
+			n.rotation.z = (e.rot as Vector3).z + sin(t * 0.9) * 0.06
+		"latir":
+			n.scale = (e.sc as Vector3) * (1.0 + sin(t * 2.0 * x) * 0.04)
+		"nadar":
+			var k := fposmod(t_fx * 0.12 * x + e.fase, 1.0)
+			var dir := 1.0 if int(floor(t_fx * 0.12 * x + e.fase)) % 2 == 0 else -1.0
+			var px := lerpf(-1.2, 1.2, k) if dir > 0 else lerpf(1.2, -1.2, k)
+			n.position = (e.pos as Vector3) + Vector3(px, sin(t * 2.0) * 0.05, 0)
+			n.rotation.y = 0.0 if dir > 0 else PI
+		"estrella_fugaz":
+			var c := fposmod(t_fx * 0.25 * x + e.fase, 1.0)
+			n.visible = c < 0.25
+			n.position = (e.pos as Vector3) + Vector3(-c * 18.0, -c * 6.0, 0)
+		"llama":
+			n.scale = (e.sc as Vector3) * Vector3(1.0 + randf() * 0.12, 0.85 + randf() * 0.35, 1.0)
+	var m = e.mat
+	if m != null:
+		var mm := m as StandardMaterial3D
+		match e.tipo:
+			"llama":
+				mm.emission_energy_multiplier = 1.4 + randf() * 1.0
+			"titilar":
+				mm.emission_energy_multiplier = 0.5 + 1.5 * (0.5 + 0.5 * sin(t * 3.0 * x))
+			_:
+				mm.emission_energy_multiplier = 0.7 + 0.6 * (0.5 + 0.5 * sin(t * 1.6))
+
+## Activa solo las partículas de la habitación donde está Pip.
+func activar(h: String) -> void:
+	hab_activa = h
+	var i := particulas.size() - 1
+	while i >= 0:
+		var pe = particulas[i][0]
+		if not is_instance_valid(pe):
+			particulas.remove_at(i)
+		else:
+			(pe as CPUParticles3D).emitting = particulas[i][1] == h
+		i -= 1
+
+## Material de partículas (sin luz, transparente, opcionalmente brillante); en caché.
+func _pmat(c: String, brillo := 0.0) -> StandardMaterial3D:
+	var k := "%s/%s" % [c, brillo]
+	if _pmats.has(k):
+		return _pmats[k]
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(c)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.vertex_color_use_as_albedo = true
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	if brillo > 0.0:
+		m.emission_enabled = true
+		m.emission = Color(c)
+		m.emission_energy_multiplier = brillo
+	_pmats[k] = m
+	return m
+
+func _malla_p(tipo: String) -> Mesh:
+	if _pmesh.has(tipo):
+		return _pmesh[tipo]
+	var m: Mesh
+	match tipo:
+		"petalo", "copo":
+			var q := QuadMesh.new()
+			q.size = Vector2(0.06, 0.04) if tipo == "petalo" else Vector2(0.04, 0.04)
+			m = q
+		_:
+			var sp := SphereMesh.new()
+			sp.radius = 0.025
+			sp.height = 0.05
+			sp.radial_segments = 8
+			sp.rings = 4
+			m = sp
+	_pmesh[tipo] = m
+	return m
+
+## Partículas de ambiente. tipos: petalos, nieve, burbujas, vapor, luciernagas, chispas, brillos, agua.
+func particulas_en(parent: Node3D, pos: Vector3, tipo: String, cant := 24, ancho := 1.0, col := "") -> CPUParticles3D:
+	var p := CPUParticles3D.new()
+	p.position = pos
+	p.amount = cant
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(ancho, 0.1, ancho * 0.6)
+	p.local_coords = false
+	var color := Gradient.new()
+	match tipo:
+		"petalos":
+			p.mesh = _malla_p("petalo")
+			p.material_override = _pmat("#ffc2d6")
+			p.lifetime = 6.0
+			p.direction = Vector3(0.3, -1, 0)
+			p.initial_velocity_min = 0.2
+			p.initial_velocity_max = 0.4
+			p.gravity = Vector3(0.05, -0.15, 0)
+			p.angular_velocity_min = -90
+			p.angular_velocity_max = 90
+			p.particle_flag_align_y = false
+			p.scale_amount_min = 0.7
+			p.scale_amount_max = 1.2
+		"nieve":
+			p.mesh = _malla_p("copo")
+			p.material_override = _pmat("#ffffff")
+			p.lifetime = 7.0
+			p.direction = Vector3(0, -1, 0)
+			p.initial_velocity_min = 0.2
+			p.initial_velocity_max = 0.35
+			p.gravity = Vector3(0.03, -0.1, 0)
+			p.particle_flag_rotate_y = true
+		"burbujas":
+			p.mesh = _malla_p("bola")
+			p.material_override = _pmat("#dff6ff", 0.3)
+			p.lifetime = 3.0
+			p.direction = Vector3(0, 1, 0)
+			p.spread = 15.0
+			p.initial_velocity_min = 0.15
+			p.initial_velocity_max = 0.35
+			p.gravity = Vector3(0, 0.05, 0)
+			p.scale_amount_min = 0.6
+			p.scale_amount_max = 1.6
+		"vapor":
+			p.mesh = _malla_p("bola")
+			p.material_override = _pmat("#ffffff")
+			p.lifetime = 2.2
+			p.direction = Vector3(0, 1, 0)
+			p.spread = 12.0
+			p.initial_velocity_min = 0.25
+			p.initial_velocity_max = 0.4
+			p.gravity = Vector3.ZERO
+			p.scale_amount_min = 1.5
+			p.scale_amount_max = 3.0
+		"luciernagas", "brillos":
+			p.mesh = _malla_p("bola")
+			p.material_override = _pmat("#fff3a0" if tipo == "luciernagas" else "#ffffff", 2.5)
+			p.lifetime = 4.0
+			p.direction = Vector3(0, 1, 0)
+			p.spread = 180.0
+			p.initial_velocity_min = 0.05
+			p.initial_velocity_max = 0.15
+			p.gravity = Vector3.ZERO
+			p.scale_amount_min = 0.3
+			p.scale_amount_max = 0.7
+			p.emission_box_extents = Vector3(ancho, ancho * 0.5, ancho * 0.4)
+		"chispas":
+			p.mesh = _malla_p("bola")
+			p.material_override = _pmat("#ffb347", 3.0)
+			p.lifetime = 1.2
+			p.direction = Vector3(0, 1, 0)
+			p.spread = 20.0
+			p.initial_velocity_min = 0.5
+			p.initial_velocity_max = 1.0
+			p.gravity = Vector3(0, 0.2, 0)
+			p.scale_amount_min = 0.2
+			p.scale_amount_max = 0.5
+			p.emission_box_extents = Vector3(0.12, 0.02, 0.12)
+		"agua":
+			p.mesh = _malla_p("bola")
+			p.material_override = _pmat("#aee6ff", 0.2)
+			p.lifetime = 1.0
+			p.direction = Vector3(0, 1, 0)
+			p.spread = 14.0
+			p.initial_velocity_min = 1.6
+			p.initial_velocity_max = 2.0
+			p.gravity = Vector3(0, -4.5, 0)
+			p.scale_amount_min = 0.4
+			p.scale_amount_max = 0.8
+			p.emission_box_extents = Vector3(0.03, 0.01, 0.03)
+	# aparecen y se desvanecen suave
+	color.set_color(0, Color(1, 1, 1, 0))
+	color.add_point(0.15, Color(1, 1, 1, 0.9))
+	color.add_point(0.8, Color(1, 1, 1, 0.8))
+	color.set_color(color.get_point_count() - 1, Color(1, 1, 1, 0))
+	p.color_ramp = color
+	# el ambiente ya está "lleno" desde el primer cuadro (no espera a que caigan los primeros copos)
+	if tipo in ["petalos", "nieve", "luciernagas", "brillos", "burbujas"]:
+		p.preprocess = p.lifetime
+	if col != "":
+		p.material_override = _pmat(col, 0.0 if tipo in ["petalos", "nieve", "vapor"] else 2.0)
+	p.emitting = _h == hab_activa
+	parent.add_child(p)
+	particulas.append([p, _h])
+	return p
+
+## Materiales de los efectos (para precalentar los sombreadores durante la carga).
+func muestras() -> Array:
+	return [_pmat("#ffffff"), _pmat("#fff3a0", 2.5), _pmat("#dff6ff", 0.3), mat("#ffffff", 0.5, 1.0)]
+
+## Un emisor de cada tipo, para precalentar.
+func muestras_particulas(parent: Node3D) -> void:
+	var guardado := _h
+	_h = "vitrina"
+	hab_activa = "vitrina"
+	for tp in ["petalos", "nieve", "burbujas", "vapor", "luciernagas", "chispas", "agua"]:
+		particulas_en(parent, Vector3(randf_range(-0.4, 0.4), 0.6, 0), tp, 6, 0.1).emitting = true
+	_h = guardado

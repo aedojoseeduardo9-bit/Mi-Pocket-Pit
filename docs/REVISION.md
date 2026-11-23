@@ -1,4 +1,34 @@
-# Pocket Pip — revisión de errores (versión 0.2)
+# Pocket Pip — revisión de errores
+
+## Versión 0.3 (lo que reportaste en la APK 2)
+- [x] **Lag fuerte en la pantalla nioro.** Causas encontradas y corregidas:
+  - La intro corría mientras el juego se armaba detrás (casa, Pip, ropa de muestra para preparar sombreadores): cada
+    tirón del armado se veía en la animación. Ahora todo se arma con la pantalla en **negro** y la intro empieza
+    recién cuando el juego está listo.
+  - Durante la intro ya no se dibuja la casa 3D detrás (la intro la tapa entera).
+  - El resplandor de "nioro" cambiaba de grosor cada cuadro: el teléfono redibujaba las letras gigantes cada vez.
+    Ahora usa grosores fijos y solo cambia la transparencia.
+- [x] **Lag de los minijuegos.** Mientras juegas ya no se dibuja la casa 3D detrás ni se anima a Pip; la cuenta
+  regresiva cambiaba el tamaño de letra cada cuadro (mismo problema de arriba): ahora se escala sin redibujar letras.
+  Lo mismo con las "z" de dormir y los textos que flotan.
+- [x] **Ropa que calza en la capibara**: cada prenda se reacomoda al hueso del que cuelga (cabeza más larga, ojos más
+  altos y separados, cuerpo más ancho, bracitos gruesos). Bajo sombreros y trajes se esconde la mandarina; bajo
+  cascos, las orejitas. La cara que asoma por capuchas usa el color de quien la lleva.
+- [x] **Brazos y orejas abstractos**: brazos nuevos (tubo suave que se afina, manito con tres deditos), orejas de
+  ardilla (hoja gruesa curvada, interior rosado, mechón de tres puntas) y patitas con dedos.
+- [x] **Decoración con más efectos**: partículas (pétalos de cerezo y de otoño, nieve, burbujas en la bañera,
+  vapor de la olla, luciérnagas de noche, chispas de fogata, agua de fuente, destellos mágicos), estrellas fugaces,
+  peces que nadan, columpio que se mece, patito y flotador que flotan, lámparas que laten y giran, velas con llama.
+  13 diseños nuevos con efecto: nevera mágica, mesa de cumpleaños, flor mágica, bola disco, nube mágica, alfombra
+  arcoíris, lluvia de estrellas, fuente, fogata, pared acuario, jacuzzi de luz y cortina de luces.
+  Solo se anima la habitación donde está Pip (ahorra batería).
+- [x] **Puntitos de arriba → burbuja junto a "Más"**: tocarla = siguiente habitación; mantenerla apretada y deslizar
+  = se abre una píldora con las 4 habitaciones y Pip corre a la que señales (con vibración en cada paso).
+- [x] Errores encontrados en esta revisión: la píldora quedaba debajo de los botones de acción; la nieve y los
+  pétalos tardaban en aparecer (ahora el ambiente ya está lleno); la fogata y la fuente quedaban fuera de cuadro;
+  al acercar la cámara se veía el borde del piso.
+
+## Versión 0.2
 
 Revisión hecha con "los ojos" (65 capturas y 35 pruebas automáticas) y leyendo el código. Cada error está
 marcado `[x]` si ya se corrigió en esta versión o `[ ]` si sigue pendiente. Ordenados de más a menos importante.

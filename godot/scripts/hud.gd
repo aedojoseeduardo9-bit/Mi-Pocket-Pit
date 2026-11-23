@@ -33,6 +33,7 @@ var _toast_col := UI.NARANJO
 var _toast_t := 0.0
 var _hab_vista := 1.0
 var juego: Minijuego
+var burbuja: BurbujaHab
 
 const NEC_HAB := {"hambre": 0, "energia": 1, "diversion": 2, "higiene": 3}
 const NEC_COLOR := {"hambre": Color("#ff8a5c"), "energia": Color("#ffc93c"), "diversion": Color("#8b7cf6"), "higiene": Color("#4aa8ff")}
@@ -63,6 +64,8 @@ func _init(m) -> void:
 		b.presionado.connect(func(): abrir_panel(tipo))
 		dock.add_child(b)
 		dock_btn.append(b)
+	burbuja = BurbujaHab.new(main)
+	add_child(burbuja)
 	b_regalo = UI.Boton.new("regalo", "", UI.ROSA, Vector2(84, 84))
 	b_regalo.color_icono = Color.WHITE
 	b_regalo.presionado.connect(abrir_regalo)
@@ -70,6 +73,7 @@ func _init(m) -> void:
 	accion = Control.new()
 	accion.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(accion)
+	move_child(burbuja, get_child_count() - 1)   # la píldora abierta queda encima de los botones de acción
 	resized.connect(_layout)
 	Estado.cambio.connect(refrescar)
 	_layout()
@@ -83,7 +87,8 @@ func _layout() -> void:
 	var paso := (dock.size.x - 8) / DOCK.size()
 	for i in dock_btn.size():
 		dock_btn[i].position = Vector2(4 + i * paso + (paso - 122) * 0.5, 4)
-	b_regalo.position = Vector2(20, m_top + 190)
+	b_regalo.position = Vector2(20, m_top + 120)
+	burbuja.position = Vector2(W - 14 - 100, H - 128 - 112)
 	accion.position = Vector2(0, H - 128 - 200)
 	accion.size = Vector2(W, 190)
 	if hoja:
@@ -169,19 +174,6 @@ func _draw() -> void:
 	UI.texto(self, pill.position + Vector2(108, 30), _fmt(int(round(_bel_vista))), 30, UI.CAFE, 700, true, 100)
 	draw_circle(pill.position + Vector2(180, 31), 22 + sin(_pulso * 4.0) * 1.5, UI.MENTA)
 	UI.icono(self, "mas", pill.position + Vector2(180, 31), 30, Color.WHITE)
-	# habitaciones: puntitos y nombre
-	if hoja_tipo == "" and main.modo != "pelota":
-		var cy := m_top + 128.0
-		var nombre: String = Casa.NOMBRES[Casa.HABS[main.hab]]
-		var tw := UI.fuente(700).get_string_size(L.t(nombre), HORIZONTAL_ALIGNMENT_LEFT, -1, 26).x
-		var ancho := tw + 140.0
-		var rr := Rect2(Vector2(W * 0.5 - ancho * 0.5, cy - 26), Vector2(ancho, 52))
-		UI._sb(self, rr, Color(1, 0.985, 0.96, 0.85), 26)
-		for i in 4:
-			var dp := Vector2(rr.position.x + 26 + i * 18, cy)
-			var k := clampf(1.0 - absf(_hab_vista - i), 0.0, 1.0)
-			draw_circle(dp, 5.0 + 2.5 * k, UI.CAFE2.lerp(UI.NARANJO, k) if k > 0.01 else Color(UI.CAFE2, 0.35))
-		UI.texto(self, Vector2(rr.position.x + 104 + tw * 0.5, cy), nombre, 26, UI.CAFE, 700)
 	if main.modo == "pelota":
 		UI.texto_borde(self, Vector2(W * 0.5, m_top + 200), str(main.toques_pelota), 110, UI.ORO, UI.CAFE, 18)
 		UI.texto_borde(self, Vector2(W * 0.5, m_top + 275), "¡Toca la pelota!", 30, Color.WHITE, UI.CAFE, 8)
@@ -226,10 +218,6 @@ func _input(e: InputEvent) -> void:
 			main.ir_a(NEC_HAB[n])
 			get_viewport().set_input_as_handled()
 			return
-	# puntitos de las habitaciones
-	if absf(p.y - (m_top + 128.0)) < 30.0 and absf(p.x - W * 0.5) < 160.0:
-		main.ir_a((main.hab + 1) % 4)
-		get_viewport().set_input_as_handled()
 
 static func _nombre_nec(n: String) -> String:
 	return {"hambre": "Comida", "energia": "Energía", "diversion": "Diversión", "higiene": "Higiene"}[n]
@@ -275,6 +263,8 @@ func pagar(precio: int) -> bool:
 
 func refrescar() -> void:
 	b_regalo.visible = Estado.regalo_disponible() and hoja_tipo == "" and main.modo != "pelota"
+	burbuja.visible = hoja_tipo == "" and main.modo != "pelota" and juego == null
+	burbuja.queue_redraw()
 	dock.visible = main.modo != "pelota"
 	_refrescar_accion()
 	dock.queue_redraw()
@@ -296,7 +286,7 @@ func cambio_habitacion() -> void:
 			sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 			sc.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 			sc.position = Vector2(16, 8)
-			sc.size = Vector2(W - 32, 182)
+			sc.size = Vector2(W - 32 - 112, 182)   # a la derecha queda la burbuja de habitaciones
 			sc.scroll_deadzone = 14
 			var fila := HBoxContainer.new()
 			fila.add_theme_constant_override("separation", 12)
@@ -613,6 +603,7 @@ func _armar_tarjetas() -> void:
 				var t := _tarjeta(csz)
 				t.icono = "deco_" + slot
 				t.nombre = Estado.nombre(v)
+				t.animada = v.get("fx", false)
 				t.precio = int(v.precio)
 				var p: Dictionary = v.get("p", {})
 				t.color = Color(str(p.get("c1", p.get("c", "#e9e0d6"))))
@@ -720,11 +711,14 @@ func _jugar(id: String) -> void:
 	juego = Minijuego.new(id)
 	add_child(juego)
 	juego.size = size
+	# con el minijuego en pantalla completa no se dibuja la casa 3D: todo el teléfono queda para el juego
+	get_viewport().disable_3d = true
 	juego.terminado.connect(func(_t, _p, gana):
 		if gana > 0:
 			main.fx.volar(size * 0.5, pos_bellotas(), mini(14, gana))
 		juego.queue_free()
 		juego = null
+		get_viewport().disable_3d = false
 		main.pip.hacer("celebrar")
 		refrescar())
 	refrescar()
@@ -1059,3 +1053,102 @@ func _confirmar_compra(id: String) -> void:
 			_armar_tarjetas())
 	card.add_child(no)
 	card.add_child(si)
+
+
+# ================= burbuja de habitaciones =================
+## Burbuja junto a "Más": tocarla = siguiente habitación. Mantenerla apretada y deslizar = se abre una píldora con
+## las 4 habitaciones y Pip corre a la que señale el dedo.
+class BurbujaHab extends Control:
+	var main
+	var _abierta := 0.0           ## 0..1 animación de la píldora
+	var _apretado := false
+	var _t0 := 0.0
+	var _p0 := Vector2.ZERO
+	var _sel := 0.0               ## habitación señalada (suave)
+	var _sel_i := 0
+	var _desliza := false
+	var _t := 0.0
+	const R := 50.0
+	const PASO := 112.0
+	const ICONOS := ["cocina", "habitacion", "patio", "bano"]
+
+	func _init(m) -> void:
+		main = m
+		size = Vector2(100, 100)
+		mouse_filter = Control.MOUSE_FILTER_STOP
+
+	func _has_point(p: Vector2) -> bool:
+		if _abierta > 0.3:
+			return Rect2(Vector2(-PASO * 3.6, -10), Vector2(PASO * 3.6 + size.x, size.y + 20)).has_point(p)
+		return Rect2(Vector2.ZERO, size).has_point(p)
+
+	func _centro_i(i: int) -> Vector2:
+		# la habitación 3 queda sobre la burbuja; las demás hacia la izquierda
+		return size * 0.5 + Vector2(-(3 - i) * PASO, 0)
+
+	func _gui_input(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
+			if e.pressed:
+				_apretado = true
+				_desliza = false
+				_t0 = _t
+				_p0 = e.position
+				_sel = main.hab
+				_sel_i = main.hab
+				Sfx.play("pop", 1.3, -8.0)
+				accept_event()
+			elif _apretado:
+				_apretado = false
+				if not _desliza and _t - _t0 < 0.3:
+					main.ir_a((main.hab + 1) % 4)
+				elif _sel_i != main.hab:
+					main.ir_a(_sel_i)
+				accept_event()
+		elif e is InputEventMouseMotion and _apretado:
+			if e.position.distance_to(_p0) > 14.0:
+				_desliza = true
+			if _abierta > 0.5:
+				var i := clampi(int(round(3.0 - (size.x * 0.5 - e.position.x) / PASO)), 0, 3)
+				if i != _sel_i:
+					_sel_i = i
+					Sfx.play("tic", 1.0 + i * 0.1, -6.0)
+					main.vibrar(12)
+					main.ir_a(i)
+			accept_event()
+
+	func _process(dt: float) -> void:
+		_t += dt
+		var quiere := 1.0 if _apretado and (_desliza or _t - _t0 > 0.25) else 0.0
+		var antes := _abierta
+		_abierta = move_toward(_abierta, quiere, dt * 6.0)
+		var obj := float(_sel_i if _abierta > 0.01 else main.hab)
+		_sel = lerpf(_sel, obj, minf(1.0, dt * 14.0))
+		if absf(antes - _abierta) > 0.0001 or absf(_sel - obj) > 0.001 or int(_t * 2.0) != int((_t - dt) * 2.0):
+			queue_redraw()
+
+	func _draw() -> void:
+		var c := size * 0.5
+		var k := _abierta * _abierta * (3.0 - 2.0 * _abierta)
+		if k > 0.01:
+			# píldora con las 4 habitaciones
+			var izq := c.x - 3.0 * PASO * k - R
+			var r := Rect2(Vector2(izq, c.y - R - 6), Vector2(c.x + R - izq, 2 * R + 12))
+			UI._sb(self, Rect2(r.position + Vector2(0, 3), r.size), UI.SOMBRA, R + 6)
+			UI._sb(self, r, Color(1, 0.985, 0.96, 0.98), R + 6)
+			var hp := c + Vector2(-(3.0 - _sel) * PASO * k, 0)
+			draw_circle(hp, R - 4, Color("#ffe2c2"))
+			for i in 4:
+				var p := c + Vector2(-(3 - i) * PASO * k, 0)
+				var on: bool = i == _sel_i
+				UI.icono(self, ICONOS[i], p + Vector2(0, -8), 46, UI.NARANJO if on else UI.CAFE2)
+				UI.texto(self, p + Vector2(0, 30), Casa.NOMBRES[Casa.HABS[i]], 15, UI.CAFE if on else UI.CAFE2, 700 if on else 500, true, PASO - 10)
+		else:
+			# burbuja: brillante, con el ícono de la habitación y sus puntitos
+			draw_circle(c + Vector2(0, 3), R, UI.SOMBRA)
+			draw_circle(c, R, Color(1, 0.985, 0.96, 0.97))
+			draw_arc(c, R - 3, 0, TAU, 48, Color(UI.NARANJO, 0.85), 4.0, true)
+			draw_circle(c + Vector2(-R * 0.35, -R * 0.42), R * 0.16, Color(1, 1, 1, 0.8))
+			UI.icono(self, ICONOS[main.hab], c + Vector2(0, -6), 50, UI.CAFE)
+			for i in 4:
+				var dp := c + Vector2((i - 1.5) * 12.0, 30)
+				draw_circle(dp, 4.0 if i == main.hab else 3.0, UI.NARANJO if i == main.hab else Color(UI.CAFE2, 0.4))
