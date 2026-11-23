@@ -295,6 +295,12 @@ func _init() -> void:
 		_partes_pip.append(mi)
 	_pip_cara = {"eyes": eyes.duplicate(), "mouth": mouth, "tongue": tongue, "teeth": teeth.duplicate(), "blush": blush.duplicate()}
 	_armar_capibara()
+	_nombrar()
+	# el modelo editable (data/modelos/pip.json, lo arma el editor de Pip) reemplaza las piezas de arriba
+	if not sin_datos:
+		var d := modelo_guardado()
+		if not d.is_empty():
+			aplicar_modelo(d)
 	_zonas()
 
 ## Zonas que se pueden tocar (el rayo del dedo las encuentra): cabeza, nariz, barriga, orejas, cola, pies y manos.
@@ -899,7 +905,7 @@ func _cola_tubo() -> void:
 		var b1 := (ref - tg * ref.dot(tg)).normalized()
 		ref = b1
 		var b2 := tg.cross(b1)
-		var r := 0.03 + 0.078 * pow(sin(PI * minf(1.0, u * 1.12) * 0.5 + 0.0), 0.7) * (1.0 - 0.35 * u)
+		var r := cola_grosor * 0.03 + cola_grosor * 0.078 * pow(sin(PI * minf(1.0, u * 1.12) * 0.5 + 0.0), 0.7) * (1.0 - 0.35 * u)
 		if u > 0.86:
 			r *= sqrt(maxf(0.0, 1.0 - (u - 0.86) / 0.14))
 		for l in COLA_LADOS:
@@ -909,8 +915,8 @@ func _cola_tubo() -> void:
 			vs.append(cen[k] + dir * rr)
 			ns.append(dir)
 			var c := fur.lerp(fur2, 0.35 + 0.35 * absf(cos(a)))
-			if u > 0.72:
-				c = c.lerp(tip, clampf((u - 0.72) / 0.16, 0.0, 1.0))
+			if u > cola_punta:
+				c = c.lerp(tip, clampf((u - cola_punta) / 0.16, 0.0, 1.0))
 			cs.append(c)
 	for k in COLA_ANILLOS - 1:
 		for l in COLA_LADOS:
@@ -976,6 +982,10 @@ func _armar_capibara() -> void:
 	var bl := pip_mat("#ffffff", Color(0.4, 0.4, 0.4), false)
 	M["capi"] = cafe
 	M["capi2"] = cafe2
+	M["capiOscuro"] = osc
+	M["capiHocico"] = hocico
+	M["capiOjo"] = neg
+	M["capiBlanco"] = bl
 	var L: Array = []
 	L.append(_part(torso, _ball, cafe, Vector3(0, 0.04, -0.02), Vector3(0.175, 0.165, 0.19)))
 	L.append(_part(torso, _ball, cafe2, Vector3(0, 0.03, 0.08), Vector3(0.12, 0.12, 0.1)))
@@ -1011,8 +1021,10 @@ func _armar_capibara() -> void:
 		L.append(b)
 		rub.append(b)
 	# la mandarina en la cabeza
-	capi_mandarina = [_part(head, _ball, pip_mat("#ff9f2e", Color(0.15, 0.06, 0.0), false), Vector3(0, 0.15, 0.0), Vector3(0.05, 0.045, 0.05)),
-		_part(head, _ball, pip_mat("#4cae4c", Color.BLACK, false), Vector3(0.015, 0.2, 0.0), Vector3(0.025, 0.006, 0.014))]
+	M["mandarina"] = pip_mat("#ff9f2e", Color(0.15, 0.06, 0.0), false)
+	M["hoja"] = pip_mat("#4cae4c", Color.BLACK, false)
+	capi_mandarina = [_part(head, _ball, M.mandarina, Vector3(0, 0.15, 0.0), Vector3(0.05, 0.045, 0.05)),
+		_part(head, _ball, M.hoja, Vector3(0.015, 0.2, 0.0), Vector3(0.025, 0.006, 0.014))]
 	L.append_array(capi_mandarina)
 	for a in arms:
 		L.append(_part(a, _ball, osc, Vector3(0, -0.05, 0.01), Vector3(0.034, 0.045, 0.038)))
@@ -1119,3 +1131,211 @@ static func _oreja_malla(k: float, grosor: float, _x: float) -> ArrayMesh:
 		rz.append(maxf(0.0005, grosor * (1.0 - 0.7 * u) + 0.004 * k))
 	_mallas[key] = loft(pts, rx, rz, 16)
 	return _mallas[key]
+
+
+# ================= modelo editable (editor de Pip) =================
+## Los huesos tienen nombre; las piezas (formas, colores, posiciones) pueden venir de data/modelos/pip.json, que
+## arma el editor de Pip. Las animaciones usan los huesos, así que todo lo editado se sigue moviendo igual.
+static var sin_datos := false          ## true al exportar el modelo "de fábrica" (tools/exportar_modelo.gd)
+static var _guardado = null
+var huesos := {}                        ## nombre -> Node3D
+var cola_grosor := 1.0
+var cola_punta := 0.72
+
+static func modelo_guardado() -> Dictionary:
+	if _guardado == null:
+		_guardado = {}
+		var ruta := "res://data/modelos/pip.json"
+		if FileAccess.file_exists(ruta):
+			var d = JSON.parse_string(FileAccess.open(ruta, FileAccess.READ).get_as_text())
+			if d is Dictionary:
+				_guardado = d
+	return _guardado
+
+func _nombrar() -> void:
+	var n := {"cuerpo": body, "torso": torso, "cuello": neck, "cabeza": head, "boca": mouth, "bufanda": scarf,
+		"capi_boca": _capi_cara.mouth}
+	for i in 2:
+		n["ojo_%d" % i] = _pip_cara.eyes[i]
+		n["oreja_%d" % i] = ears[i]
+		n["brazo_%d" % i] = arms[i]
+		n["pierna_%d" % i] = legs[i]
+		n["bufanda_punta_%d" % i] = scarf_tails[i]
+		n["capi_ojo_%d" % i] = _capi_cara.eyes[i]
+	n["cola_raiz"] = tail[0].get_parent()
+	for i in tail.size():
+		n["cola_%d" % i] = tail[i]
+	for k in n:
+		(n[k] as Node3D).name = k
+	huesos = n
+	# papeles especiales de algunas piezas (las animaciones los buscan)
+	for x in teeth:
+		x.set_meta("rol", "diente")
+	for x in blush:
+		x.set_meta("rol", "rubor")
+	tongue.set_meta("rol", "lengua")
+	nose.set_meta("rol", "nariz")
+	for x in _capi_cara.teeth:
+		x.set_meta("rol", "diente")
+	for x in _capi_cara.blush:
+		x.set_meta("rol", "rubor")
+	(_capi_cara.tongue as Node).set_meta("rol", "lengua")
+	for x in capi_mandarina:
+		x.set_meta("rol", "mandarina")
+	for x in capi_orejas:
+		x.set_meta("rol", "oreja")
+	for x in _capi:
+		x.set_meta("capi", true)
+
+func _nombre_malla(m: Mesh) -> String:
+	if m == _ball: return "esfera"
+	if m == _low: return "esfera_baja"
+	if m == _cone: return "cono"
+	if m == _torus: return "toro"
+	if m == _star: return "estrella"
+	for k in _mallas:
+		if _mallas[k] == m:
+			return str(k)
+	return "esfera"
+
+static var _cil: CylinderMesh
+static var _caja: BoxMesh
+
+func _malla(nombre: String) -> Mesh:
+	match nombre:
+		"esfera": return _ball
+		"esfera_baja": return _low
+		"cono": return _cone
+		"toro": return _torus
+		"estrella": return _star
+		"cilindro":
+			if _cil == null:
+				_cil = CylinderMesh.new()
+				_cil.top_radius = 1.0
+				_cil.bottom_radius = 1.0
+				_cil.height = 1.0
+				_cil.radial_segments = 24
+			return _cil
+		"caja":
+			if _caja == null:
+				_caja = BoxMesh.new()
+				_caja.size = Vector3.ONE
+			return _caja
+		"brazo": return _brazo_malla()
+	if nombre.begins_with("oreja"):
+		var p := nombre.substr(5).split("/")
+		return _oreja_malla(float(p[0]), float(p[1]) if p.size() > 1 else 0.016, 0.0)
+	return _ball
+
+static func _v3(a) -> Array:
+	var v: Vector3 = a
+	return [snappedf(v.x, 0.0001), snappedf(v.y, 0.0001), snappedf(v.z, 0.0001)]
+
+static func _hex(c: Color) -> String:
+	return "#" + c.to_html(false)
+
+## El modelo actual como datos (lo que lee el editor).
+func exportar() -> Dictionary:
+	var claves := {}
+	for k in M:
+		claves[M[k]] = k
+	var mats := {}
+	for k in M:
+		var m := M[k] as StandardMaterial3D
+		if k == "cola":
+			continue
+		mats[k] = {"color": _hex(m.albedo_color), "emision": _hex(m.emission) if m.emission_enabled else "",
+			"tipo": "brillo" if m.roughness < 0.5 else ("pelo" if m.rim_enabled else "plano")}
+	var hs := {}
+	for k in huesos:
+		var h := huesos[k] as Node3D
+		var padre := str(h.get_parent().name) if h.get_parent() != self else ""
+		hs[k] = {"padre": padre, "pos": _v3(h.position), "rot": _v3(h.rotation), "esc": _v3(h.scale)}
+	var partes: Array = []
+	var mallas := {}
+	var i := 0
+	for mi in find_children("*", "MeshInstance3D", true, false):
+		var m := mi as MeshInstance3D
+		if m == cola or m.get_parent() is Area3D:
+			continue
+		var forma := _nombre_malla(m.mesh)
+		if forma == "brazo" or forma.begins_with("oreja"):
+			if not mallas.has(forma):
+				var arr := m.mesh.surface_get_arrays(0)
+				var vv: Array = []
+				for v in (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array):
+					vv.append_array(_v3(v))
+				mallas[forma] = {"v": vv, "i": Array(arr[Mesh.ARRAY_INDEX] as PackedInt32Array)}
+		i += 1
+		partes.append({"id": "p%d" % i, "hueso": str(m.get_parent().name), "forma": forma, "mat": str(claves.get(m.material_override, "fur")),
+			"pos": _v3(m.position), "rot": _v3(m.rotation), "esc": _v3(m.scale), "rol": str(m.get_meta("rol", "")),
+			"capi": bool(m.get_meta("capi", false))})
+	return {"version": 1, "materiales": mats, "huesos": hs, "partes": partes, "mallas": mallas,
+		"cola": {"grosor": cola_grosor, "punta": cola_punta}}
+
+## Arma las piezas desde los datos del editor (reemplaza las de fábrica).
+func aplicar_modelo(d: Dictionary) -> void:
+	for k in d.get("materiales", {}):
+		var md: Dictionary = d.materiales[k]
+		var em := Color(str(md.emision)) if str(md.get("emision", "")) != "" else Color.BLACK
+		if not M.has(k):
+			M[k] = gloss_mat(str(md.color)) if md.tipo == "brillo" else pip_mat(str(md.color), em, md.tipo == "pelo")
+		else:
+			var m := M[k] as StandardMaterial3D
+			m.albedo_color = Color(str(md.color))
+			if em != Color.BLACK:
+				m.emission_enabled = true
+				m.emission = em
+	for k in d.get("huesos", {}):
+		if huesos.has(k):
+			var hd: Dictionary = d.huesos[k]
+			(huesos[k] as Node3D).position = Vector3(hd.pos[0], hd.pos[1], hd.pos[2])
+			if k.begins_with("oreja") or k.begins_with("ojo") or k.begins_with("capi_ojo") or k.begins_with("bufanda"):
+				(huesos[k] as Node3D).rotation = Vector3(hd.rot[0], hd.rot[1], hd.rot[2])
+	var c: Dictionary = d.get("cola", {})
+	cola_grosor = float(c.get("grosor", 1.0))
+	cola_punta = float(c.get("punta", 0.72))
+	for mi in _partes_pip + _capi:
+		if is_instance_valid(mi) and mi != cola:
+			(mi as Node).free()
+	_partes_pip = [cola]
+	_capi = []
+	teeth.clear()
+	blush.clear()
+	capi_mandarina.clear()
+	capi_orejas.clear()
+	var cara_p := {"teeth": [], "blush": [], "tongue": null}
+	var cara_c := {"teeth": [], "blush": [], "tongue": null}
+	for pd in d.get("partes", []):
+		var padre: Node3D = huesos.get(str(pd.hueso), torso)
+		var mi := _part(padre, _malla(str(pd.forma)), M.get(str(pd.mat), M.fur), Vector3(pd.pos[0], pd.pos[1], pd.pos[2]),
+			Vector3(pd.esc[0], pd.esc[1], pd.esc[2]))
+		mi.rotation = Vector3(pd.rot[0], pd.rot[1], pd.rot[2])
+		var capi: bool = pd.get("capi", false)
+		var cara: Dictionary = cara_c if capi else cara_p
+		if str(pd.get("rol", "")) != "":
+			mi.set_meta("rol", str(pd.rol))
+		if capi:
+			mi.set_meta("capi", true)
+		match str(pd.get("rol", "")):
+			"diente": cara.teeth.append(mi)
+			"rubor": cara.blush.append(mi)
+			"lengua": cara.tongue = mi
+			"nariz": nose = mi
+			"mandarina": capi_mandarina.append(mi)
+			"oreja": capi_orejas.append(mi)
+		if capi:
+			mi.visible = false
+			_capi.append(mi)
+		else:
+			_partes_pip.append(mi)
+	tongue = cara_p.tongue if cara_p.tongue else MeshInstance3D.new()
+	teeth.assign(cara_p.teeth)
+	blush.assign(cara_p.blush)
+	_pip_cara = {"eyes": _pip_cara.eyes, "mouth": _pip_cara.mouth, "tongue": tongue, "teeth": teeth.duplicate(), "blush": blush.duplicate()}
+	var ct: Array[MeshInstance3D] = []
+	ct.assign(cara_c.teeth)
+	var cb: Array[MeshInstance3D] = []
+	cb.assign(cara_c.blush)
+	_capi_cara = {"eyes": _capi_cara.eyes, "mouth": _capi_cara.mouth, "tongue": cara_c.tongue if cara_c.tongue else MeshInstance3D.new(),
+		"teeth": ct, "blush": cb}

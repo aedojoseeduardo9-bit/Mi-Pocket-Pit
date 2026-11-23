@@ -57,6 +57,10 @@ var tiempo := 0.0
 
 func _ready() -> void:
 	get_viewport().physics_object_picking = false
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--exportar-modelo="):
+			_exportar_modelo(a.substr(18))
+			return
 	# 1) primero la pantalla negra de la intro (el arranque pesado ocurre detrás, sin que se note)
 	var capa_intro := CanvasLayer.new()
 	capa_intro.layer = 50
@@ -714,3 +718,17 @@ func _precalentar() -> void:
 	casa.gotas.emitting = false
 	pelota.visible = false
 	_vitrina.queue_free()
+
+## Exporta el modelo "de fábrica" de Pip y la capibara (para el editor de Pip):
+## godot --headless --path godot -- --exportar-modelo=<archivo.json>
+func _exportar_modelo(ruta: String) -> void:
+	PipModel.sin_datos = not ruta.ends_with("_cargado.json")
+	var m := PipModel.new()
+	for i in m.tail.size():
+		m.tail[i].rotation.x = PipModel.TAIL_BASE[i]
+	var f := FileAccess.open(ruta, FileAccess.WRITE)
+	f.store_string(JSON.stringify(m.exportar()))
+	f.close()
+	print("modelo exportado: ", ruta)
+	m.free()
+	get_tree().quit()

@@ -56,4 +56,13 @@ El dueño habla **español**: responde siempre en español, claro y sin tecnicis
   (137, con forma + colores + animación), decoración (30+ por habitación), pociones, bailes, comida, minijuegos,
   paquetes en pesos chilenos y especiales (pack de bienvenida, capibara para siempre). También escribe `docs/CATALOGO.md`.
 - Revisión de errores: `docs/REVISION.md` (actualizarla en cada versión).
+- **Modelo editable de Pip y la capibara**: `data/modelos/pip.json` (huesos con nombre, piezas con forma/color/posición,
+  colores y cola). `PipModel.aplicar_modelo` lo carga encima del modelo de fábrica del código; los huesos y las
+  animaciones no cambian. `data/modelos/pip_fabrica.json` = el original (exportar de nuevo con
+  `godot --headless --path godot -- --exportar-modelo=<archivo.json>` si se cambia el código de `pip.gd`).
+- **Taller de Pip** (editor 3D del dueño): https://claude.ai/artifact/6rAs93cqTbmmArikNCQ1F3 (copia en
+  `godot/tools/taller_pip.html`). Cuando el dueño diga "usa el modelo del taller": leer con `ArtifactData`
+  `get` colección `modelos`, documento `actual`; su campo `modelo` se escribe tal cual en `data/modelos/pip.json`;
+  correr los ojos, mirar las capturas de Pip y de la capibara, y subir (PR + fusionar). Las versiones con nombre
+  están en la colección `versiones`.
 - Sonidos y música en `godot/audio/` (de Star Nova y Color Flow, del mismo dueño).
