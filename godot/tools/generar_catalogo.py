@@ -351,6 +351,70 @@ comida = [{"id": "bellota", "nombre": "Bellota", "en": "Acorn", "precio": 2, "ll
           {"id": "pastel", "nombre": "Pastel", "en": "Cake", "precio": 18, "llena": 35, "color": "#ffc2d6"},
           {"id": "helado", "nombre": "Helado", "en": "Ice Cream", "precio": 12, "llena": 22, "color": "#bff0e4"}]
 
+# ---------------- regalos por nivel (no se venden: llegan al subir de nivel) ----------------
+# Trajes y accesorios exclusivos (tema espacial), comidas exóticas con efecto, naves para Cohete Avellana,
+# dorsos de cartas para Memoria y nubes para Salto Nova. Del nivel 2 al 25 siempre hay algo nuevo.
+EXCLUSIVAS = [  # forma, zona, es, en, nivel, colores, anim
+    ("alien", "traje", "Traje de alien", "Alien Suit", 4, ["#7be08a", "#2b2633", "#c3f7ff"], "balancear"),
+    ("casco_ovni", "cabeza", "Gorro ovni", "UFO Hat", 7, ["#cfd6e2", "#7fd8ff", "#ff8fe0"], "flotar"),
+    ("astronauta_nova", "traje", "Astronauta Nova", "Nova Astronaut", 10, ["#6c4ad6", "#ffcf4a", "#7fd8ff"], "brillar"),
+    ("visor_nebulosa", "ojos", "Visor nebulosa", "Nebula Visor", 12, ["#2b2633", "#ff8fe0", "#7fd8ff"], "parpadear"),
+    ("anillo_planetas", "cabeza", "Anillo de planetas", "Planet Ring", 15, ["#ffcf4a", "#ff8f6b", "#7fc8ff"], "girar"),
+    ("alas_cometa", "espalda", "Alas de cometa", "Comet Wings", 18, ["#7fd8ff", "#ffffff", "#c3a6ff"], "llama"),
+    ("capa_galaxia", "cuerpo", "Capa galaxia", "Galaxy Cape", 20, ["#241a5c", "#ff8fe0", "#7fd8ff"], "ondear"),
+    ("dragon_estelar", "traje", "Dragón estelar", "Star Dragon", 23, ["#3a2a8c", "#7fd8ff", "#ffcf4a"], "aletear"),
+    ("corona_sol", "cabeza", "Corona del sol", "Sun Crown", 25, ["#ffcf4a", "#ff8f3a", "#fff3c4"], "girar"),
+]
+for fo, zo, es, en, nv, cs, an in EXCLUSIVAS:
+    ropa.append({"id": fo, "forma": fo, "zona": zo, "nombre": es, "en": en, "precio": 0, "nivel": nv, "c": cs,
+                 "anim": an, "regalo": True})
+
+COMIDA_EXOTICA = [  # id, es, en, nivel, precio, llena, color, efecto
+    ("fruta_estelar", "Fruta estelar", "Star Fruit", 3, 30, 20, "#ffcf4a", "brillo"),
+    ("chile_fuego", "Chile de fuego", "Fire Pepper", 6, 30, 16, "#ff4d3a", "fuego"),
+    ("helado_cosmico", "Helado cósmico", "Cosmic Ice Cream", 10, 35, 24, "#7fd8ff", "frio"),
+    ("hongo_gigante", "Hongo gigante", "Giant Mushroom", 13, 40, 30, "#e2574c", "gigante"),
+    ("gelatina_fantasma", "Gelatina fantasma", "Ghost Jelly", 17, 40, 22, "#c3f7ff", "fantasma"),
+    ("algodon_arcoiris", "Algodón arcoíris", "Rainbow Candy Floss", 21, 45, 22, "#ff8fe0", "arcoiris"),
+    ("caramelo_mini", "Caramelo mini", "Tiny Candy", 25, 45, 18, "#b49cff", "mini"),
+]
+comida_exotica = [{"id": i, "nombre": es, "en": en, "nivel": nv, "precio": pr, "llena": ll, "color": co, "efecto": ef,
+                   "regalo": True} for i, es, en, nv, pr, ll, co, ef in COMIDA_EXOTICA]
+
+naves = [  # Cohete Avellana
+    {"id": "avellana", "nombre": "Cohete Avellana", "en": "Hazel Rocket", "nivel": 1},
+    {"id": "platillo", "nombre": "Platillo volador", "en": "Flying Saucer", "nivel": 5},
+    {"id": "dorado", "nombre": "Cohete dorado", "en": "Golden Rocket", "nivel": 9},
+    {"id": "ovni_alien", "nombre": "Nave alien", "en": "Alien Ship", "nivel": 14},
+    {"id": "cristal", "nombre": "Nave de cristal", "en": "Crystal Ship", "nivel": 19},
+    {"id": "estrella_nova", "nombre": "Estrella Nova", "en": "Nova Star", "nivel": 24},
+]
+cartas = [  # dorso de las cartas de Memoria
+    {"id": "bellota", "nombre": "Cartas bellota", "en": "Acorn Cards", "nivel": 1},
+    {"id": "estrellas", "nombre": "Cartas estrelladas", "en": "Starry Cards", "nivel": 2},
+    {"id": "galaxia", "nombre": "Cartas galaxia", "en": "Galaxy Cards", "nivel": 8},
+    {"id": "dulces", "nombre": "Cartas de dulce", "en": "Candy Cards", "nivel": 16},
+    {"id": "neon", "nombre": "Cartas neón", "en": "Neon Cards", "nivel": 22},
+]
+nubes = [  # plataformas de Salto Nova
+    {"id": "algodon", "nombre": "Nubes de algodón", "en": "Cotton Clouds", "nivel": 1},
+    {"id": "arcoiris", "nombre": "Nubes arcoíris", "en": "Rainbow Clouds", "nivel": 11},
+    {"id": "planetas", "nombre": "Planetas", "en": "Planets", "nivel": 20},
+]
+
+# recompensas[nivel] = lista de {tipo, id}
+recompensas = {}
+for r in ropa:
+    if r.get("regalo"):
+        recompensas.setdefault(str(r["nivel"]), []).append({"tipo": "ropa", "id": r["id"]})
+for c in comida_exotica:
+    recompensas.setdefault(str(c["nivel"]), []).append({"tipo": "comida", "id": c["id"]})
+for tipo, lista in (("nave", naves), ("cartas", cartas), ("nubes", nubes)):
+    for x in lista:
+        if x["nivel"] > 1:
+            recompensas.setdefault(str(x["nivel"]), []).append({"tipo": tipo, "id": x["id"]})
+assert all(str(n) in recompensas for n in range(2, 26)), sorted(set(range(2, 26)) - set(int(k) for k in recompensas))
+
 juegos = [{"id": "salto", "nombre": "Salto Nova", "en": "Nova Jump", "icono": "salto"},
           {"id": "lluvia", "nombre": "Lluvia de bellotas", "en": "Acorn Rain", "icono": "bellota"},
           {"id": "memoria", "nombre": "Memoria", "en": "Memory", "icono": "memoria"},
@@ -384,7 +448,8 @@ for h, slots in deco.items():
 
 cat = {"_nota": "GENERADO por godot/tools/generar_catalogo.py — no editar a mano.",
        "ropa": ropa, "pociones": pociones, "bailes": bailes, "comida": comida, "deco": deco, "juegos": juegos,
-       "paquetes": paquetes, "especiales": especiales, "regalo_diario": [20, 30, 40, 50, 60, 80, 150],
+       "paquetes": paquetes, "especiales": especiales, "comida_exotica": comida_exotica, "naves": naves,
+       "cartas": cartas, "nubes": nubes, "recompensas": recompensas, "nivel_compra": {"base": 1200, "por_nivel": 300}, "regalo_diario": [20, 30, 40, 50, 60, 80, 150],
        "bellotas_gratis": {"max": 5, "minutos": 30}}
 
 with open(os.path.join(RAIZ, "data", "catalogo.json"), "w", encoding="utf-8") as f:
@@ -412,6 +477,14 @@ L.append(f"\n## Pociones ({len(pociones)})")
 for p in pociones:
     L.append(f"- [x] {p['nombre']} — {p['precio']} bellotas, {p['segundos']} s")
 L.append("- [x] Capibara para siempre — $1.499 (compra con dinero real; en la versión de prueba es gratis)")
+L.append("\n## Regalos por nivel (no se venden)")
+for n in range(2, 26):
+    nom = []
+    for x in recompensas[str(n)]:
+        src = {"ropa": ropa, "comida": comida_exotica, "nave": naves, "cartas": cartas, "nubes": nubes}[x["tipo"]]
+        nom.append(next(y["nombre"] for y in src if y["id"] == x["id"]))
+    L.append(f"- [x] Nivel {n}: " + ", ".join(nom))
+L.append("\nSubir de nivel pagando: 1.200 bellotas + 300 por cada nivel (nivel 10 → 11: 3.900).")
 L.append(f"\n## Minijuegos ({len(juegos)})")
 for j in juegos:
     L.append(f"- [x] {j['nombre']}")

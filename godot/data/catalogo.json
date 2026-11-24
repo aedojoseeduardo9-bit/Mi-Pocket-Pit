@@ -2003,6 +2003,150 @@
     "#f6f2ee"
    ],
    "anim": ""
+  },
+  {
+   "id": "alien",
+   "forma": "alien",
+   "zona": "traje",
+   "nombre": "Traje de alien",
+   "en": "Alien Suit",
+   "precio": 0,
+   "nivel": 4,
+   "c": [
+    "#7be08a",
+    "#2b2633",
+    "#c3f7ff"
+   ],
+   "anim": "balancear",
+   "regalo": true
+  },
+  {
+   "id": "casco_ovni",
+   "forma": "casco_ovni",
+   "zona": "cabeza",
+   "nombre": "Gorro ovni",
+   "en": "UFO Hat",
+   "precio": 0,
+   "nivel": 7,
+   "c": [
+    "#cfd6e2",
+    "#7fd8ff",
+    "#ff8fe0"
+   ],
+   "anim": "flotar",
+   "regalo": true
+  },
+  {
+   "id": "astronauta_nova",
+   "forma": "astronauta_nova",
+   "zona": "traje",
+   "nombre": "Astronauta Nova",
+   "en": "Nova Astronaut",
+   "precio": 0,
+   "nivel": 10,
+   "c": [
+    "#6c4ad6",
+    "#ffcf4a",
+    "#7fd8ff"
+   ],
+   "anim": "brillar",
+   "regalo": true
+  },
+  {
+   "id": "visor_nebulosa",
+   "forma": "visor_nebulosa",
+   "zona": "ojos",
+   "nombre": "Visor nebulosa",
+   "en": "Nebula Visor",
+   "precio": 0,
+   "nivel": 12,
+   "c": [
+    "#2b2633",
+    "#ff8fe0",
+    "#7fd8ff"
+   ],
+   "anim": "parpadear",
+   "regalo": true
+  },
+  {
+   "id": "anillo_planetas",
+   "forma": "anillo_planetas",
+   "zona": "cabeza",
+   "nombre": "Anillo de planetas",
+   "en": "Planet Ring",
+   "precio": 0,
+   "nivel": 15,
+   "c": [
+    "#ffcf4a",
+    "#ff8f6b",
+    "#7fc8ff"
+   ],
+   "anim": "girar",
+   "regalo": true
+  },
+  {
+   "id": "alas_cometa",
+   "forma": "alas_cometa",
+   "zona": "espalda",
+   "nombre": "Alas de cometa",
+   "en": "Comet Wings",
+   "precio": 0,
+   "nivel": 18,
+   "c": [
+    "#7fd8ff",
+    "#ffffff",
+    "#c3a6ff"
+   ],
+   "anim": "llama",
+   "regalo": true
+  },
+  {
+   "id": "capa_galaxia",
+   "forma": "capa_galaxia",
+   "zona": "cuerpo",
+   "nombre": "Capa galaxia",
+   "en": "Galaxy Cape",
+   "precio": 0,
+   "nivel": 20,
+   "c": [
+    "#241a5c",
+    "#ff8fe0",
+    "#7fd8ff"
+   ],
+   "anim": "ondear",
+   "regalo": true
+  },
+  {
+   "id": "dragon_estelar",
+   "forma": "dragon_estelar",
+   "zona": "traje",
+   "nombre": "Dragón estelar",
+   "en": "Star Dragon",
+   "precio": 0,
+   "nivel": 23,
+   "c": [
+    "#3a2a8c",
+    "#7fd8ff",
+    "#ffcf4a"
+   ],
+   "anim": "aletear",
+   "regalo": true
+  },
+  {
+   "id": "corona_sol",
+   "forma": "corona_sol",
+   "zona": "cabeza",
+   "nombre": "Corona del sol",
+   "en": "Sun Crown",
+   "precio": 0,
+   "nivel": 25,
+   "c": [
+    "#ffcf4a",
+    "#ff8f3a",
+    "#fff3c4"
+   ],
+   "anim": "girar",
+   "regalo": true
   }
  ],
  "pociones": [
@@ -3769,6 +3913,337 @@
    "una_vez": true
   }
  ],
+ "comida_exotica": [
+  {
+   "id": "fruta_estelar",
+   "nombre": "Fruta estelar",
+   "en": "Star Fruit",
+   "nivel": 3,
+   "precio": 30,
+   "llena": 20,
+   "color": "#ffcf4a",
+   "efecto": "brillo",
+   "regalo": true
+  },
+  {
+   "id": "chile_fuego",
+   "nombre": "Chile de fuego",
+   "en": "Fire Pepper",
+   "nivel": 6,
+   "precio": 30,
+   "llena": 16,
+   "color": "#ff4d3a",
+   "efecto": "fuego",
+   "regalo": true
+  },
+  {
+   "id": "helado_cosmico",
+   "nombre": "Helado cósmico",
+   "en": "Cosmic Ice Cream",
+   "nivel": 10,
+   "precio": 35,
+   "llena": 24,
+   "color": "#7fd8ff",
+   "efecto": "frio",
+   "regalo": true
+  },
+  {
+   "id": "hongo_gigante",
+   "nombre": "Hongo gigante",
+   "en": "Giant Mushroom",
+   "nivel": 13,
+   "precio": 40,
+   "llena": 30,
+   "color": "#e2574c",
+   "efecto": "gigante",
+   "regalo": true
+  },
+  {
+   "id": "gelatina_fantasma",
+   "nombre": "Gelatina fantasma",
+   "en": "Ghost Jelly",
+   "nivel": 17,
+   "precio": 40,
+   "llena": 22,
+   "color": "#c3f7ff",
+   "efecto": "fantasma",
+   "regalo": true
+  },
+  {
+   "id": "algodon_arcoiris",
+   "nombre": "Algodón arcoíris",
+   "en": "Rainbow Candy Floss",
+   "nivel": 21,
+   "precio": 45,
+   "llena": 22,
+   "color": "#ff8fe0",
+   "efecto": "arcoiris",
+   "regalo": true
+  },
+  {
+   "id": "caramelo_mini",
+   "nombre": "Caramelo mini",
+   "en": "Tiny Candy",
+   "nivel": 25,
+   "precio": 45,
+   "llena": 18,
+   "color": "#b49cff",
+   "efecto": "mini",
+   "regalo": true
+  }
+ ],
+ "naves": [
+  {
+   "id": "avellana",
+   "nombre": "Cohete Avellana",
+   "en": "Hazel Rocket",
+   "nivel": 1
+  },
+  {
+   "id": "platillo",
+   "nombre": "Platillo volador",
+   "en": "Flying Saucer",
+   "nivel": 5
+  },
+  {
+   "id": "dorado",
+   "nombre": "Cohete dorado",
+   "en": "Golden Rocket",
+   "nivel": 9
+  },
+  {
+   "id": "ovni_alien",
+   "nombre": "Nave alien",
+   "en": "Alien Ship",
+   "nivel": 14
+  },
+  {
+   "id": "cristal",
+   "nombre": "Nave de cristal",
+   "en": "Crystal Ship",
+   "nivel": 19
+  },
+  {
+   "id": "estrella_nova",
+   "nombre": "Estrella Nova",
+   "en": "Nova Star",
+   "nivel": 24
+  }
+ ],
+ "cartas": [
+  {
+   "id": "bellota",
+   "nombre": "Cartas bellota",
+   "en": "Acorn Cards",
+   "nivel": 1
+  },
+  {
+   "id": "estrellas",
+   "nombre": "Cartas estrelladas",
+   "en": "Starry Cards",
+   "nivel": 2
+  },
+  {
+   "id": "galaxia",
+   "nombre": "Cartas galaxia",
+   "en": "Galaxy Cards",
+   "nivel": 8
+  },
+  {
+   "id": "dulces",
+   "nombre": "Cartas de dulce",
+   "en": "Candy Cards",
+   "nivel": 16
+  },
+  {
+   "id": "neon",
+   "nombre": "Cartas neón",
+   "en": "Neon Cards",
+   "nivel": 22
+  }
+ ],
+ "nubes": [
+  {
+   "id": "algodon",
+   "nombre": "Nubes de algodón",
+   "en": "Cotton Clouds",
+   "nivel": 1
+  },
+  {
+   "id": "arcoiris",
+   "nombre": "Nubes arcoíris",
+   "en": "Rainbow Clouds",
+   "nivel": 11
+  },
+  {
+   "id": "planetas",
+   "nombre": "Planetas",
+   "en": "Planets",
+   "nivel": 20
+  }
+ ],
+ "recompensas": {
+  "4": [
+   {
+    "tipo": "ropa",
+    "id": "alien"
+   }
+  ],
+  "7": [
+   {
+    "tipo": "ropa",
+    "id": "casco_ovni"
+   }
+  ],
+  "10": [
+   {
+    "tipo": "ropa",
+    "id": "astronauta_nova"
+   },
+   {
+    "tipo": "comida",
+    "id": "helado_cosmico"
+   }
+  ],
+  "12": [
+   {
+    "tipo": "ropa",
+    "id": "visor_nebulosa"
+   }
+  ],
+  "15": [
+   {
+    "tipo": "ropa",
+    "id": "anillo_planetas"
+   }
+  ],
+  "18": [
+   {
+    "tipo": "ropa",
+    "id": "alas_cometa"
+   }
+  ],
+  "20": [
+   {
+    "tipo": "ropa",
+    "id": "capa_galaxia"
+   },
+   {
+    "tipo": "nubes",
+    "id": "planetas"
+   }
+  ],
+  "23": [
+   {
+    "tipo": "ropa",
+    "id": "dragon_estelar"
+   }
+  ],
+  "25": [
+   {
+    "tipo": "ropa",
+    "id": "corona_sol"
+   },
+   {
+    "tipo": "comida",
+    "id": "caramelo_mini"
+   }
+  ],
+  "3": [
+   {
+    "tipo": "comida",
+    "id": "fruta_estelar"
+   }
+  ],
+  "6": [
+   {
+    "tipo": "comida",
+    "id": "chile_fuego"
+   }
+  ],
+  "13": [
+   {
+    "tipo": "comida",
+    "id": "hongo_gigante"
+   }
+  ],
+  "17": [
+   {
+    "tipo": "comida",
+    "id": "gelatina_fantasma"
+   }
+  ],
+  "21": [
+   {
+    "tipo": "comida",
+    "id": "algodon_arcoiris"
+   }
+  ],
+  "5": [
+   {
+    "tipo": "nave",
+    "id": "platillo"
+   }
+  ],
+  "9": [
+   {
+    "tipo": "nave",
+    "id": "dorado"
+   }
+  ],
+  "14": [
+   {
+    "tipo": "nave",
+    "id": "ovni_alien"
+   }
+  ],
+  "19": [
+   {
+    "tipo": "nave",
+    "id": "cristal"
+   }
+  ],
+  "24": [
+   {
+    "tipo": "nave",
+    "id": "estrella_nova"
+   }
+  ],
+  "2": [
+   {
+    "tipo": "cartas",
+    "id": "estrellas"
+   }
+  ],
+  "8": [
+   {
+    "tipo": "cartas",
+    "id": "galaxia"
+   }
+  ],
+  "16": [
+   {
+    "tipo": "cartas",
+    "id": "dulces"
+   }
+  ],
+  "22": [
+   {
+    "tipo": "cartas",
+    "id": "neon"
+   }
+  ],
+  "11": [
+   {
+    "tipo": "nubes",
+    "id": "arcoiris"
+   }
+  ]
+ },
+ "nivel_compra": {
+  "base": 1200,
+  "por_nivel": 300
+ },
  "regalo_diario": [
   20,
   30,

@@ -116,6 +116,7 @@ func _dibujar_dock() -> void:
 # ---------------- barra de arriba ----------------
 func _process(dt: float) -> void:
 	_pulso += dt
+	_revisar_niveles()
 	var cambio := false
 	var b := float(Estado.bellotas())
 	if absf(_bel_vista - b) > 0.5:
@@ -207,6 +208,11 @@ func _input(e: InputEvent) -> void:
 		return
 	if hoja_tipo != "":
 		return
+	if p.distance_to(Vector2(70, m_top + 44)) < 50:
+		Sfx.play("select", 1.0, -4.0)
+		abrir_subir_nivel()
+		get_viewport().set_input_as_handled()
+		return
 	var x0 := 160.0
 	var paso := (W - 160.0 - 230.0) / 4.0
 	for i in 4:
@@ -292,7 +298,11 @@ func cambio_habitacion() -> void:
 			fila.add_theme_constant_override("separation", 12)
 			sc.add_child(fila)
 			for c in Estado.cat.comida:
+				if int(c.get("nivel", 1)) > Estado.nivel():
+					continue
 				var t := UI.Tarjeta.new(Vector2(130, 172))
+				if c.get("regalo", false):
+					t.animada = true
 				t.icono = "comida_" + c.id
 				t.nombre = Estado.nombre(c)
 				t.color = Color(str(c.color)).lightened(0.55)
@@ -590,13 +600,17 @@ func _armar_tarjetas() -> void:
 				t.precio = int(r.precio)
 				t.color = Color("#fff1e0")
 				t.animada = str(r.get("anim", "")) != ""
-				var tiene := Estado.tiene(r.id) or int(r.precio) == 0
+				var regalo := Estado.es_regalo(r)
+				var tiene := Estado.tiene(r.id) or (int(r.precio) == 0 and (not regalo or Estado.nivel() >= int(r.nivel)))
+				if regalo:
+					t.cinta = "Regalo"
 				if str(_prueba_ropa.get(zona, "")) == r.id:
 					t.estado = "puesto"
 				elif tiene:
 					t.estado = "tiene"
 				elif Estado.nivel() < int(r.nivel):
 					t.estado = "bloqueado"
+					t.etiqueta = L.f("Nivel %d", [int(r.nivel)])
 				var id: String = r.id
 				t.elegida.connect(func(): _probar_ropa(zona, id))
 		"decorar":
@@ -762,7 +776,8 @@ func _probar_ropa(zona: String, id: String) -> void:
 	_hoja_sel = id
 	Atuendos.vestir(main.pip, _prueba_ropa)
 	main.pip.hacer("celebrar" if id != "" else "mirar_cola")
-	if id == "" or Estado.tiene(id) or int(Estado.ropa_por_id.get(id, {}).get("precio", 1)) == 0:
+	var r: Dictionary = Estado.ropa_por_id.get(id, {})
+	if id == "" or Estado.tiene(id) or (int(r.get("precio", 1)) == 0 and Estado.nivel() >= int(r.get("nivel", 1))):
 		Estado.poner(zona, id)
 	_armar_tarjetas()
 
@@ -784,11 +799,12 @@ func _armar_pie() -> void:
 		"armario":
 			var zona: String = ZONAS[_hoja_tab]
 			var id := str(_prueba_ropa.get(zona, ""))
-			if id != "" and not Estado.tiene(id) and Estado.ropa_por_id.has(id) and int(Estado.ropa_por_id[id].precio) > 0:
+			if id != "" and not Estado.tiene(id) and Estado.ropa_por_id.has(id) and (int(Estado.ropa_por_id[id].precio) > 0 or Estado.nivel() < int(Estado.ropa_por_id[id].nivel)):
 				var r: Dictionary = Estado.ropa_por_id[id]
 				if Estado.nivel() < int(r.nivel):
-					b = UI.Boton.new("candado", L.f("Desde el nivel %d", [int(r.nivel)]), Color("#d9cfc6"), Vector2(380, 84))
-					b.activo = false
+					var txt := L.f("Regalo del nivel %d", [int(r.nivel)]) if Estado.es_regalo(r) else L.f("Desde el nivel %d", [int(r.nivel)])
+					b = UI.Boton.new("candado", txt, Color("#d9cfc6"), Vector2(400, 84))
+					b.presionado.connect(abrir_subir_nivel)
 				else:
 					b = _boton_comprar(int(r.precio), func():
 						if pagar(int(r.precio)):
@@ -972,6 +988,131 @@ func abrir_regalo() -> void:
 		cerrar_modal()
 		refrescar())
 	card.add_child(b)
+
+## ¡Subiste de nivel! Muestra los regalos (traje, comida exótica, nave, cartas, nubes).
+var mostrar_niveles := true
+var _niveles_pend: Array = []
+
+func avisar_nivel(n: int) -> void:
+	if mostrar_niveles and Estado.regalos_de(n).size() > 0:
+		_niveles_pend.append(n)
+
+## Se llama cada cuadro: abre la ventana cuando no hay nada más abierto.
+func _revisar_niveles() -> void:
+	if _niveles_pend.is_empty() or modal != null or juego != null or hoja != null or main.modo != "juego":
+		return
+	abrir_regalo_nivel(int(_niveles_pend.pop_front()))
+
+func abrir_regalo_nivel(n: int) -> void:
+	var regalos := Estado.regalos_de(n)
+	var card := _abrir_modal(340 + 190 * regalos.size())
+	Sfx.play("level")
+	card.draw.connect(func():
+		var cx := card.size.x * 0.5
+		UI.caja(card, Rect2(Vector2.ZERO, card.size), UI.CREMA, 40)
+		card.draw_colored_polygon(UI.estrella_pts(Vector2(cx, 70), 54, 0.0), UI.ORO)
+		UI.texto(card, Vector2(cx, 74), str(n), 36, UI.CAFE, 700)
+		UI.texto(card, Vector2(cx, 152), L.f("¡Nivel %d!", [n]), 40, UI.CAFE, 700)
+		UI.texto(card, Vector2(cx, 194), "Pip recibió un regalo especial", 22, UI.CAFE2, 500)
+		for i in regalos.size():
+			var x: Dictionary = regalos[i]
+			var r := Rect2(Vector2(30, 226 + i * 190), Vector2(card.size.x - 60, 170))
+			UI.caja(card, r, Color.WHITE, 26, true, false)
+			var ic := Rect2(r.position + Vector2(14, 14), Vector2(142, 142))
+			UI._sb(card, ic, Color("#fff1e0"), 22)
+			dibujar_regalo(card, x, ic)
+			var nom := ""
+			var que := ""
+			match str(x.tipo):
+				"ropa":
+					nom = Estado.nombre(Estado.ropa_por_id[x.id])
+					que = "Traje exclusivo · en el Armario"
+				"comida":
+					nom = Estado.nombre(Estado.busca(Estado.cat.comida, x.id))
+					que = "Comida exótica x3 · en la Cocina"
+				"nave":
+					nom = Estado.nombre(Estado.busca(Estado.cat.naves, x.id))
+					que = "Nave para Cohete Avellana"
+				"cartas":
+					nom = Estado.nombre(Estado.busca(Estado.cat.cartas, x.id))
+					que = "Diseño de cartas para Memoria"
+				"nubes":
+					nom = Estado.nombre(Estado.busca(Estado.cat.nubes, x.id))
+					que = "Plataformas para Salto Nova"
+			UI.texto(card, Vector2(r.position.x + 176, r.position.y + 62), nom, 28, UI.CAFE, 700, false)
+			UI.texto(card, Vector2(r.position.x + 176, r.position.y + 106), que, 20, UI.CAFE2, 500, false))
+	var b := UI.Boton.new("check", "¡Genial!", UI.MENTA, Vector2(280, 86))
+	b.color_icono = Color.WHITE
+	b.tam_texto = 26
+	b.position = Vector2(card.size.x * 0.5 - 140, card.size.y - 104)
+	b.presionado.connect(func():
+		cerrar_modal()
+		cambio_habitacion())
+	card.add_child(b)
+	main.pip.hacer("celebrar")
+	main.fx.emitir("estrella", card.get_global_rect().get_center() + Vector2(0, -card.size.y * 0.4), 8)
+
+## Miniatura de un regalo (prenda, comida, nave, cartas o nubes).
+func dibujar_regalo(ci: CanvasItem, x: Dictionary, r: Rect2) -> void:
+	var c := r.get_center()
+	var s := minf(r.size.x, r.size.y) * 0.8
+	match str(x.tipo):
+		"ropa":
+			var def: Dictionary = Estado.ropa_por_id[x.id]
+			UI.icono_ropa(ci, str(def.forma), c, s, def.c)
+		"comida":
+			UI.icono_comida(ci, str(x.id), c, s)
+		"nave":
+			Minijuego.dibujar_nave(ci, str(x.id), c, s / 150.0, 0.0, 0.0)
+		"cartas":
+			Minijuego.dibujar_dorso(ci, str(x.id), Rect2(c - Vector2(s * 0.36, s * 0.46), Vector2(s * 0.72, s * 0.92)), 0.0)
+		"nubes":
+			Minijuego.dibujar_nube(ci, str(x.id), c + Vector2(0, s * 0.1), s / 140.0, 0.0)
+
+## Subir de nivel pagando con bellotas (precio alto). Se abre tocando el círculo del nivel o una prenda con candado.
+func abrir_subir_nivel() -> void:
+	var card := _abrir_modal(620)
+	var n := Estado.nivel()
+	var costo := Estado.costo_subir_nivel()
+	var falta := Estado.xp_para(n) - int(Estado.d.xp)
+	var nuevas := Estado.novedades_nivel(n + 1)
+	card.draw.connect(func():
+		var cx := card.size.x * 0.5
+		UI.caja(card, Rect2(Vector2.ZERO, card.size), UI.CREMA, 40)
+		UI.texto(card, Vector2(cx, 62), "Subir de nivel", 40, UI.CAFE, 700)
+		for k in 2:
+			var c := Vector2(cx + (k * 2 - 1) * 130, 200)
+			card.draw_circle(c + Vector2(0, 4), 70, UI.SOMBRA)
+			card.draw_circle(c, 70, UI.ORO if k == 1 else Color.WHITE)
+			UI.texto(card, c + Vector2(0, -8), str(n + k), 52, UI.CAFE, 700)
+			UI.texto(card, c + Vector2(0, 34), "nivel", 20, UI.CAFE2, 500)
+		UI.icono(card, "flecha_der", Vector2(cx, 200), 56, UI.NARANJO)
+		UI.texto(card, Vector2(cx, 322), L.f("Te faltan %d de experiencia", [falta]), 24, UI.CAFE2, 500)
+		if nuevas > 0:
+			UI.texto(card, Vector2(cx, 362), L.f("Desbloqueas %d prendas nuevas", [nuevas]), 26, UI.CAFE, 700)
+		UI.texto(card, Vector2(cx, 404), "Jugando también subes, sin gastar", 22, UI.CAFE2, 500))
+	var no := UI.Boton.new("", "Ahora no", Color.WHITE, Vector2(200, 84))
+	no.color_icono = UI.CAFE2
+	no.tam_texto = 24
+	no.position = Vector2(card.size.x * 0.5 - 236, card.size.y - 116)
+	no.presionado.connect(cerrar_modal)
+	var si := UI.Boton.new("bellota", L.f("Subir  %d", [costo]), UI.NARANJO, Vector2(280, 84))
+	si.color_icono = Color.WHITE
+	si.tam_texto = 26
+	si.sonido = ""
+	si.position = Vector2(card.size.x * 0.5 - 24, card.size.y - 116)
+	si.presionado.connect(func():
+		if Estado.bellotas() < costo:
+			sin_bellotas(costo - Estado.bellotas())
+			return
+		cerrar_modal()
+		if Estado.comprar_nivel():
+			_celebrar_compra()
+			refrescar()
+			if hoja != null:
+				_armar_tarjetas())
+	card.add_child(no)
+	card.add_child(si)
 
 ## La capibara: 3 minutos por bellotas (poción) o para siempre (compra con dinero real).
 func abrir_capibara() -> void:

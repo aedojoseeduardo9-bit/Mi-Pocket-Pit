@@ -46,8 +46,8 @@ func _init() -> void:
 	_torus = TorusMesh.new()
 	_torus.inner_radius = 0.75
 	_torus.outer_radius = 1.0
-	_torus.rings = 36
-	_torus.ring_segments = 12
+	_torus.rings = 56
+	_torus.ring_segments = 22
 
 func construir() -> void:
 	for i in HABS.size():
@@ -782,7 +782,10 @@ func _habitacion_cama(n: Node3D, p: Dictionary) -> void:
 			cama_alto = 0.42
 			_mi(n, _torus, mat("#a8743f"), q + Vector3(0, 0.25, 0), Vector3(0.75, 0.9, 0.6))
 			_mi(n, _torus, mat("#8d5d32"), q + Vector3(0, 0.38, 0), Vector3(0.7, 0.6, 0.55), Vector3(0, 0.4, 0))
-			_cil(n, q + Vector3(0, 0.2, 0), 0.6, 0.3, "#8d5d32")
+			# base del nido: no recibe sombras (a ras de suelo la sombra del aro salía en rayitas)
+			var bm: StandardMaterial3D = mat("#8d5d32").duplicate()
+			bm.disable_receive_shadows = true
+			_mi(n, _cyl, bm, q + Vector3(0, 0.13, 0), Vector3(0.64, 0.24, 0.5))
 			_bola(n, q + Vector3(0, 0.36, 0), Vector3(0.58, 0.1, 0.46), "#ffe3b8")
 			_bola(n, q + Vector3(-0.35, 0.46, -0.1), Vector3(0.2, 0.1, 0.16), "#fff5e6")
 

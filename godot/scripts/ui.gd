@@ -409,6 +409,59 @@ static func icono_ropa(ci: CanvasItem, forma: String, c: Vector2, s: float, cs: 
 			_sb(ci, Rect2(c + Vector2(-22, 4) * u, Vector2(44, 26) * u), c1, 10 * u)
 			if forma == "jetpack":
 				_poly(ci, [c + Vector2(-14, 40) * u, c + Vector2(0, 58) * u, c + Vector2(14, 40) * u], Color("#ffb347"))
+		# ---- exclusivas de nivel ----
+		"alien":
+			ci.draw_circle(c + Vector2(0, 26) * u, 30 * u, c0)
+			ci.draw_circle(c + Vector2(0, -12) * u, 32 * u, c0)
+			ci.draw_circle(c + Vector2(0, -8) * u, 20 * u, Color("#cf7a3e"))
+			for k in 3:
+				var q := c + Vector2((k - 1) * 22, -54 + absf(k - 1) * 8) * u
+				ci.draw_line(c + Vector2((k - 1) * 10, -38) * u, q, c0.darkened(0.2), 4 * u)
+				ci.draw_circle(q, 10 * u, Color.WHITE)
+				ci.draw_circle(q, 5 * u, c1)
+		"astronauta_nova", "dragon_estelar":
+			ci.draw_circle(c + Vector2(0, 26) * u, 30 * u, c0)
+			ci.draw_circle(c + Vector2(0, -12) * u, 32 * u, c0)
+			ci.draw_circle(c + Vector2(0, -10) * u, 20 * u, Color("#cf7a3e"))
+			if forma == "astronauta_nova":
+				ci.draw_arc(c + Vector2(0, -12) * u, 36 * u, 0, TAU, 32, c2, 5 * u, true)
+				ci.draw_colored_polygon(estrella_pts(c + Vector2(0, 26) * u, 14 * u), c1)
+			else:
+				for k in 4:
+					_poly(ci, [c + Vector2(-30 + k * 20, -40) * u, c + Vector2(-20 + k * 20, -62) * u, c + Vector2(-10 + k * 20, -40) * u], c1)
+				for sx in [-1.0, 1.0]:
+					_poly(ci, [c + Vector2(sx * 26, 16) * u, c + Vector2(sx * 54, -6) * u, c + Vector2(sx * 46, 30) * u], c1)
+		"casco_ovni":
+			_poly(ci, [c + Vector2(-26, 30) * u, c + Vector2(26, 30) * u, c + Vector2(44, 54) * u, c + Vector2(-44, 54) * u], Color(c1, 0.35))
+			_sb(ci, Rect2(c + Vector2(-48, 4) * u, Vector2(96, 26) * u), c0, 13 * u)
+			ci.draw_circle(c + Vector2(0, 2) * u, 22 * u, Color(c1, 0.8))
+			for k in 4:
+				ci.draw_circle(c + Vector2(-30 + k * 20, 18) * u, 5 * u, c2)
+		"anillo_planetas":
+			ci.draw_arc(c, 38 * u, 0, TAU, 32, Color(c0, 0.6), 4 * u, true)
+			var pc := [c0, c1, c2, Color("#7be08a")]
+			for k in 4:
+				var a := TAU * k / 4.0 + 0.4
+				ci.draw_circle(c + Vector2(cos(a) * 38, sin(a) * 18) * u, (9 + k * 2) * u, pc[k])
+		"corona_sol":
+			for k in 12:
+				var a := TAU * k / 12.0
+				_poly(ci, [c + Vector2(cos(a - 0.15), sin(a - 0.15)) * 26 * u, c + Vector2(cos(a), sin(a)) * 50 * u, c + Vector2(cos(a + 0.15), sin(a + 0.15)) * 26 * u], c1)
+			ci.draw_circle(c, 28 * u, c0)
+			ci.draw_circle(c, 18 * u, c2)
+		"visor_nebulosa":
+			_sb(ci, Rect2(c + Vector2(-50, -16) * u, Vector2(100, 32) * u), c1, 16 * u)
+			_sb(ci, Rect2(c + Vector2(-50, -2) * u, Vector2(100, 18) * u), c2, 9 * u)
+			for v in [Vector2(-30, -6), Vector2(4, 0), Vector2(30, -8)]:
+				ci.draw_circle(c + v * u, 3 * u, Color.WHITE)
+		"alas_cometa":
+			for sx in [-1.0, 1.0]:
+				_poly(ci, [c + Vector2(sx * 6, -10) * u, c + Vector2(sx * 54, -40) * u, c + Vector2(sx * 40, 8) * u, c + Vector2(sx * 54, 40) * u], Color(c0, 0.85))
+			ci.draw_colored_polygon(estrella_pts(c, 18 * u), c1)
+		"capa_galaxia":
+			_poly(ci, [c + Vector2(-26, -36) * u, c + Vector2(26, -36) * u, c + Vector2(44, 44) * u, c + Vector2(-44, 44) * u], c0)
+			for v in [Vector2(-18, -10), Vector2(14, 4), Vector2(-6, 24), Vector2(24, 30), Vector2(0, -22)]:
+				ci.draw_colored_polygon(estrella_pts(c + v * u, 6 * u), c1 if v.x < 0 else c2)
 		_:
 			if zona == "cuerpo" or forma == "capa":
 				icono(ci, "ropa", c, s * 0.95, c0)
@@ -505,6 +558,61 @@ static func icono_comida(ci: CanvasItem, id: String, c: Vector2, s: float) -> vo
 			_poly(ci, [c + Vector2(-24, 0) * u, c + Vector2(24, 0) * u, c + Vector2(0, 46) * u], Color("#e2a95f"))
 			ci.draw_circle(c + Vector2(0, -14) * u, 26 * u, Color("#bff0e4"))
 			ci.draw_circle(c + Vector2(0, -36) * u, 18 * u, Color("#ffc2d6"))
+		# ---- comidas exóticas (regalos de nivel) ----
+		"fruta_estelar":
+			ci.draw_colored_polygon(estrella_pts(c + Vector2(0, 4) * u, 44 * u, 0.0), Color("#ffb020"))
+			ci.draw_colored_polygon(estrella_pts(c + Vector2(-3, 1) * u, 34 * u, 0.0), Color("#ffcf4a"))
+			ci.draw_circle(c + Vector2(-10, -8) * u, 6 * u, Color(1, 1, 1, 0.6))
+			_poly(ci, [c + Vector2(2, -36) * u, c + Vector2(22, -50) * u, c + Vector2(14, -30) * u], Color("#5cc96a"))
+		"chile_fuego":
+			var pts: Array = []
+			for i in 13:
+				var k := i / 12.0
+				pts.append(c + Vector2(-30 + k * 64, -18 + sin(k * PI) * 34 - k * 8) * u)
+			for i in 13:
+				var k := 1.0 - i / 12.0
+				pts.append(c + Vector2(-30 + k * 64, -18 + sin(k * PI) * 34 - k * 8 + (16 - k * 14)) * u)
+			_poly(ci, pts, Color("#ff3b30"))
+			ci.draw_line(c + Vector2(-26, -16) * u, c + Vector2(10, 4) * u, Color(1, 1, 1, 0.45), 5 * u)
+			_sb(ci, Rect2(c + Vector2(-42, -30) * u, Vector2(18, 16) * u), Color("#4caf50"), 6 * u)
+			_poly(ci, [c + Vector2(30, -34) * u, c + Vector2(42, -60) * u, c + Vector2(46, -30) * u], Color("#ffcf4a"))
+			_poly(ci, [c + Vector2(34, -32) * u, c + Vector2(40, -48) * u, c + Vector2(42, -30) * u], Color("#ff7a2a"))
+		"helado_cosmico":
+			_poly(ci, [c + Vector2(-24, 2) * u, c + Vector2(24, 2) * u, c + Vector2(0, 48) * u], Color("#e2a95f"))
+			ci.draw_circle(c + Vector2(0, -12) * u, 27 * u, Color("#7fd8ff"))
+			ci.draw_circle(c + Vector2(0, -36) * u, 20 * u, Color("#b49cff"))
+			for v in [Vector2(-12, -10), Vector2(10, -18), Vector2(4, -40), Vector2(-8, -30), Vector2(14, -4)]:
+				ci.draw_circle(c + v * u, 2.6 * u, Color.WHITE)
+		"hongo_gigante":
+			_sb(ci, Rect2(c + Vector2(-13, -4) * u, Vector2(26, 46) * u), Color("#fff3e0"), 10 * u)
+			var cap: Array = []
+			for i in 17:
+				var a := PI + PI * i / 16.0
+				cap.append(c + Vector2(cos(a) * 44, -6 + sin(a) * 40) * u)
+			_poly(ci, cap, Color("#e2574c"))
+			_poly(ci, [c + Vector2(-44, -6) * u, c + Vector2(44, -6) * u, c + Vector2(44, 6) * u, c + Vector2(-44, 6) * u], Color("#c94236"))
+			for v in [Vector2(-18, -24), Vector2(10, -34), Vector2(22, -14), Vector2(-4, -14)]:
+				ci.draw_circle(c + v * u, 6 * u, Color.WHITE)
+		"gelatina_fantasma":
+			_poly(ci, [c + Vector2(-38, 30) * u, c + Vector2(38, 30) * u, c + Vector2(30, -20) * u, c + Vector2(0, -36) * u, c + Vector2(-30, -20) * u], Color(0.72, 0.95, 1.0, 0.85))
+			ci.draw_circle(c + Vector2(-12, -4) * u, 6 * u, Color("#2b2633"))
+			ci.draw_circle(c + Vector2(12, -4) * u, 6 * u, Color("#2b2633"))
+			ci.draw_arc(c + Vector2(0, 8) * u, 8 * u, 0.3, PI - 0.3, 8, Color("#2b2633"), 3 * u)
+			ci.draw_circle(c + Vector2(-18, -20) * u, 5 * u, Color(1, 1, 1, 0.7))
+			_sb(ci, Rect2(c + Vector2(-44, 28) * u, Vector2(88, 10) * u), Color("#ffffff"), 5 * u)
+		"algodon_arcoiris":
+			ci.draw_line(c + Vector2(0, 0) * u, c + Vector2(0, 48) * u, Color("#f6f2ee"), 6 * u)
+			var cols := [Color("#ff8fb3"), Color("#ffe066"), Color("#7fd8ff"), Color("#c3a6ff"), Color("#7be08a")]
+			for i in 5:
+				var a := -PI * 0.9 + i * 0.45
+				ci.draw_circle(c + Vector2(cos(a) * 22, -14 + sin(a) * 18) * u, 20 * u, cols[i])
+			ci.draw_circle(c + Vector2(0, -14) * u, 18 * u, Color("#ffd1e8"))
+		"caramelo_mini":
+			_poly(ci, [c + Vector2(-26, 0) * u, c + Vector2(-46, -18) * u, c + Vector2(-46, 18) * u], Color("#c3a6ff"))
+			_poly(ci, [c + Vector2(26, 0) * u, c + Vector2(46, -18) * u, c + Vector2(46, 18) * u], Color("#c3a6ff"))
+			ci.draw_circle(c, 28 * u, Color("#b49cff"))
+			for i in 3:
+				ci.draw_arc(c, (8 + i * 7) * u, -0.6 + i, 1.2 + i, 8, Color(1, 1, 1, 0.6), 3 * u)
 		_:
 			ci.draw_circle(c, 30 * u, Color("#cccccc"))
 
@@ -669,7 +777,11 @@ class Tarjeta extends Control:
 		UI.texto(self, Vector2(size.x * 0.5, size.y * (0.6 if doble else 0.68)), nombre, 22 if doble else 19, UI.CAFE, 700 if doble else 600, true, size.x - 16)
 		var py := size.y * (0.72 if doble else 0.86)
 		if estado == "bloqueado":
-			UI.icono(self, "candado", Vector2(size.x * 0.5, py), 30, UI.CAFE2)
+			if etiqueta != "":
+				UI.icono(self, "candado", Vector2(size.x * 0.5 - 38, py), 24, UI.CAFE2)
+				UI.texto(self, Vector2(size.x * 0.5 + 12, py), etiqueta, 18, UI.CAFE2, 700)
+			else:
+				UI.icono(self, "candado", Vector2(size.x * 0.5, py), 30, UI.CAFE2)
 		elif estado == "puesto":
 			UI.icono(self, "check", Vector2(size.x * 0.5, py), 30, UI.MENTA)
 		elif etiqueta != "":

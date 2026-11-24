@@ -59,6 +59,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 4.14 Burbuja de habitaciones junto a Más (tocar o mantener y deslizar).
 - [x] 4.15 **Cada decoración con forma propia** (no solo otro color): 6 árboles distintos, 7 pisos (tablas, espiga, ajedrez, hexágonos, piedra, mullido, mosaico), neveras retro/doble/robot/cristal, mesa de picnic y barra, bonsái y planta carnívora, cama arcoíris, farol, alfombra de osito, 5 suelos de patio (tulipanes, otoño con hongos, nieve con muñeco, playa), 6 bañeras y 9 cortinas. Cada pared trae su adorno 3D (reloj, repisas, banderines, cuadros, móviles de estrellas, corazón de neón, antorchas, vigas, enredaderas, nubes).
 - [x] 4.16 Al decorar, la cámara va al objeto que estás cambiando.
+- [x] 4.17 Sombras con borde suave (sin dientes ni puntitos) y sin rayas falsas en la cama nido.
 - [ ] 4.8 Temas completos: "Casa del árbol", "Nave espacial", "Castillo", "Playa", "Dulces", "Star Nova".
 - [ ] 4.9 Ventanas con día y noche reales (hora del teléfono) y clima (lluvia, nieve).
 - [ ] 4.10 Muebles que se mueven con el dedo (poner/quitar cuadros, plantas, juguetes).
@@ -119,6 +120,12 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [ ] 9.7 Pesca en el Lago Espejo de Verdalia.
 - [ ] 9.8 Cocina rápida (pedidos con tiempo).
 - [x] 9.9 Récords por minijuego (faltan medallas).
+- [x] 9.10 **Gráfica nueva en los 4 minijuegos**: fondos en capas (cerros, sol con rayos, nebulosas, planeta con
+  anillo, estrellas que titilan), partículas al saltar, atrapar o chocar, puntos que vuelan, sacudida y destello al
+  perder, Pip que se estira y aplasta al rebotar, canasta en la Lluvia, rocas espaciales con cráteres, humo del cohete,
+  cartas que se levantan al girar y brillan al acertar, barra de tiempo en Memoria (el reloj parte con la primera carta).
+- [x] 9.11 Diseños elegibles antes de jugar: 6 naves (Cohete Avellana, platillo, dorado, alien, cristal, Estrella
+  Nova), 5 dorsos de cartas (bellota, estrellas, galaxia, dulces, neón) y 3 nubes (algodón, arcoíris, planetas).
 
 ## 10. Bellotas (moneda del juego) y progreso
 - [x] 10.1 Bellotas doradas: se ganan con regalo diario, cariño, pelota y subir de nivel.
@@ -127,7 +134,13 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [ ] 10.4 Misiones diarias ("dale 3 comidas", "baila 1 vez") con premio.
 - [ ] 10.5 Logros (álbum de stickers).
 - [ ] 10.6 Ruleta de la suerte diaria (gratis una vez al día, sin anuncios).
-- [ ] 10.7 Cofres de premio por nivel.
+- [x] 10.7 **Regalos por nivel (del 2 al 25, siempre algo nuevo)**: trajes exclusivos que no se venden (alien,
+  gorro ovni, astronauta Nova, visor nebulosa, anillo de planetas, alas de cometa, capa galaxia, dragón estelar,
+  corona del sol), comidas exóticas con efecto (fruta estelar brilla, chile de fuego echa fuego, helado cósmico da
+  frío, hongo gigante, gelatina fantasma, algodón arcoíris, caramelo mini), naves, cartas y nubes. Ventana "¡Nivel N!"
+  con los regalos; las partidas viejas reciben los regalos que ya les tocaban.
+- [x] 10.11 **Subir de nivel pagando bellotas** (caro: 1.200 + 300 por nivel). Tocando el círculo del nivel o una
+  prenda con candado.
 - [ ] 10.8 Segunda moneda "Estrellas Nova" solo para ropa exclusiva (se gana poco jugando, se puede comprar).
 - [ ] 10.9 Álbum de recuerdos (fotos que saca Pip en momentos especiales).
 

@@ -49,11 +49,16 @@ El dueño habla **español**: responde siempre en español, claro y sin tecnicis
 - `ui.gd` — colores, tipografía (Fredoka), íconos dibujados, `Boton`, `Tarjeta`, `Fx` (efectos 2D).
 - `estado.gd` (autoload `Estado`) — partida y catálogo. `pagos.gd` (autoload `Pagos`). `sfx.gd` (autoload `Sfx`,
   con sonidos de Pip sintetizados). `intro.gd` — intro nioro. `ojos.gd` — pruebas y capturas.
-- `minijuegos.gd` (`Minijuego`) — Salto Nova, Lluvia de bellotas, Memoria y Cohete Avellana (2D, pantalla completa).
+- `minijuegos.gd` (`Minijuego`) — Salto Nova, Lluvia de bellotas, Memoria y Cohete Avellana (2D, pantalla completa),
+  con partículas y fondos en capas. Diseños por nivel: `dibujar_nave`, `dibujar_dorso`, `dibujar_nube` (estáticas,
+  también las usa la ventana de regalos); se eligen antes de jugar (`Estado.skin` / `cambiar_skin`).
+- Regalos por nivel (2 a 25): `recompensas` del catálogo; `Estado._dar_regalos(n)` y `hud.abrir_regalo_nivel(n)`.
+  Prendas con `"regalo": true` no se venden (precio 0, se tienen al llegar al nivel). Subir de nivel pagando:
+  `Estado.costo_subir_nivel()` (caro a propósito), ventana `hud.abrir_subir_nivel()`.
 - `l.gd` (`L`) — idiomas: los textos van en español en el código; `data/en.json` tiene el inglés. `UI.texto` traduce
   solo; textos con números: `L.f("¡Nivel %d!", [n])`. Los "ojos" listan los textos sin traducir: debe quedar vacío.
 - Datos: `godot/data/catalogo.json` lo **genera** `python3 godot/tools/generar_catalogo.py` (no editar a mano): ropa
-  (137, con forma + colores + animación), decoración (30+ por habitación), pociones, bailes, comida, minijuegos,
+  (146, 9 de ellas regalos de nivel; con forma + colores + animación), decoración (30+ por habitación), pociones, bailes, comida, minijuegos,
   paquetes en pesos chilenos y especiales (pack de bienvenida, capibara para siempre). También escribe `docs/CATALOGO.md`.
 - Revisión de errores: `docs/REVISION.md` (actualizarla en cada versión).
 - **Modelo editable de Pip y la capibara**: `data/modelos/pip.json` (huesos con nombre, piezas con forma/color/posición,

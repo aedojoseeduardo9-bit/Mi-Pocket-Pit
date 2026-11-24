@@ -28,7 +28,9 @@ func _ready() -> void:
 	cat = JSON.parse_string(f.get_as_text())
 	for r in cat.ropa:
 		ropa_por_id[r.id] = r
-	for lista in [cat.ropa, cat.pociones, cat.bailes, cat.comida, cat.juegos, cat.paquetes, cat.especiales]:
+	# las comidas exóticas viven junto a las normales (aparecen en la barra al llegar a su nivel)
+	cat.comida.append_array(cat.comida_exotica)
+	for lista in [cat.ropa, cat.pociones, cat.bailes, cat.comida, cat.juegos, cat.paquetes, cat.especiales, cat.naves, cat.cartas, cat.nubes]:
 		for x in lista:
 			L.registrar(str(x.get("en", "")))
 	for hab in cat.deco:
@@ -72,6 +74,7 @@ func nueva() -> Dictionary:
 		"forma": "pip",
 		"capi_hasta": 0.0,      ## hora (unix) en que termina la capibara de 3 minutos
 		"records": {},
+		"skin": {"nave": "avellana", "cartas": "bellota", "nubes": "algodon"},   ## diseños elegidos en los minijuegos
 		"cfg": {"musica": 0.7, "efectos": 1.0, "calidad": 1, "idioma": idioma, "vibrar": true},
 	}
 
@@ -84,6 +87,9 @@ func cargar() -> void:
 	if g is Dictionary:
 		_mezclar(d, g)
 	_limpiar()
+	# partidas de antes de los regalos por nivel: se entregan los que ya correspondían (sin ventanas)
+	for n in range(2, nivel() + 1):
+		_dar_regalos(n)
 	_avanzar_tiempo()
 
 ## Mezcla lo guardado sobre los valores nuevos (así las claves de versiones nuevas quedan con su valor inicial).
@@ -175,8 +181,77 @@ func dar_xp(n: int) -> void:
 		d.xp = int(d.xp) - xp_para(int(d.nivel))
 		d.nivel = int(d.nivel) + 1
 		dar_bellotas(20 + int(d.nivel) * 5)
+		_dar_regalos(int(d.nivel))
 		subio_nivel.emit(int(d.nivel))
 	_sucio = true
+
+# ---------------- regalos por nivel ----------------
+## Lo que trae un nivel: [{tipo, id}] con tipo ropa | comida | nave | cartas | nubes.
+func regalos_de(n: int) -> Array:
+	return cat.recompensas.get(str(n), [])
+
+## Entrega los regalos de un nivel una sola vez: 3 porciones de la comida exótica y el diseño nuevo queda elegido.
+func _dar_regalos(n: int) -> void:
+	var clave := "regalo_nivel_%d" % n
+	if tiene(clave):
+		return
+	agregar(clave, false)
+	for x in regalos_de(n):
+		match str(x.tipo):
+			"ropa":
+				agregar(str(x.id), false)
+			"comida":
+				sumar_comida(str(x.id), 3)
+			_:
+				d.skin[str(x.tipo)] = str(x.id)
+	_sucio = true
+
+## Lista del catálogo para cada diseño de minijuego.
+func lista_skin(tipo: String) -> Array:
+	return {"nave": cat.naves, "cartas": cat.cartas, "nubes": cat.nubes}[tipo]
+
+func skin(tipo: String) -> String:
+	return str(d.skin.get(tipo, lista_skin(tipo)[0].id))
+
+## Diseños ya desbloqueados (por nivel) de un minijuego.
+func skins_libres(tipo: String) -> Array:
+	var out: Array = []
+	for x in lista_skin(tipo):
+		if int(x.nivel) <= nivel():
+			out.append(x)
+	return out
+
+func cambiar_skin(tipo: String) -> void:
+	var libres := skins_libres(tipo)
+	var i := 0
+	for k in libres.size():
+		if libres[k].id == skin(tipo):
+			i = k
+	d.skin[tipo] = libres[(i + 1) % libres.size()].id
+	marcar()
+
+## Una prenda de regalo es tuya cuando llegas a su nivel.
+func es_regalo(r: Dictionary) -> bool:
+	return r.get("regalo", false)
+
+## Subir de nivel pagando: caro a propósito (lo normal es subir jugando y cuidando a Pip).
+## Nivel 1→2 cuesta 1.200 bellotas y cada nivel 300 más (nivel 10→11: 3.900).
+func costo_subir_nivel() -> int:
+	return int(cat.nivel_compra.base) + (nivel() - 1) * int(cat.nivel_compra.por_nivel)
+
+func comprar_nivel() -> bool:
+	if not gastar(costo_subir_nivel()):
+		return false
+	dar_xp(xp_para(nivel()) - int(d.xp))
+	return true
+
+## Cuántas prendas se desbloquean justo en ese nivel (para comprar o de regalo).
+func novedades_nivel(n: int) -> int:
+	var k := 0
+	for r in cat.ropa:
+		if int(r.get("nivel", 1)) == n:
+			k += 1
+	return k
 
 func nivel() -> int:
 	return int(d.nivel)

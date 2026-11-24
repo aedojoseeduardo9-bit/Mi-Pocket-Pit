@@ -2,9 +2,9 @@
 
 Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 
-## Ropa (137 prendas)
+## Ropa (146 prendas)
 
-### Cabeza (44)
+### Cabeza (47)
 - [x] Gorro de lana rojo / Red Beanie — 60 (nivel 1)
 - [x] Gorro de lana con orejeras y trenzas / Earflap Beanie — 60 (nivel 1)
 - [x] Gorro de lana de gatito / Kitty Beanie — 60 (nivel 1)
@@ -49,8 +49,11 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Tiara / Tiara — 190 (nivel 4) · animación: brillar
 - [x] Sombrero de bruja / Witch Hat — 150 (nivel 3)
 - [x] Casco vikingo / Viking Helmet — 170 (nivel 4)
+- [x] Gorro ovni / UFO Hat — 0 (nivel 7) · animación: flotar
+- [x] Anillo de planetas / Planet Ring — 0 (nivel 15) · animación: girar
+- [x] Corona del sol / Sun Crown — 0 (nivel 25) · animación: girar
 
-### Ojos (14)
+### Ojos (15)
 - [x] Lentes de sol negro / Black Sunglasses — 55 (nivel 1)
 - [x] Lentes de sol de aviador / Aviator Sunglasses — 55 (nivel 1)
 - [x] Lentes de sol deportivos / Sport Sunglasses — 55 (nivel 1)
@@ -65,6 +68,7 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Visor cibernético con antenas / Antenna Cyber Visor — 220 (nivel 5) · animación: parpadear
 - [x] Gafas de buceo / Diving Goggles — 80 (nivel 2)
 - [x] Parche pirata / Eye Patch — 50 (nivel 1)
+- [x] Visor nebulosa / Nebula Visor — 0 (nivel 12) · animación: parpadear
 
 ### Cuello (17)
 - [x] Bufanda Nova / Nova Scarf — 0 (nivel 1)
@@ -85,7 +89,7 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Cascabel de tres campanas / Triple Jingle Bell — 80 (nivel 2) · animación: balancear
 - [x] Medalla de campeón / Champion Medal — 160 (nivel 5)
 
-### Cuerpo (26)
+### Cuerpo (27)
 - [x] Polerón menta / Mint Hoodie — 110 (nivel 1)
 - [x] Polerón con orejas de oso / Bear-ear Hoodie — 110 (nivel 1)
 - [x] Polerón universitario / Varsity Hoodie — 110 (nivel 1)
@@ -112,8 +116,9 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Camiseta de fútbol de capitán / Captain Soccer Jersey — 110 (nivel 2)
 - [x] Tutú rosa / Pink Tutu — 140 (nivel 3)
 - [x] Tutú de dos pisos con estrellas / Starry Two-tier Tutu — 140 (nivel 3)
+- [x] Capa galaxia / Galaxy Cape — 0 (nivel 20) · animación: ondear
 
-### Espalda (11)
+### Espalda (12)
 - [x] Alas de hada celeste / Sky Fairy Wings — 260 (nivel 4) · animación: aletear
 - [x] Alas de hada de cristal largas / Crystal Fairy Wings — 260 (nivel 4) · animación: aletear
 - [x] Alas de murciélago / Bat Wings — 240 (nivel 4) · animación: aletear
@@ -125,8 +130,9 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Caparazón / Turtle Shell — 150 (nivel 3)
 - [x] Alas de mariposa naranjo / Orange Butterfly Wings — 280 (nivel 4) · animación: aletear
 - [x] Alas de mariposa con colas largas / Swallowtail Butterfly Wings — 280 (nivel 4) · animación: aletear
+- [x] Alas de cometa / Comet Wings — 0 (nivel 18) · animación: llama
 
-### Traje (25)
+### Traje (28)
 - [x] Traje ninja negro / Black Ninja Suit — 600 (nivel 4) · animación: ondear
 - [x] Traje ninja con espada / Sword Ninja Suit — 600 (nivel 4) · animación: ondear
 - [x] Traje ninja con estrellas ninja / Shuriken Ninja Suit — 600 (nivel 4) · animación: ondear
@@ -152,6 +158,9 @@ Generado por `godot/tools/generar_catalogo.py`. Precios en bellotas.
 - [x] Disfraz de calabaza / Pumpkin Costume — 500 (nivel 3)
 - [x] Disfraz de panda / Panda Costume — 650 (nivel 4)
 - [x] Disfraz de tiburón / Shark Costume — 700 (nivel 5)
+- [x] Traje de alien / Alien Suit — 0 (nivel 4) · animación: balancear
+- [x] Astronauta Nova / Nova Astronaut — 0 (nivel 10) · animación: brillar
+- [x] Dragón estelar / Star Dragon — 0 (nivel 23) · animación: aletear
 
 ## Decoración: cocina (38 estilos)
 - **pared** (12): Pared crema, Pared lavanda a rayas, Pared cielo con lunares, Pared limón a cuadros, Pared cerezo con estrellas, Pared menta con corazones, Pared crema de ladrillo, Pared lavanda de tablas, Pared cielo con ondas, Pared limón con rombos, Pared cerezo con hojas, Pared menta con nubes
@@ -190,6 +199,34 @@ Total decoración: 141
 - [x] Poción estelar — 45 bellotas, 40 s
 - [x] Poción capibara — 120 bellotas, 180 s
 - [x] Capibara para siempre — $1.499 (compra con dinero real; en la versión de prueba es gratis)
+
+## Regalos por nivel (no se venden)
+- [x] Nivel 2: Cartas estrelladas
+- [x] Nivel 3: Fruta estelar
+- [x] Nivel 4: Traje de alien
+- [x] Nivel 5: Platillo volador
+- [x] Nivel 6: Chile de fuego
+- [x] Nivel 7: Gorro ovni
+- [x] Nivel 8: Cartas galaxia
+- [x] Nivel 9: Cohete dorado
+- [x] Nivel 10: Astronauta Nova, Helado cósmico
+- [x] Nivel 11: Nubes arcoíris
+- [x] Nivel 12: Visor nebulosa
+- [x] Nivel 13: Hongo gigante
+- [x] Nivel 14: Nave alien
+- [x] Nivel 15: Anillo de planetas
+- [x] Nivel 16: Cartas de dulce
+- [x] Nivel 17: Gelatina fantasma
+- [x] Nivel 18: Alas de cometa
+- [x] Nivel 19: Nave de cristal
+- [x] Nivel 20: Capa galaxia, Planetas
+- [x] Nivel 21: Algodón arcoíris
+- [x] Nivel 22: Cartas neón
+- [x] Nivel 23: Dragón estelar
+- [x] Nivel 24: Estrella Nova
+- [x] Nivel 25: Corona del sol, Caramelo mini
+
+Subir de nivel pagando: 1.200 bellotas + 300 por cada nivel (nivel 10 → 11: 3.900).
 
 ## Minijuegos (5)
 - [x] Salto Nova

@@ -42,6 +42,7 @@ func _vestir(p: Dictionary) -> void:
 	Atuendos.vestir(main.pip, Estado.d.puesto)
 
 func _correr() -> void:
+	main.hud.mostrar_niveles = false   # las ventanas de regalo de nivel se prueban aparte
 	while main.intro.t < 1.2:
 		await _esperar(0.02)
 	await foto("intro_esfera")
@@ -310,6 +311,13 @@ func _correr() -> void:
 	main.hud.abrir_panel("juegos")
 	await _esperar(0.7)
 	await foto("juegos")
+	# regalos de nivel: con nivel 25 están todos los diseños; se elige el último de cada minijuego
+	var nivel_antes := Estado.nivel()
+	Estado.d.nivel = 25
+	for n in range(2, 26):
+		Estado._dar_regalos(n)
+	ok(Estado.skins_libres("nave").size() == Estado.cat.naves.size(), "con nivel 25 están todas las naves")
+	ok(Estado.tiene("corona_sol") and Estado.comida("caramelo_mini") >= 3, "los regalos de nivel se entregan")
 	for j in ["salto", "lluvia", "memoria", "cohete"]:
 		Estado.d.nec.energia = 80.0
 		main.hud._jugar(j)
@@ -318,6 +326,10 @@ func _correr() -> void:
 		ok(mj != null, "se abre el minijuego " + j)
 		if mj == null:
 			continue
+		if mj._tipo_skin() != "":
+			await _esperar(0.3)
+			ok(mj._puede_elegir(), "se puede elegir diseño en " + j)
+			await foto("juego_%s_elegir" % j)
 		await _esperar(3.2)
 		if j == "memoria":
 			mj.cartas[0].abierta = true
@@ -330,6 +342,12 @@ func _correr() -> void:
 		mj.terminado.emit(j, mj.puntos, 10)
 		await _esperar(0.5)
 		ok(main.hud.juego == null, "se cierra el minijuego " + j)
+	main.hud.abrir_regalo_nivel(10)
+	await _esperar(0.8)
+	await foto("regalo_nivel_10")
+	main.hud.cerrar_modal()
+	Estado.d.nivel = nivel_antes
+	await _esperar(0.4)
 	# más y ajustes
 	main.hud.abrir_panel("mas")
 	await _esperar(0.7)
@@ -373,6 +391,19 @@ func _correr() -> void:
 	await foto("pocion_arcoiris")
 	main.pip.pocion_t = 0.0
 	await _esperar(1.0)
+	# subir de nivel pagando con bellotas (caro)
+	var nv0 := Estado.nivel()
+	var costo := Estado.costo_subir_nivel()
+	ok(costo >= 1000, "subir de nivel cuesta caro (%d bellotas)" % costo)
+	main.hud.abrir_subir_nivel()
+	await _esperar(0.8)
+	await foto("subir_nivel")
+	Estado.dar_bellotas(costo)
+	var bel_antes := Estado.bellotas()
+	ok(Estado.comprar_nivel(), "se puede comprar un nivel")
+	ok(Estado.nivel() == nv0 + 1 and Estado.bellotas() < bel_antes, "el nivel sube y se cobran las bellotas")
+	main.hud.cerrar_modal()
+	await _esperar(1.0)
 	main.apagar_luz(true)
 	await _esperar(2.4)
 	await foto("durmiendo")
@@ -400,6 +431,51 @@ func _terminar() -> void:
 
 ## Galería (OJOS_GALERIA=1): una foto de cada decoración y de cada prenda, para revisar que todas se vean distintas.
 func _galeria() -> void:
+	if OS.get_environment("OJOS_GALERIA") == "juegos":
+		Estado.d.nivel = 25
+		main.hud.mostrar_niveles = false
+		for j in ["cohete", "memoria", "salto"]:
+			var ts: String = {"cohete": "nave", "memoria": "cartas", "salto": "nubes"}[j]
+			for x in Estado.lista_skin(ts):
+				Estado.d.skin[ts] = x.id
+				main.hud._jugar(j)
+				var mj: Minijuego = main.hud.juego
+				if j == "cohete":
+					# la nave vuela sola un rato (toques automáticos) para ver la estela
+					await _esperar(2.4)
+					for k in 10:
+						if mj.ry > mj.size.y * 0.42:
+							mj.rv = -620.0
+						for r in mj.rocas:
+							r[1] = mj.ry
+						await _esperar(0.12)
+				else:
+					await _esperar(3.4)
+				if j == "memoria":
+					mj.cartas[0].abierta = true
+					mj.cartas[5].abierta = true
+					await _esperar(0.4)
+				await foto("mj_%s_%s" % [j, x.id])
+				mj.fin = true
+				mj.terminado.emit(j, 0, 0)
+				await _esperar(0.4)
+		main.hud._jugar("lluvia")
+		await _esperar(4.5)
+		await foto("mj_lluvia")
+		main.hud.juego.terminado.emit("lluvia", 0, 0)
+		await _esperar(0.4)
+		for n in [3, 4, 10, 25]:
+			main.hud.abrir_regalo_nivel(n)
+			await _esperar(0.7)
+			await foto("regalo_nivel_%d" % n)
+		main.hud.cerrar_modal()
+		return
+	if OS.get_environment("OJOS_GALERIA") == "sombras":
+		for i in [1, 0, 2, 3]:
+			await _ir(i)
+			await _esperar(1.0)
+			await foto("sombra_%d" % i)
+		return
 	var solo_ropa := OS.get_environment("OJOS_GALERIA") in ["ropa", "espalda"]
 	for h in ([] if solo_ropa else Casa.HABS):
 		await _ir(Casa.HABS.find(h))
@@ -418,6 +494,8 @@ func _galeria() -> void:
 	await _esperar(1.0)
 	for r in Estado.cat.ropa:
 		if atras and not str(r.zona) in ["espalda", "traje", "cuerpo"]:
+			continue
+		if OS.get_environment("OJOS_SOLO_REGALO") != "" and not r.get("regalo", false):
 			continue
 		_vestir({r.zona: r.id})
 		await _esperar(0.3)

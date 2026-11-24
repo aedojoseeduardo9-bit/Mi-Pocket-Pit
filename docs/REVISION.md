@@ -1,5 +1,16 @@
 # Pocket Pip — revisión de errores
 
+## Versión 0.5
+- [x] **Bordes de las sombras dentados y con puntitos.** La sombra cubría 11 m con una imagen de 2048 píxeles y se
+  desenfocaba con poco detalle: se ve en escalera. Ahora cubre 8,5 m (la casa entera) con 4096 en calidad alta
+  (2048 en media), con un desenfoque parejo: borde suave y limpio. También se subió el "sesgo" para que las
+  superficies curvas no se sombreen a sí mismas en rayas.
+- [x] **Rayas en zigzag en la cama nido**: no era sombra, la base del nido atravesaba el aro y el cruce salía en
+  zigzag. La base ahora queda dentro del aro y no recibe sombras.
+- [x] Aros (toros) de la casa con más polígonos: curvas más suaves.
+- [x] La ventana de regalos de nivel tapaba el último regalo con el botón: corregido.
+- [x] Memoria: el reloj partía antes de que miraras las cartas; ahora parte con la primera carta.
+
 ## Versión 0.4 (lo que pediste: "que cada compra se note")
 - [x] **Compras que solo cambiaban color o partículas** (el ejemplo de los árboles). Ahora toda decoración y toda prenda
   tiene su propia forma. Revisado con una galería automática: una foto de cada una de las 141 decoraciones y las 137
