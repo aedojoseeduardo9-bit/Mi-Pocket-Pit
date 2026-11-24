@@ -219,7 +219,7 @@ static func vestir(pip: PipModel, puesto: Dictionary) -> void:
 		var def: Dictionary = Estado.ropa_por_id.get(id, {})
 		if def.is_empty():
 			continue
-		var res := _armar(pip, str(def.forma), def.c, str(def.get("anim", "")))
+		var res := _armar(pip, str(def.forma), def.c, str(def.get("anim", "")), int(def.get("v", 0)))
 		if pip.forma == "capibara":
 			for nd in res:
 				_ajustar_capibara(pip, nd as Node3D, zona)
@@ -268,7 +268,7 @@ static func _ajustar_capibara(pip: PipModel, nd: Node3D, zona: String) -> void:
 static func _c(cs: Array, i: int, def := "#ffffff") -> String:
 	return str(cs[i]) if i < cs.size() else def
 
-static func _armar(pip: PipModel, forma: String, cs: Array, anim: String) -> Array:
+static func _armar(pip: PipModel, forma: String, cs: Array, anim: String, v := 0) -> Array:
 	var H := pip.head
 	var T := pip.torso
 	var c0 := _c(cs, 0)
@@ -589,6 +589,8 @@ static func _armar(pip: PipModel, forma: String, cs: Array, anim: String) -> Arr
 		_:
 			if forma in TRAJES:
 				out.append_array(_traje(pip, g, forma, c0, c1, c2, anim))
+	if v > 0:
+		_variante(pip, g, forma, v, c0, c1, c2, out)
 	return out
 
 const CUERPO_TORSO := ["bufanda", "mono", "collar_bellotas", "panuelo", "corbata", "collar_perlas", "cascabel", "medalla",
@@ -695,6 +697,7 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 	var out: Array = []
 	var H := pip.head
 	var hg := _g(H, forma + "_cabeza")
+	hg.set_meta("cabeza", true)
 	out.append(hg)
 	match forma:
 		"ninja":
@@ -992,3 +995,550 @@ static func rbox(s: Vector3, r: float) -> ArrayMesh:
 ## Color de la cara que asoma por las capuchas (naranjo de Pip o café de la capibara).
 static func _piel(pip: PipModel) -> Material:
 	return pip.M.capi if pip.forma == "capibara" else pip.M.fur
+
+# ---------------- variantes con diseño propio ----------------
+## Quita todas las piezas de un grupo (y sus animaciones) para armarlo de nuevo.
+static func _vaciar(pip: PipModel, g: Node3D) -> void:
+	for ch in g.get_children():
+		g.remove_child(ch)
+		ch.free()
+	var vivas: Array = []
+	for a in pip.anim_ropa:
+		if is_instance_valid(a.n):
+			vivas.append(a)
+	pip.anim_ropa = vivas
+
+## Después de mover una pieza animada, su posición de reposo pasa a ser la nueva.
+static func _rebase(pip: PipModel, n: Node3D) -> void:
+	for a in pip.anim_ropa:
+		if a.n == n:
+			a.rot = n.rotation
+			a.pos = n.position
+			a.sc = n.scale
+
+static func _esconder_malla(g: Node3D, malla: Mesh) -> void:
+	for ch in g.get_children():
+		if ch is MeshInstance3D and (ch as MeshInstance3D).mesh == malla:
+			(ch as Node3D).visible = false
+
+static func _rayo() -> ArrayMesh:
+	return extruir(PackedVector2Array([Vector2(0.15, 1.0), Vector2(-0.45, -0.05), Vector2(-0.02, -0.05), Vector2(-0.2, -1.0),
+		Vector2(0.45, 0.15), Vector2(0.03, 0.15), Vector2(0.35, 1.0)]), 0.2)
+
+## Cascarón de capucha puesta (deja la cara a la vista).
+static func _capucha_puesta(pip: PipModel, out: Array, mat: Material) -> Node3D:
+	var hg := _g(pip.head, "capucha")
+	_p(hg, _ball, mat, Vector3(0, 0.03, -0.035), Vector3(0.172, 0.165, 0.14))
+	_p(hg, _torus, mat, Vector3(0, 0.01, 0.07), Vector3(0.15, 0.45, 0.14), Vector3(PI / 2 - 0.35, 0, 0))
+	out.append(hg)
+	return hg
+
+static func _variante(pip: PipModel, g: Node3D, forma: String, v: int, c0: String, c1: String, c2: String, out: Array) -> void:
+	var H := pip.head
+	var hg: Node3D = null
+	for o in out:
+		if (o as Node).has_meta("cabeza"):
+			hg = o
+	match forma + str(v):
+		# ---------- cuello ----------
+		"bufanda1":
+			g.get_node("punta").visible = false
+			for s in [-1.0, 1.0]:
+				var t := _g(g, "cola", Vector3(s * 0.045, -0.02, 0.095), Vector3(-0.15, 0, s * 0.12))
+				_p(t, _box, tela(c0), Vector3(0, -0.08, 0), Vector3(0.04, 0.16, 0.012))
+				for k in 4:
+					_p(t, _box, tela(c1), Vector3(-0.015 + k * 0.01, -0.175, 0), Vector3(0.004, 0.035, 0.006))
+				_an(pip, t, "ondear", 0.7 * s)
+		"bufanda2":
+			_p(g, _torus, tela(c0), Vector3(0, 0.01, 0), Vector3(0.118, 0.7, 0.118), Vector3(0.2, 0, 0))
+			for s in [-1.0, 1.0]:
+				var pm := _g(g, "pompon", Vector3(s * 0.04, -0.03, 0.115))
+				_p(pm, _cyl, tela(c1), Vector3(0, -0.03, 0), Vector3(0.003, 0.06, 0.003))
+				_p(pm, _ball, tela(c1), Vector3(0, -0.07, 0), Vector3.ONE * 0.03)
+				_an(pip, pm, "balancear", 0.5 * s)
+		"bufanda3":
+			for i in 3:
+				_p(g, _torus, tela(c1 if i % 2 == 0 else "#ff8fb3"), Vector3(0, -0.012 + i * 0.012, 0), Vector3(0.103, 0.12, 0.103), Vector3(0.2, 0, 0))
+			var t := g.get_node("punta")
+			for i in 3:
+				_p(t, _box, tela(c1 if i % 2 == 0 else "#ff8fb3"), Vector3(0, -0.015 - i * 0.02, 0.0), Vector3(0.062, 0.008, 0.014))
+		"mono1":
+			g.scale = Vector3.ONE * 2.1
+			g.position = Vector3(0, 0.1, 0.16)
+			for s in [-1.0, 1.0]:
+				for k in 3:
+					_p(g, _ball, tela("#ffffff"), Vector3(s * (0.018 + k * 0.012), -0.008 + (k % 2) * 0.014, 0.012), Vector3.ONE * 0.0045)
+		"mono2":
+			g.position = Vector3(0, 0.1, 0.16)
+			g.scale = Vector3.ONE * 1.5
+			for s in [-1.0, 1.0]:
+				_p(g, _cone, tela(c0), Vector3(s * 0.026, -0.022, 0), Vector3(0.02, 0.034, 0.01), Vector3(0, 0, -s * (PI / 2 + 0.7)))
+				_p(g, _ball, tela("#ffe066"), Vector3(s * 0.035, 0.004, 0.009), Vector3.ONE * 0.007)
+				_p(g, _cyl, tela("#2b2633"), Vector3(s * 0.008, 0.022, 0.006), Vector3(0.0015, 0.03, 0.0015), Vector3(0, 0, -s * 0.4))
+				_p(g, _ball, tela("#2b2633"), Vector3(s * 0.014, 0.036, 0.006), Vector3.ONE * 0.004)
+			_an(pip, g, "balancear", 0.2)
+		"panuelo1":
+			_p(g, _cone, tela(c0), Vector3(0, -0.075, 0.115), Vector3(0.13, 0.14, 0.012), Vector3(PI + 0.2, 0, 0))
+			for i in 9:
+				_p(g, _ball, tela(c1), Vector3(-0.05 + (i % 3) * 0.05, -0.035 - (i / 3) * 0.035, 0.13 - (i / 3) * 0.006), Vector3(0.009, 0.006, 0.003))
+		"panuelo2":
+			var nudo := _g(g, "nudo", Vector3(0.085, -0.005, 0.065))
+			_p(nudo, _ball, tela(c0), Vector3.ZERO, Vector3.ONE * 0.022)
+			for s in [-1.0, 1.0]:
+				_p(nudo, _cone, tela(c0), Vector3(0.015, -0.035, s * 0.012), Vector3(0.02, 0.06, 0.008), Vector3(PI, 0, s * 0.3 - 0.3))
+			_an(pip, nudo, "ondear", 0.6)
+		"corbata1":
+			g.position = Vector3(0, 0.12, 0.125)
+			_p(g, _gota, tela(c0), Vector3(0, -0.058, 0.016), Vector3(0.058, 0.07, 0.045), Vector3(0, 0, PI))
+			for i in 4:
+				_p(g, _box, tela(c1), Vector3(0, -0.03 - i * 0.022, 0.026), Vector3(0.05 - i * 0.004, 0.006, 0.004), Vector3(0, 0, 0.6))
+		"cascabel1":
+			for s in [-1.0, 1.0]:
+				var b := _g(g, "campana", Vector3(s * 0.065, -0.04, 0.1))
+				_p(b, _ball, metal(c1), Vector3(0, -0.02, 0), Vector3.ONE * 0.02)
+				_p(b, _box, tela("#5a3a1a"), Vector3(0, -0.024, 0.017), Vector3(0.02, 0.003, 0.003))
+				_an(pip, b, "balancear", 0.7 * s)
+			for s in [-1.0, 1.0]:
+				_p(g, _cone, tela("#4cc38a"), Vector3(s * 0.022, 0.01, 0.105), Vector3(0.02, 0.03, 0.008), Vector3(0, 0, -s * PI / 2))
+		# ---------- cabeza ----------
+		"gorro_lana1":
+			for s in [-1.0, 1.0]:
+				_p(g, _ball, tela(c0), Vector3(s * 0.14, -0.02, 0.0), Vector3(0.035, 0.07, 0.06))
+				var tr := _g(g, "trenza", Vector3(s * 0.145, -0.08, 0.0))
+				for k in 3:
+					_p(tr, _ball, tela(c1), Vector3(0, -k * 0.022, 0), Vector3.ONE * 0.013)
+				_p(tr, _ball, tela(c1), Vector3(0, -0.075, 0), Vector3(0.018, 0.022, 0.018))
+				_an(pip, tr, "balancear", 0.3 * s)
+			for i in 6:
+				_p(g, _ball, tela(c1), Vector3(-0.1 + i * 0.04, 0.12, 0.1 - absf(i - 2.5) * 0.012), Vector3.ONE * 0.012)
+		"gorro_lana2":
+			g.get_node("pompon").visible = false
+			for s in [-1.0, 1.0]:
+				_p(g, _cone, tela(c0), Vector3(s * 0.09, 0.19, -0.01), Vector3(0.05, 0.08, 0.035), Vector3(0, 0, -s * 0.35))
+				_p(g, _cone, tela("#ffb3c7"), Vector3(s * 0.09, 0.185, 0.015), Vector3(0.03, 0.055, 0.01), Vector3(0, 0, -s * 0.35))
+			for s in [-1.0, 1.0]:
+				_p(g, _ball, tela("#2b2633"), Vector3(s * 0.05, 0.12, 0.13), Vector3(0.016, 0.02, 0.006))
+		"gorro_lana3":
+			g.get_node("pompon").visible = false
+			var pt := _g(g, "punta", Vector3(0, 0.15, -0.03), Vector3(-0.7, 0, 0.35))
+			_p(pt, _cone, tela(c0), Vector3(0, 0.15, 0), Vector3(0.12, 0.32, 0.12))
+			for i in 4:
+				_p(pt, _torus, tela(c1), Vector3(0, 0.03 + i * 0.065, 0), Vector3.ONE * (0.105 - i * 0.024) * Vector3(1, 0.5, 1))
+			_p(pt, _ball, tela(c1), Vector3(0, 0.32, 0), Vector3.ONE * 0.03)
+			_an(pip, pt, "balancear", 0.2)
+		"gorra1":
+			g.rotation.y = PI
+			_p(g, _cyl, tela(c1), Vector3(0, 0.09, -0.12), Vector3(0.035, 0.008, 0.035), Vector3(PI / 2 + 0.6, 0, 0))
+		"gorra2":
+			for s in [-1.0, 1.0]:
+				_p(g, _ball, tela(c0), Vector3(s * 0.11, 0.16, -0.02), Vector3(0.045, 0.045, 0.025))
+				_p(g, _ball, tela("#ffb3c7"), Vector3(s * 0.11, 0.16, -0.0), Vector3(0.026, 0.026, 0.01))
+		"gorra3":
+			for i in 6:
+				_p(g, _cone, tela("#ffcf4a"), Vector3(0, 0.18 - absf(i - 2.0) * 0.012, 0.08 - i * 0.04), Vector3(0.012, 0.05, 0.03), Vector3(-0.3 + i * 0.25, 0, 0))
+			for i in 7:
+				_p(g, _cone, tela("#ffffff"), Vector3(-0.075 + i * 0.025, 0.077, 0.225), Vector3(0.008, 0.02, 0.008), Vector3(PI, 0, 0))
+		"sombrero_copa1":
+			_p(g, _cyl, tela(c0), Vector3(0, 0.34, 0), Vector3(0.1, 0.12, 0.1))
+			var cj := _g(g, "conejo", Vector3(0, 0.4, 0))
+			_p(cj, _ball, tela("#ffffff"), Vector3(0, 0.03, 0.02), Vector3(0.055, 0.045, 0.05))
+			for s in [-1.0, 1.0]:
+				_p(cj, _ball, tela("#ffffff"), Vector3(s * 0.025, 0.11, 0.0), Vector3(0.014, 0.06, 0.01), Vector3(0, 0, -s * 0.15))
+				_p(cj, _ball, tela("#ffb3c7"), Vector3(s * 0.025, 0.11, 0.006), Vector3(0.008, 0.045, 0.006), Vector3(0, 0, -s * 0.15))
+				_p(cj, _ball, tela("#2b2633"), Vector3(s * 0.018, 0.04, 0.065), Vector3.ONE * 0.007)
+			_p(cj, _ball, tela("#ff8fb3"), Vector3(0, 0.025, 0.07), Vector3.ONE * 0.007)
+			_an(pip, cj, "balancear", 0.3)
+		"corona1":
+			var hielo := vidrio("#bfe9ff", 0.6)
+			hielo.emission_enabled = true
+			hielo.emission = Color("#bfe9ff") * 0.4
+			for i in 9:
+				var a := TAU * i / 9.0
+				var alto := 0.12 if i % 2 == 0 else 0.07
+				_p(g, _cone, hielo, Vector3(sin(a) * 0.09, 0.18 + alto * 0.5, cos(a) * 0.09), Vector3(0.022, alto, 0.022), Vector3(cos(a) * 0.15, 0, -sin(a) * 0.15))
+			_p(g, _cone, hielo, Vector3(0, 0.29, 0.07), Vector3(0.03, 0.2, 0.03))
+			_an(pip, g, "brillar", 0.0, hielo)
+		"flor1":
+			g.scale = Vector3.ONE * 2.3
+			for i in 10:
+				var a := TAU * (i + 0.5) / 10.0
+				_p(g, _ball, tela("#ffffff"), Vector3(cos(a) * 0.03, sin(a) * 0.03, -0.002), Vector3(0.024, 0.008, 0.005), Vector3(0, 0, a))
+			_p(g, _ball, tela("#ffcf4a"), Vector3(0, 0, 0.008), Vector3.ONE * 0.016)
+			_p(g, _ball, tela("#5fae4a"), Vector3(-0.035, -0.035, -0.005), Vector3(0.025, 0.01, 0.006), Vector3(0, 0, 0.8))
+		"flor2":
+			for k in 2:
+				var f := _g(g, "flor%d" % k, Vector3(-0.045 + k * 0.08, 0.03 + k * 0.012, -0.015))
+				var col := "#ff8fb3" if k == 0 else "#ffe066"
+				for i in 5:
+					var a := TAU * i / 5.0
+					_p(f, _ball, tela(col), Vector3(cos(a) * 0.022, sin(a) * 0.022, 0), Vector3(0.02, 0.016, 0.007), Vector3(0, 0, a))
+				_p(f, _ball, tela("#ffffff"), Vector3(0, 0, 0.005), Vector3.ONE * 0.011)
+			for s in [-1.0, 1.0]:
+				_p(g, _ball, tela("#5fae4a"), Vector3(s * 0.03, -0.035, -0.01), Vector3(0.028, 0.01, 0.006), Vector3(0, 0, s * 0.6))
+			_an(pip, g, "balancear", 0.12)
+		"audifonos1":
+			var lm := luz(c0)
+			for s in [-1.0, 1.0]:
+				_p(g, _cone, tela(c0), Vector3(s * 0.085, 0.15, 0.0), Vector3(0.045, 0.07, 0.025), Vector3(0, 0, -s * 0.45))
+				_p(g, _cone, lm, Vector3(s * 0.085, 0.147, 0.016), Vector3(0.028, 0.05, 0.01), Vector3(0, 0, -s * 0.45))
+			_an(pip, g, "brillar", 0.0, lm)
+		"audifonos2":
+			var mic := _g(g, "mic", Vector3(-0.165, -0.015, 0.0), Vector3(0, -0.9, 0))
+			_p(mic, _cyl, tela("#2b2633"), Vector3(0, -0.04, 0.07), Vector3(0.005, 0.15, 0.005), Vector3(1.1, 0, 0))
+			_p(mic, _ball, tela("#2b2633"), Vector3(0, -0.085, 0.14), Vector3(0.016, 0.016, 0.02))
+			var led := luz("#7fd8ff")
+			for s in [-1.0, 1.0]:
+				_p(g, _torus, led, Vector3(s * 0.175, -0.01, 0), Vector3(0.05, 0.3, 0.05), Vector3(0, 0, PI / 2))
+			_an(pip, g, "parpadear", 0.0, led)
+		"vaquero1":
+			_p(g, _ball, tela(c0), Vector3(0, 0.2, 0), Vector3(0.11, 0.1, 0.1))
+			_p(g, _star, metal("#ffcf4a"), Vector3(0, 0.19, 0.105), Vector3.ONE * 0.04, Vector3(-0.3, 0, 0))
+			_p(g, _torus, tela("#2b2633"), Vector3(0, -0.02, 0.06), Vector3(0.12, 0.08, 0.12), Vector3(PI / 2 - 0.3, 0, 0))
+			_p(g, _ball, metal("#c9d1dc"), Vector3(0, -0.1, 0.15), Vector3.ONE * 0.014)
+		"mago1":
+			var pt: Node3D = g.get_node("punta")
+			var dob := _g(pt, "doblez", Vector3(0, 0.2, 0), Vector3(0, 0, -1.7))
+			_p(dob, _cone, tela(c0), Vector3(0, 0.07, 0), Vector3(0.05, 0.16, 0.05))
+			_p(dob, _ball, metal("#ffcf4a"), Vector3(0, 0.16, 0), Vector3.ONE * 0.026)
+			_p(g, _cyl, tela(c0), Vector3(0, 0.12, 0), Vector3(0.21, 0.008, 0.21))
+			_p(g, _torus, tela(c1), Vector3(0, 0.125, 0), Vector3(0.21, 0.2, 0.21))
+		"corona_flores1":
+			var cn := _g(g, "cintas", Vector3(0, 0.1, -0.12))
+			var cols := ["#ff8fb3", "#c3a6ff", "#7fd8ff", "#ffe066"]
+			for i in 4:
+				_p(cn, _box, tela(cols[i]), Vector3(-0.03 + i * 0.02, -0.12, -0.01), Vector3(0.012, 0.24, 0.004), Vector3(0.25, 0, (i - 1.5) * 0.08))
+			_an(pip, cn, "ondear", 1.2)
+			var mp := _g(g, "mariposa", Vector3(0.07, 0.19, 0.04))
+			for s in [-1.0, 1.0]:
+				_p(mp, _ball, vidrio("#c3a6ff", 0.7), Vector3(s * 0.02, 0, 0), Vector3(0.02, 0.025, 0.004), Vector3(0, s * 0.4, 0))
+			_an(pip, mp, "aletear", 1.0)
+		"cuernos1":
+			_vaciar(pip, g)
+			for s in [-1.0, 1.0]:
+				var cu := _g(g, "cuerno", Vector3(s * 0.12, 0.09, -0.01), Vector3(0, PI / 2, 0))
+				_p(cu, _torus, brillante(c0), Vector3.ZERO, Vector3(0.06, 0.6, 0.06))
+				_p(cu, _torus, brillante(c0), Vector3(0, 0, 0.02 * s), Vector3(0.035, 0.6, 0.035), Vector3(0, 0, 0.4))
+				_p(cu, _cone, brillante(c0), Vector3(0.0, -0.055, 0.02 * s), Vector3(0.016, 0.04, 0.016), Vector3(PI, 0, 0))
+		"helice1":
+			g.get_node("helice").visible = false
+			for s in [-1.0, 1.0]:
+				_p(g, _cyl, tela("#2b2633"), Vector3(s * 0.07, 0.19, -0.01), Vector3(0.007, 0.05, 0.007), Vector3(0, 0, -s * 0.5))
+				var h := _g(g, "helice2", Vector3(s * 0.09, 0.215, -0.01), Vector3(0, 0, -s * 0.5))
+				_p(h, _ball, tela(c1), Vector3.ZERO, Vector3(0.09, 0.006, 0.02))
+				_p(h, _ball, tela(_c([c0, c1, c2], 2, "#ffcf4a")), Vector3.ZERO, Vector3(0.02, 0.006, 0.09))
+				_an(pip, h, "girar", 16.0 * s)
+		"orejas_conejo1":
+			for ch in g.get_children():
+				if ch is Node3D and not (ch is MeshInstance3D):
+					var s := signf((ch as Node3D).position.x)
+					(ch as Node3D).rotation = Vector3(0.3, 0, -s * 2.35)
+					(ch as Node3D).position = Vector3(s * 0.12, 0.1, 0.0)
+					_rebase(pip, ch)
+		"boina1":
+			g.scale = Vector3(1.15, 1.3, 1.15)
+			var cols := ["#ff5a6e", "#ffe066", "#7fc8ff", "#7be08a"]
+			for i in 4:
+				var a := 0.5 + i * 1.3
+				_p(g, _ball, tela(cols[i]), Vector3(sin(a) * 0.1, 0.155, cos(a) * 0.09), Vector3(0.018, 0.005, 0.015))
+			var pin := _g(g, "pincel", Vector3(0.1, 0.13, -0.02), Vector3(0.3, 0, -1.0))
+			_p(pin, _cyl, tela("#c58a4a"), Vector3(0, 0.05, 0), Vector3(0.006, 0.12, 0.006))
+			_p(pin, _cone, tela("#ff5a6e"), Vector3(0, 0.125, 0), Vector3(0.009, 0.03, 0.009))
+		"boina2":
+			g.rotation.z = -0.45
+			g.position.x = -0.02
+			_p(g, _star, metal("#ffcf4a"), Vector3(0.0, 0.12, 0.14), Vector3.ONE * 0.03, Vector3(-0.6, 0, 0))
+			_p(g, _torus, tela(Color(c0).darkened(0.3).to_html(false)), Vector3(0.01, 0.085, 0), Vector3(0.158, 0.3, 0.152))
+		# ---------- ojos ----------
+		"lentes_sol1":
+			_vaciar(pip, g)
+			var oro := metal("#e0b44c")
+			for s in [-1.0, 1.0]:
+				_p(g, _gota, vidrio("#3a2a20", 0.85), Vector3(s * 0.072, 0.02, 0.155), Vector3(0.06, 0.055, 0.02), Vector3(0, 0, s * 0.15))
+				_p(g, _box, oro, Vector3(s * 0.135, 0.04, 0.08), Vector3(0.006, 0.006, 0.14), Vector3(0, s * 0.35, 0))
+			for k in 2:
+				_p(g, _box, oro, Vector3(0, 0.035 + k * 0.025, 0.163), Vector3(0.05, 0.005, 0.005))
+		"lentes_sol2":
+			_vaciar(pip, g)
+			var esp := metal(c0)
+			esp.roughness = 0.05
+			_p(g, _ball, esp, Vector3(0, 0.03, 0.07), Vector3(0.165, 0.045, 0.11))
+			_p(g, _torus, tela("#2b2633"), Vector3(0, 0.03, 0), Vector3(0.16, 0.25, 0.154))
+			for s in [-1.0, 1.0]:
+				_p(g, _box, tela("#ffffff"), Vector3(s * 0.11, 0.05, 0.14), Vector3(0.03, 0.006, 0.004), Vector3(0, s * 0.6, 0.2))
+		"lentes_corazon1":
+			_vaciar(pip, g)
+			var luna := vidrio(c0, 0.82)
+			for s in [-1.0, 1.0]:
+				_p(g, _heart, luna, Vector3(s * 0.085, 0.04, 0.165), Vector3(0.085, 0.08, 0.04))
+				_p(g, _heart, tela("#ffffff"), Vector3(s * 0.085, 0.04, 0.16), Vector3(0.095, 0.09, 0.03))
+				_p(g, _box, tela(c0), Vector3(s * 0.15, 0.04, 0.08), Vector3(0.006, 0.008, 0.14), Vector3(0, s * 0.35, 0))
+			var bri := luz("#ffffff")
+			for i in 3:
+				_p(g, _star, bri, Vector3(-0.15 + i * 0.15, 0.13 + (i % 2) * 0.03, 0.15), Vector3.ONE * 0.015)
+			_an(pip, g, "brillar", 0.0, bri)
+		"lentes_redondos1":
+			var oro := metal(c0 if c0 != "#2b2633" else "#e0b44c")
+			for s in [-1.0, 1.0]:
+				for k in 7:
+					var u := k / 6.0
+					_p(g, _ball, oro, Vector3(s * (0.14 - u * 0.12), 0.0 - sin(u * PI * 0.5) * 0.17, 0.09 + u * 0.05), Vector3.ONE * 0.006)
+		"lentes_estrella1":
+			for s in [-1.0, 1.0]:
+				var w := _p(g, _ala, tela("#ffffff"), Vector3(s * 0.135, 0.04, 0.15), Vector3(0.08 * s, 0.07, 0.06), Vector3(0, 0, 0.3 * s))
+				w.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			var gm := luz("#ffffff")
+			for i in 6:
+				_p(g, _ball, gm, Vector3(-0.1 + i * 0.04, 0.09, 0.16), Vector3.ONE * 0.007)
+			_an(pip, g, "brillar", 0.0, gm)
+		"visor1":
+			var lm := luz("#ff5a6e")
+			for s in [-1.0, 1.0]:
+				_p(g, _box, tela(c0), Vector3(s * 0.165, 0.04, 0.0), Vector3(0.02, 0.05, 0.05))
+				_p(g, _cyl, metal("#cfd6e2"), Vector3(s * 0.17, 0.11, 0.0), Vector3(0.005, 0.12, 0.005), Vector3(0, 0, -s * 0.2))
+				_p(g, _ball, lm, Vector3(s * 0.183, 0.175, 0.0), Vector3.ONE * 0.016)
+			_an(pip, g, "parpadear", 1.0, lm)
+		# ---------- cuerpo ----------
+		"poleron1", "poleron3":
+			var c := tela(c0)
+			_esconder_malla(g, _ball)
+			_tronco(g, c)
+			var cap := _capucha_puesta(pip, out, c)
+			if v == 1:
+				for s in [-1.0, 1.0]:
+					_p(cap, _ball, c, Vector3(s * 0.11, 0.17, -0.03), Vector3(0.05, 0.05, 0.03))
+					_p(cap, _ball, tela("#ffb3c7"), Vector3(s * 0.11, 0.17, -0.005), Vector3(0.03, 0.03, 0.01))
+			else:
+				var cu := tela("#ffe9b0")
+				for s in [-1.0, 1.0]:
+					_p(cap, _cone, cu, Vector3(s * 0.08, 0.18, -0.06), Vector3(0.022, 0.07, 0.022), Vector3(-0.5, 0, -s * 0.4))
+				for i in 4:
+					_p(cap, _cone, tela(c1 if c1 != "#ffffff" else "#ffcf4a"), Vector3(0, 0.16 - i * 0.06, -0.15 - i * 0.02), Vector3(0.02, 0.04, 0.012), Vector3(-0.9 - i * 0.2, 0, 0))
+				for i in 3:
+					_p(g, _cone, tela(c1 if c1 != "#ffffff" else "#ffcf4a"), Vector3(0, 0.1 - i * 0.06, -0.185), Vector3(0.02, 0.04, 0.012), Vector3(-1.4, 0, 0))
+		"poleron2":
+			var bl := tela("#f6f2ee")
+			for a in pip.arms:
+				out.append(_p(a, _ball, bl, Vector3(0, -0.03, 0.01), Vector3(0.034, 0.05, 0.036)))
+			_p(g, _torus, bl, Vector3(0, 0.15, 0.02), Vector3(0.085, 0.4, 0.085), Vector3(0.2, 0, 0))
+			_p(g, _torus, bl, Vector3(0, -0.07, -0.01), Vector3(0.14, 0.25, 0.16))
+			var le := tela("#e85d6f")
+			_p(g, _box, le, Vector3(-0.045, 0.06, 0.165), Vector3(0.016, 0.09, 0.01), Vector3(-0.15, 0, 0))
+			_p(g, _torus, le, Vector3(-0.025, 0.085, 0.163), Vector3(0.025, 0.5, 0.025), Vector3(PI / 2 - 0.15, 0, 0))
+		"polera_estrella1":
+			_esconder_malla(g, _star)
+			var r := _p(g, _rayo(), metal(c1), Vector3(0, 0.06, 0.165), Vector3(0.05, 0.07, 0.05), Vector3(-0.15, 0, 0.1))
+			r.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			for s in [-1.0, 1.0]:
+				_p(g, _rayo(), metal(c1), Vector3(s * 0.12, 0.1, 0.1), Vector3(0.02, 0.03, 0.03), Vector3(0, s * 0.8, 0))
+		"overol1":
+			var cz := tela("#ff5a6e")
+			_p(g, _heart, cz, Vector3(-0.04, 0.08, 0.178), Vector3(0.03, 0.028, 0.03), Vector3(-0.2, 0, 0.2))
+			_p(g, _heart, tela("#ffe066"), Vector3(0.07, -0.03, 0.17), Vector3(0.025, 0.024, 0.03), Vector3(-0.1, 0.4, -0.2))
+			_p(g, _box, tela(Color(c0).darkened(0.15).to_html(false)), Vector3(0.03, 0.04, 0.182), Vector3(0.05, 0.04, 0.01), Vector3(-0.2, 0, 0))
+			_p(g, _cyl, tela("#ffcf4a"), Vector3(0.04, 0.075, 0.18), Vector3(0.005, 0.05, 0.005), Vector3(-0.2, 0, -0.3))
+			for l in pip.legs:
+				out.append(_p(l, _torus, tela(c0), Vector3(0, -0.07, 0.0), Vector3(0.052, 0.6, 0.06)))
+		"capa1":
+			var cp: Node3D = g.get_node("capa")
+			_p(cp, _ball, tela(c0), Vector3(0, -0.16, -0.06), Vector3(0.2, 0.25, 0.04), Vector3(0.14, 0, 0))
+			var arm := tela("#fbf8f2")
+			_p(g, _torus, arm, Vector3(0, 0.15, 0.0), Vector3(0.12, 1.2, 0.12), Vector3(0.25, 0, 0))
+			for i in 9:
+				var a := -1.4 + i * 0.35
+				_p(g, _ball, tela("#2b2633"), Vector3(sin(a) * 0.12, 0.165, cos(a) * 0.11), Vector3(0.006, 0.012, 0.004))
+			for i in 7:
+				var a := -0.9 + i * 0.3
+				_p(g, _ball, metal("#ffcf4a"), Vector3(sin(a) * 0.1, 0.11 - cos(a * 0.6) * 0.03, cos(a) * 0.12), Vector3.ONE * 0.008)
+		"capa2":
+			var cap := _capucha_puesta(pip, out, tela(c0))
+			cap = cap
+			var cp: Node3D = g.get_node("capa")
+			var sm := luz("#ffe066")
+			for i in 7:
+				_p(cp, _star, sm, Vector3(-0.1 + (i % 4) * 0.065, -0.05 - (i / 4) * 0.12 - (i % 2) * 0.04, -0.1), Vector3.ONE * 0.02, Vector3(0, PI, 0))
+			_an(pip, cp, "brillar", 0.0, sm)
+		"chaleco1":
+			var bo := tela(Color(c0).lightened(0.2).to_html(false))
+			for s in [-1.0, 1.0]:
+				for k in 2:
+					_p(g, _box, bo, Vector3(s * 0.075, 0.07 - k * 0.07, 0.165 - k * 0.005), Vector3(0.05, 0.04, 0.012), Vector3(-0.15, s * 0.3, 0))
+					_p(g, _box, tela(c0), Vector3(s * 0.075, 0.088 - k * 0.07, 0.172 - k * 0.005), Vector3(0.052, 0.012, 0.012), Vector3(-0.15, s * 0.3, 0))
+			var br := _g(g, "brujula", Vector3(0.0, 0.0, 0.18))
+			_p(br, _cyl, metal("#e0b44c"), Vector3(0, -0.02, 0), Vector3(0.025, 0.008, 0.025), Vector3(PI / 2, 0, 0))
+			_p(br, _box, tela("#e23b4e"), Vector3(0, -0.02, 0.006), Vector3(0.004, 0.03, 0.002), Vector3(0, 0, 0.5))
+			_an(pip, br, "balancear", 0.4)
+			_p(g, _star, metal("#ffcf4a"), Vector3(-0.08, 0.13, 0.13), Vector3.ONE * 0.02, Vector3(-0.4, 0, 0))
+		"hawaiana1":
+			var cols := ["#ff5a6e", "#ffe066", "#ff8fb3", "#c77dff", "#ff9f43", "#ffffff"]
+			for i in 16:
+				var a := TAU * i / 16.0
+				var r := 0.11 + (0.03 if cos(a) > 0.2 else 0.0)
+				_p(g, _ball, tela(cols[i % cols.size()]), Vector3(sin(a) * r, 0.145 - maxf(0.0, cos(a)) * 0.06, cos(a) * r * 1.05), Vector3.ONE * 0.02)
+		"impermeable1":
+			var c := brillante(c0)
+			_esconder_malla(g, _ball)
+			_tronco(g, c, 0.012)
+			for i in 3:
+				_p(g, _ball, tela(c1), Vector3(0, 0.12 - i * 0.05, 0.172 - i * 0.002), Vector3.ONE * 0.01)
+			var cap := _capucha_puesta(pip, out, c)
+			_p(cap, _ball, tela("#ff9f43"), Vector3(0, 0.12, 0.13), Vector3(0.08, 0.02, 0.06), Vector3(-0.2, 0, 0))
+			for s in [-1.0, 1.0]:
+				_p(cap, _ball, tela("#ffffff"), Vector3(s * 0.06, 0.17, 0.08), Vector3.ONE * 0.025)
+				_p(cap, _ball, tela("#2b2633"), Vector3(s * 0.06, 0.175, 0.1), Vector3.ONE * 0.012)
+		"sueter1":
+			var cara := Vector3(0, 0.06, 0.168)
+			_p(g, _ball, tela("#8d5d32"), cara, Vector3(0.04, 0.045, 0.012))
+			for s in [-1.0, 1.0]:
+				_p(g, _cyl, tela("#c58a4a"), cara + Vector3(s * 0.035, 0.05, -0.004), Vector3(0.004, 0.05, 0.004), Vector3(0, 0, -s * 0.5))
+				_p(g, _cyl, tela("#c58a4a"), cara + Vector3(s * 0.05, 0.065, -0.004), Vector3(0.003, 0.025, 0.003), Vector3(0, 0, s * 0.5))
+				_p(g, _ball, tela("#ffffff"), cara + Vector3(s * 0.015, 0.012, 0.01), Vector3.ONE * 0.006)
+			var nz := luz("#ff3344")
+			_p(g, _ball, nz, cara + Vector3(0, -0.015, 0.012), Vector3.ONE * 0.012)
+			_an(pip, g, "brillar", 0.0, nz)
+			for i in 8:
+				_p(g, _star, tela("#ffffff"), Vector3(-0.12 + i * 0.034, -0.04 + (i % 2) * 0.012, 0.14 - absf(i - 3.5) * 0.012), Vector3.ONE * 0.008)
+		"sueter2":
+			_p(g, _torus, tela(c0), Vector3(0, 0.17, 0.0), Vector3(0.1, 0.9, 0.1), Vector3(0.15, 0, 0))
+			_p(g, _torus, tela(c0), Vector3(0, 0.2, 0.0), Vector3(0.09, 0.8, 0.09), Vector3(0.15, 0, 0))
+			for i in 5:
+				_p(g, _box, tela(Color(c0).lightened(0.12).to_html(false)), Vector3(-0.08 + i * 0.04, 0.03, 0.158 - absf(i - 2) * 0.01), Vector3(0.012, 0.16, 0.012), Vector3(-0.15, 0, 0))
+		"futbol1":
+			for a in pip.arms:
+				out.append(_p(a, _ball, tela("#7be08a"), Vector3(0, -0.085, 0.022), Vector3(0.036, 0.034, 0.036)))
+				out.append(_p(a, _torus, tela("#2b2633"), Vector3(0, -0.06, 0.02), Vector3(0.032, 0.4, 0.032)))
+			_p(g, _box, tela(c1), Vector3(0, 0.06, 0.168), Vector3(0.016, 0.07, 0.006), Vector3(-0.1, 0, 0))
+			for l in pip.legs:
+				out.append(_p(l, _ball, tela("#ffffff"), Vector3(0, -0.035, 0.05), Vector3(0.035, 0.03, 0.015)))
+		"futbol2":
+			var arm: Node3D = pip.arms[0]
+			out.append(_p(arm, _torus, tela("#ffcf4a"), Vector3(0, -0.01, 0.005), Vector3(0.036, 0.6, 0.036)))
+			out.append(_p(arm, _box, tela("#2b2633"), Vector3(0.0, -0.01, 0.04), Vector3(0.012, 0.012, 0.004)))
+			_p(g, _box, tela(c1), Vector3(-0.025, 0.06, 0.168), Vector3(0.012, 0.06, 0.006), Vector3(-0.1, 0, 0))
+			_p(g, _torus, tela(c1), Vector3(0.02, 0.06, 0.167), Vector3(0.022, 0.5, 0.03), Vector3(PI / 2 - 0.1, 0, 0))
+			for l in pip.legs:
+				for k in 2:
+					out.append(_p(l, _torus, tela(c0 if k == 0 else c1), Vector3(0, -0.065 - k * 0.018, 0.01), Vector3(0.034, 0.5, 0.036)))
+		"tutu1":
+			for i in 2:
+				_p(g, _cone, tela(c1 if i == 0 else c0), Vector3(0, -0.08 - i * 0.012, -0.01), Vector3(0.3 - i * 0.03, -0.06, 0.31 - i * 0.03), Vector3(PI, 0, 0))
+			var sm := luz("#fff3c4")
+			for i in 10:
+				var a := TAU * i / 10.0
+				_p(g, _star, sm, Vector3(sin(a) * 0.25, -0.085, cos(a) * 0.25 - 0.01), Vector3.ONE * 0.014, Vector3(0, a, 0))
+			_an(pip, g, "brillar", 0.0, sm)
+			for s in [-1.0, 1.0]:
+				_p(g, _cone, tela(c1), Vector3(s * 0.04, 0.08, -0.19), Vector3(0.035, 0.06, 0.015), Vector3(0, 0, -s * PI / 2))
+		# ---------- espalda ----------
+		"alas_hada1":
+			var cr := vidrio("#e8f4ff", 0.45)
+			cr.emission_enabled = true
+			cr.emission = Color(c0) * 0.5
+			for ch in g.get_children():
+				if ch is Node3D and not (ch is MeshInstance3D):
+					var s := signf((ch as Node3D).position.x)
+					var m := _p(ch, _ala, cr, Vector3(0, -0.04, 0), Vector3(0.12 * s, 0.32, 0.1), Vector3(0, 0, -s * 1.25))
+					m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+					_p(ch, _ball, luz("#ffffff"), Vector3(s * 0.14, 0.09, 0.01), Vector3.ONE * 0.012)
+			_an(pip, g, "brillar", 0.0, cr)
+		"alas_mariposa1":
+			for ch in g.get_children():
+				if ch is Node3D and not (ch is MeshInstance3D):
+					var s := signf((ch as Node3D).position.x)
+					_p(ch, _ball, tela(c0), Vector3(s * 0.08, -0.15, 0), Vector3(0.018, 0.08, 0.008), Vector3(0, 0, s * 0.35))
+					_p(ch, _ball, tela(c1), Vector3(s * 0.1, -0.22, 0), Vector3(0.016, 0.02, 0.009))
+					_p(ch, _ball, tela("#7fc8ff"), Vector3(s * 0.12, -0.04, 0.004), Vector3(0.022, 0.022, 0.01))
+		"mochila1":
+			var os := _g(g, "osito", Vector3(0, 0.17, -0.2))
+			var cf := tela("#c58a4a")
+			_p(os, _ball, cf, Vector3.ZERO, Vector3.ONE * 0.05)
+			for s in [-1.0, 1.0]:
+				_p(os, _ball, cf, Vector3(s * 0.04, 0.04, 0), Vector3.ONE * 0.018)
+				_p(os, _ball, tela("#2b2633"), Vector3(s * 0.018, 0.01, -0.045), Vector3.ONE * 0.006)
+				_p(os, _ball, cf, Vector3(s * 0.05, -0.05, -0.02), Vector3(0.015, 0.02, 0.015))
+			_p(os, _ball, tela("#f3d9b6"), Vector3(0, -0.01, -0.045), Vector3(0.02, 0.015, 0.01))
+			_an(pip, os, "balancear", 0.35)
+		"mochila2":
+			_p(g, _cyl, tela("#4cc38a"), Vector3(0, 0.18, -0.2), Vector3(0.04, 0.2, 0.04), Vector3(0, 0, PI / 2))
+			for s in [-1.0, 1.0]:
+				_p(g, _torus, tela("#8d5d32"), Vector3(s * 0.06, 0.18, -0.2), Vector3(0.043, 0.3, 0.043), Vector3(0, 0, PI / 2))
+			_p(g, _cyl, tela("#7fc8ff"), Vector3(0.11, 0.05, -0.18), Vector3(0.02, 0.07, 0.02))
+			_p(g, _cyl, metal("#cfd6e2"), Vector3(0.11, 0.09, -0.18), Vector3(0.015, 0.01, 0.015))
+			_p(g, _cyl, metal("#cfd6e2"), Vector3(-0.11, 0.06, -0.19), Vector3(0.022, 0.03, 0.022), Vector3(PI / 2, 0, 0))
+		# ---------- trajes ----------
+		"ninja1":
+			var es := _g(g, "espada", Vector3(0, 0.05, -0.2), Vector3(0, 0, 0.75))
+			_p(es, _box, metal("#e8eef7"), Vector3(0, 0.15, 0), Vector3(0.018, 0.3, 0.006))
+			_p(es, _cyl, metal("#ffcf4a"), Vector3(0, -0.005, 0), Vector3(0.025, 0.008, 0.025), Vector3(PI / 2, 0, 0))
+			_p(es, _cyl, tela("#2b2633"), Vector3(0, -0.06, 0), Vector3(0.012, 0.1, 0.012))
+			for k in 4:
+				_p(es, _box, tela("#e85d6f"), Vector3(0, -0.025 - k * 0.022, 0), Vector3(0.026, 0.006, 0.026), Vector3(0, 0.7, 0))
+		"ninja2":
+			var gris := metal("#9aa0ad")
+			for i in 3:
+				var sh := _g(g, "shuriken", Vector3(-0.08 + i * 0.08, -0.01, 0.17 - absf(i - 1) * 0.02))
+				_p(sh, _star, gris, Vector3.ZERO, Vector3(0.028, 0.028, 0.015), Vector3(-0.1, 0, 0))
+				_an(pip, sh, "girar", 2.0 + i)
+			if hg != null:
+				var cola := _g(hg, "cola_larga", Vector3(0, 0.07, -0.15))
+				for k in 3:
+					_p(cola, _box, tela("#e23b4e"), Vector3(0.02, -0.08 - k * 0.07, -0.04 - k * 0.03), Vector3(0.018, 0.08, 0.005), Vector3(0.5, 0, 0.2))
+				_an(pip, cola, "ondear", 1.6)
+		"robot1":
+			var fm := luz("#ffb347")
+			for l in pip.legs:
+				out.append(_p(l, _cyl, metal("#7a8090"), Vector3(0, -0.11, 0.0), Vector3(0.05, 0.04, 0.05)))
+				var f := _g(l, "fuego", Vector3(0, -0.14, 0.0))
+				_p(f, _cone, fm, Vector3(0, -0.04, 0), Vector3(0.035, 0.08, 0.035), Vector3(PI, 0, 0))
+				_an(pip, f, "llama", 1.0, fm)
+				out.append(f)
+			for a in pip.arms:
+				out.append(_p(a, _ball, metal(c1 if c1 != "#ffffff" else "#ff5a5f"), Vector3(0, 0.0, 0.0), Vector3(0.045, 0.035, 0.045)))
+			if hg != null:
+				for s in [-1.0, 1.0]:
+					_p(hg, _cyl, metal("#cfd6e2"), Vector3(s * 0.12, 0.19, 0), Vector3(0.005, 0.08, 0.005), Vector3(0, 0, -s * 0.3))
+					_p(hg, _ball, fm, Vector3(s * 0.135, 0.235, 0), Vector3.ONE * 0.015)
+		"slime1", "slime2":
+			var hb: Node3D = hg.get_node("blob_cabeza") if hg != null and hg.has_node("blob_cabeza") else hg
+			if v == 1:
+				var oro := metal("#ffcf4a")
+				_p(hb, _cyl, oro, Vector3(0, 0.2, 0), Vector3(0.09, 0.04, 0.09))
+				for i in 5:
+					var a := TAU * i / 5.0
+					_p(hb, _cone, oro, Vector3(sin(a) * 0.08, 0.25, cos(a) * 0.08), Vector3(0.022, 0.06, 0.022))
+					_p(hb, _ball, luz(["#ff4d6d", "#4dd2ff", "#7dff8a", "#ffe066", "#c77dff"][i]), Vector3(sin(a) * 0.09, 0.2, cos(a) * 0.09), Vector3.ONE * 0.012)
+				var tc := tela("#e23b4e")
+				tc.cull_mode = BaseMaterial3D.CULL_DISABLED
+				var capa := _g(g, "capa", Vector3(0, 0.15, -0.15))
+				_p(capa, _ball, tc, Vector3(0, -0.12, -0.05), Vector3(0.17, 0.2, 0.03), Vector3(0.12, 0, 0))
+				_p(g, _torus, tela("#fbf8f2"), Vector3(0, 0.16, -0.02), Vector3(0.13, 1.0, 0.13), Vector3(0.3, 0, 0))
+				_an(pip, capa, "ondear", 1.0)
+			else:
+				for i in 6:
+					var bu := _g(g, "burbuja%d" % i, Vector3(sin(i * 1.7) * 0.25, 0.05 + i * 0.07, cos(i * 1.7) * 0.15))
+					_p(bu, _ball, vidrio("#e8f4ff", 0.35), Vector3.ZERO, Vector3.ONE * (0.025 + (i % 3) * 0.012))
+					_an(pip, bu, "flotar", 1.0)
+				_p(g, _ball, tela("#ff9f43"), Vector3(0.06, 0.0, 0.05), Vector3(0.03, 0.02, 0.012))
+				_p(g, _cone, tela("#ff9f43"), Vector3(0.025, 0.0, 0.05), Vector3(0.015, 0.02, 0.006), Vector3(0, 0, PI / 2))
+		"dino1":
+			if hg != null:
+				var cr := tela(c1)
+				_p(hg, _cyl, cr, Vector3(0, 0.08, -0.1), Vector3(0.2, 0.012, 0.15), Vector3(1.2, 0, 0))
+				for i in 9:
+					var a := -1.4 + i * 0.35
+					_p(hg, _cone, cr, Vector3(sin(a) * 0.2, 0.08 + cos(a) * 0.14, -0.14 - cos(a) * 0.06), Vector3(0.02, 0.05, 0.015), Vector3(-0.4, 0, -a))
+				var hueso := tela("#fff3e0")
+				for s in [-1.0, 1.0]:
+					_p(hg, _cone, hueso, Vector3(s * 0.06, 0.17, 0.08), Vector3(0.02, 0.12, 0.02), Vector3(0.6, 0, -s * 0.2))
+				_p(hg, _cone, hueso, Vector3(0, 0.08, 0.16), Vector3(0.016, 0.06, 0.016), Vector3(0.9, 0, 0))
+		"heroe1":
+			_esconder_malla(g, _star)
+			var r := _p(g, _rayo(), metal(c1), Vector3(0, 0.06, 0.172), Vector3(0.055, 0.075, 0.05), Vector3(-0.15, 0, 0.1))
+			r.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			for l in pip.legs:
+				out.append(_p(l, _ball, tela(c1), Vector3(0, -0.08, 0.025), Vector3(0.04, 0.05, 0.05)))
+				out.append(_p(l, _ball, tela(c1), Vector3(0, -0.11, 0.045), Vector3(0.04, 0.026, 0.065)))
+			for a in pip.arms:
+				out.append(_p(a, _torus, tela(c1), Vector3(0, -0.06, 0.018), Vector3(0.03, 0.8, 0.03)))
+			if hg != null:
+				for s in [-1.0, 1.0]:
+					_p(hg, _cone, tela(c0), Vector3(s * 0.14, 0.04, 0.1), Vector3(0.025, 0.06, 0.01), Vector3(0, 0, -s * 1.2))

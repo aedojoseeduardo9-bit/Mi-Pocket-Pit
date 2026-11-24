@@ -125,6 +125,74 @@ prenda("calabaza", "traje", "Disfraz de calabaza", "Pumpkin Costume", 500, 3, ["
 prenda("panda", "traje", "Disfraz de panda", "Panda Costume", 650, 4, ["blanco", "negro"])
 prenda("tiburon", "traje", "Disfraz de tiburón", "Shark Costume", 700, 5, ["gris", "blanco"])
 
+# ---------------- diseños propios de cada variante ----------------
+# El dueño pidió que ninguna compra sea "solo otro color": cada variante de una misma prenda trae piezas distintas
+# (atuendos.gd las arma según "v"). Nombre = prenda + diseño (+ color si hace falta para distinguir).
+DISENOS = {
+    "bufanda": [None, ("con flecos largos", "Fringed"), ("gruesa con pompones", "Chunky Pom-pom"), ("a rayas de lana", "Striped Wool")],
+    "mono": [None, ("gigante de lunares", "Giant Polka-dot"), ("de mariposa", "Butterfly")],
+    "panuelo": [None, ("de vaquero", "Cowboy"), ("con nudo de lado", "Side-knot")],
+    "corbata": [None, ("a rayas ancha", "Wide Striped")],
+    "cascabel": [None, ("de tres campanas", "Triple")],
+    "gorro_lana": [None, ("con orejeras y trenzas", "Earflap"), ("de gatito", "Kitty"), ("largo de duende", "Long Elf")],
+    "gorra": [None, ("al revés", "Backwards"), ("con orejas de oso", "Bear-ear"), ("con cresta de dino", "Dino-spike")],
+    "sombrero_copa": [None, ("alto con conejito", "Tall Bunny")],
+    "corona": [None, ("de hielo", "Ice")],
+    "flor": [None, ("margarita gigante", "Giant Daisy"), ("ramo de tres", "Triple Bouquet")],
+    "audifonos": [None, ("con orejas de gato", "Cat-ear"), ("gamer con micrófono", "Gamer Mic")],
+    "vaquero": [None, ("de sheriff", "Sheriff")],
+    "mago": [None, ("doblado con cascabel", "Bent Bell")],
+    "corona_flores": [None, ("con cintas de hada", "Fairy Ribbon")],
+    "cuernos": [None, ("de carnero", "Ram")],
+    "helice": [None, ("doble", "Twin")],
+    "orejas_conejo": [None, ("caídas", "Lop")],
+    "boina": [None, ("de pintor", "Painter"), ("con insignia", "Badge")],
+    "lentes_sol": [None, ("de aviador", "Aviator"), ("deportivos", "Sport")],
+    "lentes_corazon": [None, ("gigantes", "Giant")],
+    "lentes_redondos": [None, ("con cadena", "Chain")],
+    "lentes_estrella": [None, ("de rockstar con alas", "Rockstar Wing")],
+    "visor": [None, ("con antenas", "Antenna")],
+    "poleron": [None, ("con orejas de oso", "Bear-ear"), ("universitario", "Varsity"), ("de dragón", "Dragon")],
+    "polera_estrella": [None, ("con rayo", "Lightning")],
+    "overol": [None, ("con parches de corazón", "Heart-patch")],
+    "capa": [None, ("real con armiño", "Royal"), ("con capucha estrellada", "Starry Hood")],
+    "chaleco": [None, ("de explorador", "Explorer")],
+    "hawaiana": [None, ("con collar de flores", "Lei")],
+    "impermeable": [None, ("con capucha de patito", "Duck-hood")],
+    "sueter": [None, ("navideño con reno", "Holiday Reindeer"), ("de cuello alto", "Turtleneck")],
+    "futbol": [None, ("de arquero con guantes", "Goalkeeper"), ("de capitán", "Captain")],
+    "tutu": [None, ("de dos pisos con estrellas", "Starry Two-tier")],
+    "alas_hada": [None, ("de cristal largas", "Crystal")],
+    "mochila": [None, ("con osito", "Teddy"), ("de explorador", "Explorer")],
+    "alas_mariposa": [None, ("con colas largas", "Swallowtail")],
+    "ninja": [None, ("con espada", "Sword"), ("con estrellas ninja", "Shuriken")],
+    "robot": [None, ("con propulsores", "Rocket")],
+    "slime": [None, ("rey con corona", "King"), ("de agua con burbujas", "Bubbly")],
+    "dino": [None, ("tricerátops", "Triceratops")],
+    "heroe": [None, ("con rayo y botas", "Lightning")],
+}
+_cuenta = {}
+for r in ropa:
+    f_ = r["forma"]
+    if f_ not in DISENOS:
+        continue
+    i = _cuenta.get(f_, 0)
+    _cuenta[f_] = i + 1
+    r["v"] = i
+    d = DISENOS[f_][i] if i < len(DISENOS[f_]) else None
+    if d:
+        base_es = r["nombre"]
+        base_en = r["en"]
+        # quitar el color del nombre (ya no hace falta: el diseño lo distingue)
+        for k, (hx, en_c, es_c) in C.items():
+            if base_es.endswith(" " + es_c):
+                base_es = base_es[: -len(es_c) - 1]
+            if base_en.startswith(en_c + " "):
+                base_en = base_en[len(en_c) + 1:]
+        r["nombre"] = base_es + " " + d[0]
+        r["en"] = d[1] + " " + base_en
+assert all(len(set(r["nombre"] for r in ropa if r["forma"] == f_)) == n for f_, n in _cuenta.items()), "nombres repetidos"
+
 # ---------------- decoración: 30+ por habitación ----------------
 def v(id_, es, en, precio, **p):
     return {"id": id_, "nombre": es, "en": en, "precio": precio, "p": p}
@@ -156,38 +224,38 @@ def paredes(hab, n):
         out.append(v(pid, es, en, 0 if i == 0 else 40 + 15 * (i % 6), patron=pat, c1=c1, c2=c2))
     return out
 
-pisos = [v("madera", "Madera", "Wood", 0, tipo="tablas", c1="#d4a373", c2="#b9875a"),
-         v("madera_oscura", "Madera oscura", "Dark Wood", 60, tipo="tablas", c1="#8d5d32", c2="#6e4524"),
-         v("ajedrez", "Baldosa ajedrez", "Checker Tiles", 50, tipo="ajedrez", c1="#f4f1ec", c2="#3c3f58"),
-         v("ajedrez_rosa", "Baldosa rosa", "Pink Tiles", 70, tipo="ajedrez", c1="#fff3f7", c2="#ff9fb8"),
-         v("ajedrez_menta", "Baldosa menta", "Mint Tiles", 70, tipo="ajedrez", c1="#f2fbf8", c2="#7fd8be"),
-         v("alfombra_azul", "Alfombra azul", "Blue Carpet", 80, tipo="liso", c1="#7fa8e8", c2="#6a92d4"),
-         v("alfombra_lila", "Alfombra lila", "Purple Carpet", 80, tipo="liso", c1="#b9a2f0", c2="#a68ce0")]
-
-def furn(slot, items):
-    return items
+# Cada estilo tiene FORMA propia (no solo otro color): el dueño quiere que toda compra se note.
+pisos = [v("madera", "Tablas de madera", "Wood Planks", 0, tipo="tablas", c1="#d4a373", c2="#b9875a"),
+         v("parquet", "Parquet en espiga", "Herringbone Parquet", 90, tipo="espiga", c1="#c58a55", c2="#9c6a3c"),
+         v("ajedrez", "Baldosa ajedrez", "Checker Tiles", 60, tipo="ajedrez", c1="#f4f1ec", c2="#3c3f58"),
+         v("hexagonos", "Baldosa panal", "Honeycomb Tiles", 90, tipo="hexagonos", c1="#fff6dc", c2="#ffcf6a"),
+         v("piedra", "Piso de piedras", "Stone Path Floor", 110, tipo="piedra", c1="#d9d2c6", c2="#a89f92"),
+         v("mullida", "Alfombra peluda", "Shaggy Carpet", 120, tipo="mullida", c1="#b9a2f0", c2="#d4c4ff"),
+         v("mosaico", "Mosaico de colores", "Color Mosaic", 130, tipo="mosaico", c1="#f2f6fb", c2="#7fc8ff")]
 
 deco = {
     "cocina": {
         "pared": paredes("cocina", 12),
         "piso": pisos,
-        "nevera": [v("clasica", "Nevera clásica", "Classic Fridge", 0, c="#f4f6fa", r=0.08),
-                   v("retro", "Nevera retro rosa", "Retro Pink Fridge", 120, c="#ffb3c1", r=0.18),
-                   v("menta", "Nevera menta", "Mint Fridge", 120, c="#9fe0c8", r=0.18),
-                   v("negra", "Nevera moderna", "Modern Fridge", 160, c="#3a3d4a", r=0.05),
-                   v("amarilla", "Nevera amarilla", "Yellow Fridge", 120, c="#ffd86a", r=0.18),
-                   v("magica", "Nevera mágica", "Magic Fridge", 260, c="#b49cff", r=0.18, magia=True)],
+        "nevera": [v("clasica", "Nevera clásica", "Classic Fridge", 0, forma="clasica", c="#f4f6fa"),
+                   v("retro", "Nevera retro", "Retro Fridge", 120, forma="retro", c="#ffb3c1"),
+                   v("doble", "Nevera de dos puertas", "Double-Door Fridge", 180, forma="doble", c="#cfd6e2"),
+                   v("vintage", "Nevera con pegatinas", "Sticker Fridge", 140, forma="vintage", c="#9fe0c8"),
+                   v("robot", "Nevera robot", "Robot Fridge", 260, forma="robot", c="#ffd86a"),
+                   v("magica", "Nevera de cristal", "Crystal Fridge", 300, forma="magica", c="#b49cff")],
         "mesa": [v("madera", "Mesa de madera", "Wooden Table", 0, forma="cuadrada", c="#c08552"),
-                 v("azul", "Mesa redonda azul", "Round Blue Table", 90, forma="redonda", c="#7fb8ff"),
-                 v("rosa", "Mesa redonda rosa", "Round Pink Table", 90, forma="redonda", c="#ffadc4"),
-                 v("blanca", "Mesa blanca", "White Table", 80, forma="cuadrada", c="#f2efe9"),
+                 v("azul", "Mesa redonda", "Round Table", 90, forma="redonda", c="#7fb8ff"),
                  v("hongo", "Mesa hongo", "Mushroom Table", 150, forma="hongo", c="#ff6b6b"),
-                 v("dulces", "Mesa de cumpleaños", "Birthday Table", 220, forma="dulces", c="#ffadc4")],
+                 v("dulces", "Mesa de cumpleaños", "Birthday Table", 220, forma="dulces", c="#ffadc4"),
+                 v("picnic", "Mesa de picnic", "Picnic Table", 140, forma="picnic", c="#b0844f"),
+                 v("barra", "Barra con taburetes", "Breakfast Bar", 190, forma="barra", c="#f2efe9")],
         "planta": [v("ninguna", "Sin planta", "No Plant", 0, forma="nada"),
                    v("cactus", "Cactus", "Cactus", 40, forma="cactus", c="#5fae4a"),
                    v("helecho", "Helecho", "Fern", 50, forma="helecho", c="#4f9a3e"),
                    v("girasol", "Girasol", "Sunflower", 60, forma="girasol", c="#ffcf4a"),
-                   v("flor_magica", "Flor mágica", "Magic Flower", 180, forma="flor_magica", c="#c77dff")],
+                   v("flor_magica", "Flor mágica", "Magic Flower", 180, forma="flor_magica", c="#c77dff"),
+                   v("bonsai", "Bonsái", "Bonsai", 160, forma="bonsai", c="#4f9a3e"),
+                   v("carnivora", "Planta carnívora", "Snappy Plant", 200, forma="carnivora", c="#7cc96a")],
     },
     "habitacion": {
         "pared": paredes("habitacion", 12),
@@ -197,16 +265,16 @@ deco = {
                  v("concha", "Cama concha", "Shell Bed", 180, forma="concha", c="#ffc2d6"),
                  v("hoja", "Cama hoja", "Leaf Bed", 140, forma="hoja", c="#7cc96a"),
                  v("castillo", "Cama castillo", "Castle Bed", 300, forma="castillo", c="#c9b8f0"),
-                 v("nube_magica", "Nube mágica", "Magic Cloud Bed", 320, forma="nube_magica")],
+                 v("arcoiris", "Cama arcoíris", "Rainbow Bed", 320, forma="arcoiris")],
         "lampara": [v("hongo", "Lámpara hongo", "Mushroom Lamp", 0, forma="hongo", c="#ff6b6b"),
                     v("luna", "Lámpara luna", "Moon Lamp", 90, forma="luna", c="#e9f0ff"),
                     v("estrella", "Lámpara estrella", "Star Lamp", 110, forma="estrella", c="#ffd36e"),
-                    v("hongo_azul", "Lámpara hongo azul", "Blue Mushroom Lamp", 70, forma="hongo", c="#6fa8ff"),
+                    v("farol", "Farol de bellota", "Acorn Lantern", 120, forma="farol", c="#ffcf80"),
                     v("lava", "Lámpara de lava", "Lava Lamp", 130, forma="lava", c="#ff7ac0"),
                     v("disco", "Bola disco", "Disco Ball", 280, forma="disco", c="#e8eef7")],
         "alfombra": [v("redonda", "Alfombra redonda", "Round Rug", 0, forma="redonda", c="#ffb3c7"),
                      v("estrella", "Alfombra estrella", "Star Rug", 70, forma="estrella", c="#ffd36e"),
-                     v("redonda_azul", "Alfombra celeste", "Sky Rug", 50, forma="redonda", c="#a9d2ff"),
+                     v("oso", "Alfombra osito", "Teddy Rug", 110, forma="oso", c="#e2b98a"),
                      v("corazon", "Alfombra corazón", "Heart Rug", 80, forma="corazon", c="#ff8fb3"),
                      v("nube", "Alfombra nube", "Cloud Rug", 80, forma="nube", c="#f4f6ff"),
                      v("arcoiris", "Alfombra arcoíris", "Rainbow Rug", 120, forma="arcoiris", c="#ff6b6b")],
@@ -219,16 +287,20 @@ deco = {
                   v("lluvia_estrellas", "Lluvia de estrellas", "Star Shower", 260, cielo="lluvia_estrellas")],
         "cerca": [v("blanca", "Cerca blanca", "White Fence", 0, forma="estacas", c="#ffffff"),
                   v("madera", "Cerca de troncos", "Log Fence", 50, forma="troncos", c="#a8743f"),
-                  v("rosa", "Cerca rosa", "Pink Fence", 60, forma="estacas", c="#ffb3c7"),
-                  v("seto", "Seto", "Hedge", 70, forma="seto", c="#5fae4a"),
+                  v("caramelo", "Cerca de caramelo", "Candy Cane Fence", 120, forma="caramelo", c="#ff5a6e"),
+                  v("seto", "Seto con flores", "Flower Hedge", 90, forma="seto", c="#5fae4a"),
                   v("piedra", "Muro de piedra", "Stone Wall", 90, forma="piedra", c="#b8b2a7")],
-        "arbol": [v("roble", "Roble", "Oak", 0, forma="redondo", c="#5fae4a"), v("cerezo", "Cerezo", "Cherry Tree", 120, forma="redondo", c="#ffc2d6"),
-                  v("pino", "Pino", "Pine", 90, forma="pino", c="#3f8f4a"), v("palmera", "Palmera", "Palm Tree", 130, forma="palmera", c="#5fbf5a"),
-                  v("otono", "Árbol de otoño", "Autumn Tree", 110, forma="redondo", c="#ff9f43"),
-                  v("magico", "Árbol mágico", "Magic Tree", 250, forma="redondo", c="#b49cff")],
-        "pasto": [v("verde", "Pasto", "Grass", 0, c="#8fd16a"), v("primavera", "Pasto con flores", "Spring Grass", 60, c="#a5de7c"),
-                  v("otono", "Pasto de otoño", "Autumn Grass", 60, c="#c9c46a"), v("nieve", "Nieve", "Snow", 120, c="#f2f6fb"),
-                  v("arena", "Arena de playa", "Beach Sand", 90, c="#f5dfa8")],
+        "arbol": [v("roble", "Roble con columpio", "Oak Tree", 0, forma="roble", c="#5fae4a"),
+                  v("cerezo", "Cerezo llorón", "Weeping Cherry", 140, forma="cerezo", c="#ffc2d6"),
+                  v("pino", "Pino nevado", "Snowy Pine", 100, forma="pino", c="#3f8f4a"),
+                  v("palmera", "Palmera con cocos", "Coconut Palm", 130, forma="palmera", c="#5fbf5a"),
+                  v("otono", "Arce de otoño", "Autumn Maple", 130, forma="arce", c="#ff8a3d"),
+                  v("magico", "Árbol de cristal", "Crystal Tree", 280, forma="cristal", c="#b49cff")],
+        "pasto": [v("verde", "Pasto", "Grass", 0, forma="pasto", c="#8fd16a"),
+                  v("primavera", "Jardín de tulipanes", "Tulip Garden", 90, forma="tulipanes", c="#a5de7c"),
+                  v("otono", "Hojas y hongos", "Leaves & Mushrooms", 90, forma="otono", c="#c9b26a"),
+                  v("nieve", "Nieve con muñeco", "Snow & Snowman", 160, forma="nieve", c="#f2f6fb"),
+                  v("arena", "Playa", "Beach", 150, forma="playa", c="#f5dfa8")],
         "juguete": [v("ninguno", "Nada", "Nothing", 0, forma="nada"), v("columpio", "Columpio", "Swing", 120, forma="columpio", c="#ff6b6b"),
                     v("tobogan", "Tobogán", "Slide", 150, forma="tobogan", c="#4aa8ff"),
                     v("piscina", "Piscinita", "Kiddie Pool", 130, forma="piscina", c="#7fd8ff"),
@@ -239,22 +311,21 @@ deco = {
     },
     "bano": {
         "pared": paredes("bano", 12) + [v("acuario", "Pared acuario", "Aquarium Wall", 300, patron="acuario", c1="#dff3fb", c2="#ffffff")],
-        "piso": [pisos[0], pisos[2], pisos[3], pisos[4],
-                 v("baldosa_blanca", "Baldosa blanca", "White Tiles", 0, tipo="ajedrez", c1="#f7f9fc", c2="#e3e9f2")],
-        "banera": [v("clasica", "Bañera clásica", "Classic Tub", 0, c="#ffffff", patas=""),
-                   v("dorada", "Bañera patas doradas", "Golden Feet Tub", 150, c="#fff4f6", patas="#ffcf4a"),
-                   v("rosa", "Bañera rosa", "Pink Tub", 120, c="#ffc2d6", patas=""),
-                   v("menta", "Bañera menta", "Mint Tub", 120, c="#b4ecd9", patas="#ffffff"),
-                   v("negra", "Bañera elegante", "Elegant Tub", 200, c="#3a3d4a", patas="#ffcf4a"),
-                   v("jacuzzi", "Jacuzzi de luz", "Glow Jacuzzi", 260, c="#e8f4ff", patas="", jacuzzi=True)],
+        "piso": [pisos[0], pisos[2], pisos[3], pisos[4], pisos[6]],
+        "banera": [v("clasica", "Bañera clásica", "Classic Tub", 0, forma="clasica", c="#ffffff"),
+                   v("dorada", "Bañera de patas doradas", "Clawfoot Tub", 150, forma="garras", c="#fff4f6"),
+                   v("barril", "Tina de barril", "Barrel Tub", 140, forma="barril", c="#b0844f"),
+                   v("concha", "Bañera concha", "Seashell Tub", 220, forma="concha", c="#ffc2d6"),
+                   v("negra", "Bañera moderna", "Modern Tub", 200, forma="moderna", c="#3a3d4a"),
+                   v("jacuzzi", "Jacuzzi de luz", "Glow Jacuzzi", 260, forma="jacuzzi", c="#e8f4ff")],
         "cortina": [v("rayas", "Cortina a rayas", "Striped Curtain", 0, forma="rayas", c1="#7fc8ff", c2="#ffffff"),
                     v("burbujas", "Cortina burbujas", "Bubble Curtain", 60, forma="burbujas", c1="#b8f0ff", c2="#ffffff"),
                     v("estrellas", "Cortina estrellas", "Star Curtain", 90, forma="estrellas", c1="#4b4fa8", c2="#ffd36e"),
-                    v("rayas_rosa", "Cortina rosa", "Pink Curtain", 50, forma="rayas", c1="#ff9fb8", c2="#ffffff"),
-                    v("patitos", "Cortina patitos", "Duck Curtain", 80, forma="burbujas", c1="#fff3b0", c2="#ffd84a"),
-                    v("mar", "Cortina del mar", "Sea Curtain", 70, forma="rayas", c1="#3cc9c0", c2="#7fc8ff"),
-                    v("lila", "Cortina lila", "Lilac Curtain", 50, forma="lisa", c1="#c3a6ff", c2="#c3a6ff"),
-                    v("noche", "Cortina noche", "Night Curtain", 90, forma="estrellas", c1="#2f3170", c2="#ffffff"),
+                    v("cuentas", "Cortina de cuentas", "Bead Curtain", 110, forma="cuentas", c1="#ff9fb8", c2="#ffe066"),
+                    v("patitos", "Cortina patitos", "Duck Curtain", 80, forma="patitos", c1="#fff3b0", c2="#ffd84a"),
+                    v("olas", "Cortina de olas", "Wave Curtain", 100, forma="olas", c1="#3cc9c0", c2="#ffffff"),
+                    v("bambu", "Persiana de bambú", "Bamboo Blind", 120, forma="bambu", c1="#c9b26a", c2="#9c8648"),
+                    v("dosel", "Cortina con lazo", "Tied Drape", 130, forma="dosel", c1="#c3a6ff", c2="#ff8fb3"),
                     v("luces", "Cortina de luces", "Fairy Light Curtain", 160, forma="luces", c1="#fff3f8", c2="#fff3f8")],
     },
 }
@@ -302,7 +373,7 @@ especiales = [
 ]
 
 # decoraciones con efectos (animación, luces o partículas): la tarjeta muestra una chispita
-CON_EFECTO = {"magica", "dulces", "flor_magica", "girasol", "nube_magica", "disco", "luna", "estrella", "lava", "noche",
+CON_EFECTO = {"magica", "dulces", "flor_magica", "girasol", "arcoiris", "disco", "farol", "robot", "carnivora", "luna", "estrella", "lava", "noche",
               "aurora", "galaxia", "lluvia_estrellas", "cerezo", "otono", "magico", "nieve", "columpio", "piscina", "fuente",
               "fogata", "acuario", "jacuzzi", "luces", "clasica", "dorada", "rosa", "menta", "negra"}
 for h, slots in deco.items():
