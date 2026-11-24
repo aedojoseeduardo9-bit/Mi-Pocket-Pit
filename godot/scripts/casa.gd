@@ -277,6 +277,7 @@ func pared(n: Node3D, p: Dictionary) -> void:
 					x += 1.8
 	if xs.size() > 0:
 		_multi(n, mesh, mat(c2), xs)
+	_adorno(n, str(p.get("patron", "liso")), c1, c2)
 
 ## Piso: tablas de madera, baldosas de ajedrez o alfombra lisa.
 func piso(n: Node3D, p: Dictionary) -> void:
@@ -284,6 +285,7 @@ func piso(n: Node3D, p: Dictionary) -> void:
 	var c2 := str(p.get("c2", "#b9875a"))
 	_rb(n, Vector3(ANCHO, 0.2, 10.0), Vector3(0, -0.1, 2.5), c1, 0.04)
 	var xs: Array = []
+	var malla: Mesh = BoxMesh.new()
 	match str(p.get("tipo", "tablas")):
 		"tablas":
 			for iz in 10:
@@ -291,37 +293,303 @@ func piso(n: Node3D, p: Dictionary) -> void:
 			for iz in 10:
 				for k in 4:
 					xs.append(Transform3D(Basis.from_scale(Vector3(0.015, 0.01, 0.5)), Vector3(-3.0 + k * 2.0 + (iz % 2) * 1.0, 0.003, -2.0 + iz * 0.5)))
+		"espiga":
+			# tablitas en zigzag (espiga), en dos tonos
+			for iz in 18:
+				for ix in 16:
+					var a := PI / 4 if (ix + iz) % 2 == 0 else -PI / 4
+					var col := (ix * 7 + iz * 3) % 3 == 0
+					if not col:
+						continue
+					xs.append(Transform3D(Basis(Vector3.UP, a).scaled(Vector3(0.36, 0.012, 0.1)), Vector3(-3.75 + ix * 0.5, 0.004, -2.4 + iz * 0.28)))
+			for iz in 18:
+				for ix in 16:
+					var a := PI / 4 if (ix + iz) % 2 == 0 else -PI / 4
+					xs.append(Transform3D(Basis(Vector3.UP, a).scaled(Vector3(0.37, 0.008, 0.012)), Vector3(-3.75 + ix * 0.5, 0.003, -2.4 + iz * 0.28 + 0.05)))
 		"ajedrez":
 			for ix in 16:
 				for iz in 10:
 					if (ix + iz) % 2 == 0:
 						xs.append(Transform3D(Basis.from_scale(Vector3(0.5, 0.01, 0.5)), Vector3(-3.75 + ix * 0.5, 0.005, -2.25 + iz * 0.5)))
-		_:
-			pass
+		"hexagonos":
+			# baldosas de panal en relieve
+			var hx := CylinderMesh.new()
+			hx.radial_segments = 6
+			hx.top_radius = 1.0
+			hx.bottom_radius = 1.0
+			hx.height = 1.0
+			malla = hx
+			for iz in 14:
+				for ix in 14:
+					var x := -3.6 + ix * 0.55 + (0.275 if iz % 2 else 0.0)
+					xs.append(Transform3D(Basis(Vector3.UP, PI / 6).scaled(Vector3(0.29, 0.03, 0.29)), Vector3(x, 0.01, -2.4 + iz * 0.48)))
+		"piedra":
+			var rnd := RandomNumberGenerator.new()
+			rnd.seed = 11
+			malla = _ball
+			for i in 120:
+				var s := rnd.randf_range(0.16, 0.3)
+				xs.append(Transform3D(Basis(Vector3.UP, rnd.randf() * TAU).scaled(Vector3(s * 1.2, 0.04, s)), Vector3(rnd.randf_range(-3.9, 3.9), 0.0, rnd.randf_range(-2.4, 2.6))))
+		"mullida":
+			# alfombra peluda: cientos de motitas
+			var rnd := RandomNumberGenerator.new()
+			rnd.seed = 2
+			malla = _ball
+			for i in 700:
+				var s := rnd.randf_range(0.05, 0.08)
+				xs.append(Transform3D(Basis.from_scale(Vector3(s, s * 0.9, s)), Vector3(rnd.randf_range(-3.9, 3.9), 0.0, rnd.randf_range(-2.4, 2.6))))
+		"mosaico":
+			var cols := ["#7fc8ff", "#ff9fb8", "#ffe066", "#7be08a", "#c3a6ff"]
+			var por_color := {}
+			for k in cols:
+				por_color[k] = []
+			for ix in 32:
+				for iz in 20:
+					var k: String = cols[(ix * 3 + iz * 7 + (ix * iz) % 5) % cols.size()]
+					por_color[k].append(Transform3D(Basis.from_scale(Vector3(0.22, 0.012, 0.22)), Vector3(-3.875 + ix * 0.25, 0.005, -2.4 + iz * 0.25)))
+			for k in por_color:
+				_multi(n, malla, mat(k, 0.4), por_color[k])
+			return
 	if xs.size() > 0:
-		_multi(n, BoxMesh.new(), mat(c2, 0.5), xs)
+		_multi(n, malla, mat(c2, 0.5), xs)
+
+func _adorno(n: Node3D, pat: String, c1: String, c2: String) -> void:
+	var z := FONDO + 0.04
+	var osc := Color(c2).darkened(0.25).to_html(false)
+	match pat:
+		"liso":
+			# boiserie: zócalo alto con paneles y moldura de techo
+			_rb(n, Vector3(ANCHO, 0.06, 0.06), Vector3(0, 1.05, z), "#ffffff", 0.02)
+			_rb(n, Vector3(ANCHO, 0.12, 0.08), Vector3(0, 3.8, z), "#ffffff", 0.03)
+			for i in 8:
+				_rb(n, Vector3(0.75, 0.6, 0.03), Vector3(-3.5 + i * 1.0, 0.62, z - 0.01), Color(c1).lightened(0.25).to_html(false), 0.02)
+			# reloj de pared con péndulo
+			var rl := Vector3(1.75, 2.85, z + 0.05)
+			_cil(n, rl, 0.3, 0.06, osc, Vector3(PI / 2, 0, 0))
+			_cil(n, rl + Vector3(0, 0, 0.02), 0.25, 0.06, "#ffffff", Vector3(PI / 2, 0, 0))
+			for k in 12:
+				var a := TAU * k / 12.0
+				_bola(n, rl + Vector3(sin(a) * 0.2, cos(a) * 0.2, 0.06), Vector3.ONE * (0.025 if k % 3 == 0 else 0.012), "#2b2633")
+			_rb(n, Vector3(0.025, 0.15, 0.01), rl + Vector3(0.0, 0.06, 0.07), "#2b2633", 0.005)
+			_rb(n, Vector3(0.02, 0.19, 0.01), rl + Vector3(0.07, 0.04, 0.075), "#2b2633", 0.005, Vector3(0, 0, -1.2))
+			var pend := Node3D.new()
+			pend.position = rl + Vector3(0, -0.3, 0)
+			n.add_child(pend)
+			_cil(pend, Vector3(0, -0.2, 0), 0.01, 0.4, "#e0b44c")
+			_cil(pend, Vector3(0, -0.42, 0.01), 0.07, 0.02, "#e0b44c", Vector3(PI / 2, 0, 0))
+			efecto(pend, "columpio", 1.4)
+		"rayas":
+			# friso de madera abajo y riel
+			for i in 32:
+				_rb(n, Vector3(0.2, 1.1, 0.05), Vector3(-3.9 + i * 0.25, 0.55, z), "#ffffff" if i % 2 else "#f3ece4", 0.02)
+			_rb(n, Vector3(ANCHO, 0.08, 0.1), Vector3(0, 1.14, z + 0.02), osc, 0.03)
+			# repisa con frascos de colores
+			_rb(n, Vector3(0.9, 0.05, 0.22), Vector3(1.75, 2.5, z + 0.1), osc, 0.02)
+			for k in 3:
+				_cil(n, Vector3(1.47 + k * 0.28, 2.63 + (k % 2) * 0.04, z + 0.1), 0.08, 0.22 + (k % 2) * 0.08, ["#ff8fb3", "#7fc8ff", "#ffe066"][k], Vector3.ZERO, 0.3)
+			_rb(n, Vector3(0.9, 0.05, 0.22), Vector3(-1.75, 3.1, z + 0.1), osc, 0.02)
+			for k in 4:
+				_rb(n, Vector3(0.12, 0.3 - (k % 2) * 0.06, 0.2), Vector3(-2.0 + k * 0.14, 3.27 - (k % 2) * 0.03, z + 0.1), ["#e85d6f", "#3d6dfe", "#4cc38a", "#ffcf4a"][k], 0.02)
+		"lunares":
+			# guirnalda de banderines
+			var cols := ["#ff8fb3", "#ffe066", "#7fc8ff", "#7be08a", "#c3a6ff"]
+			for tramo in 2:
+				for i in 9:
+					var u := i / 8.0
+					var x := -3.6 + tramo * 3.8 + u * 3.2
+					var y := 3.7 - sin(u * PI) * 0.3
+					_mi(n, _cone, mat(cols[(i + tramo) % cols.size()]), Vector3(x, y - 0.12, z + 0.03), Vector3(0.13, 0.22, 0.02), Vector3(PI, 0, 0), false)
+				_cil(n, Vector3(-3.6 + tramo * 3.8 + 1.6, 3.6, z + 0.02), 0.008, 3.3, "#8a6a55", Vector3(0, 0, PI / 2))
+		"cuadros":
+			# galería de cuadros con marcos
+			var dibujos := ["#ffcf6a", "#7fc8ff", "#ff8fb3", "#7be08a"]
+			var sitios := [Vector3(-1.95, 2.35, 0), Vector3(-1.5, 3.05, 0), Vector3(1.5, 2.95, 0), Vector3(1.95, 2.25, 0)]
+			for i in sitios.size():
+				var s := Vector2(0.55, 0.45) if i % 2 == 0 else Vector2(0.42, 0.55)
+				_rb(n, Vector3(s.x + 0.1, s.y + 0.1, 0.06), sitios[i] + Vector3(0, 0, z), "#b48a62", 0.02)
+				_rb(n, Vector3(s.x, s.y, 0.02), sitios[i] + Vector3(0, 0, z + 0.035), dibujos[i], 0.01)
+				_bola(n, sitios[i] + Vector3(0, -0.05, z + 0.05), Vector3(0.1, 0.1, 0.01), "#ffffff")
+		"estrellas":
+			# móviles de estrellas colgando del techo
+			for i in 6:
+				var x: float = [-2.0, -1.55, -1.15, 1.15, 1.55, 2.0][i]
+				var largo := 0.45 + (i % 3) * 0.3
+				var m := Node3D.new()
+				m.position = Vector3(x, 4.0, z + 0.25)
+				n.add_child(m)
+				_cil(m, Vector3(0, -largo / 2.0, 0), 0.006, largo, "#d9cfc2")
+				_mi(m, Atuendos.extruir(_estrella(), 0.25), mat(c2, 0.5, 0.6), Vector3(0, -largo - 0.12, 0), Vector3.ONE * 0.14, Vector3.ZERO, false)
+				efecto(m, "balancear", 0.4 + i * 0.1)
+		"corazones":
+			# guirnalda de corazones y un corazón de neón
+			Atuendos._geos()
+			for i in 13:
+				var u := i / 12.0
+				_mi(n, Atuendos._heart, mat("#ff6f91"), Vector3(-3.6 + u * 7.2, 3.7 - sin(u * PI) * 0.3, z + 0.03), Vector3(0.11, 0.1, 0.03), Vector3.ZERO, false)
+			var neon := mat("#ff4f8b", 0.4, 2.5).duplicate()
+			efecto(_mi(n, Atuendos._heart, neon, Vector3(1.7, 2.75, z + 0.03), Vector3(0.34, 0.32, 0.04), Vector3.ZERO, false), "titilar", 0.5, neon)
+		"ladrillo":
+			# ladrillos en relieve y una chimenea de piedra
+			var rnd := RandomNumberGenerator.new()
+			rnd.seed = 4
+			var xs: Array = []
+			for f in 10:
+				for i in 14:
+					if rnd.randf() < 0.55:
+						continue
+					xs.append(Transform3D(Basis.from_scale(Vector3(0.52, 0.24, 0.05)), Vector3(-3.6 + i * 0.6 + (0.3 if f % 2 else 0.0), 0.45 + f * 0.3, z)))
+			_multi(n, rbox_mesh(Vector3.ONE, 0.1), mat(Color(c2).darkened(0.1).to_html(false)), xs, false)
+			# columnas de piedra con antorchas
+			for x in [-2.0, 2.0]:
+				for k in 8:
+					_rb(n, Vector3(0.42 + (k % 2) * 0.06, 0.4, 0.2), Vector3(x, 0.2 + k * 0.42, z + 0.08), "#a89f92" if k % 2 else "#958b7e", 0.06)
+				_cil(n, Vector3(x * 0.92, 2.6, z + 0.3), 0.04, 0.3, "#5a3a1a", Vector3(0.4, 0, 0))
+				var fm := mat("#ff9f43", 0.5, 2.0).duplicate()
+				efecto(_mi(n, _cone, fm, Vector3(x * 0.92, 2.82, z + 0.38), Vector3(0.09, 0.2, 0.09), Vector3.ZERO, false), "llama", 1.0 + x, fm)
+		"tablas":
+			# cabaña: vigas cruzadas y repisa de tronco
+			for x in [-2.0, 2.0]:
+				_rb(n, Vector3(0.24, 4.4, 0.16), Vector3(x, 2.2, z + 0.04), "#8d5d32", 0.04)
+			_rb(n, Vector3(ANCHO, 0.26, 0.18), Vector3(0, 3.75, z + 0.05), "#8d5d32", 0.04)
+			_rb(n, Vector3(0.2, 1.3, 0.12), Vector3(-1.62, 3.25, z + 0.06), "#7a4b2a", 0.04, Vector3(0, 0, -0.75))
+			_rb(n, Vector3(0.2, 1.3, 0.12), Vector3(1.62, 3.25, z + 0.06), "#7a4b2a", 0.04, Vector3(0, 0, 0.75))
+			# adorno de ramas sobre un disco de tronco
+			_cil(n, Vector3(1.6, 2.3, z + 0.1), 0.1, 0.06, "#7a4b2a", Vector3(PI / 2, 0, 0))
+			for sx in [-1.0, 1.0]:
+				_cil(n, Vector3(1.6 + sx * 0.14, 2.45, z + 0.12), 0.02, 0.32, "#c9a77a", Vector3(0, 0, -sx * 0.6))
+		"ondas":
+			# repisa ondulada con conchitas
+			for i in 40:
+				var x := -3.9 + i * 0.2
+				_rb(n, Vector3(0.22, 0.06, 0.16), Vector3(x, 3.45 + sin(x * 2.5) * 0.12, z + 0.05), osc, 0.02)
+			for x in [-2.0, -1.4, 1.35, 1.95]:
+				_mi(n, _cone, mat("#ffd1c4"), Vector3(x, 3.6 + sin(x * 2.5) * 0.12, z + 0.08), Vector3(0.09, 0.1, 0.05), Vector3(0, 0, PI))
+			# salvavidas colgado
+			_mi(n, _torus, mat("#ffffff"), Vector3(1.75, 2.5, z + 0.1), Vector3(0.32, 0.9, 0.32), Vector3(PI / 2, 0, 0))
+			for k in 4:
+				_mi(n, _torus, mat("#e85d6f"), Vector3(1.75, 2.5, z + 0.1), Vector3(0.325, 0.92, 0.325), Vector3(PI / 2, k * PI / 2, 0)).scale.x = 0.08
+		"rombos":
+			# arlequín con filetes dorados y apliques de luz
+			var oro := mat("#e0b44c", 0.3, 0.3)
+			for k in [-1.0, 1.0]:
+				for i in 12:
+					_mi(n, BoxMesh.new(), oro, Vector3(-4.2 + i * 0.75, 2.2, z), Vector3(0.025, 6.0, 0.02), Vector3(0, 0, k * 0.6), false)
+			for x in [-1.9, 1.9]:
+				_rb(n, Vector3(0.12, 0.25, 0.08), Vector3(x, 2.6, z + 0.03), "#e0b44c", 0.03)
+				var lm := mat("#fff1c9", 0.5, 2.0).duplicate()
+				efecto(_mi(n, _ball, lm, Vector3(x, 2.85, z + 0.1), Vector3(0.1, 0.13, 0.1), Vector3.ZERO, false), "titilar", 0.3, lm)
+		"hojas":
+			# enredaderas que cuelgan desde arriba
+			for i in 8:
+				var x := -2.1 + i * 0.6
+				var largo := 0.7 + (i * 37 % 5) * 0.22
+				var tallo := Node3D.new()
+				tallo.position = Vector3(x, 3.95, z + 0.06)
+				n.add_child(tallo)
+				_cil(tallo, Vector3(0, -largo / 2.0, 0), 0.012, largo, "#4f9a3e")
+				var k := 0
+				var y := -0.15
+				while y > -largo:
+					_mi(tallo, _ball, mat("#5fae4a" if k % 2 else "#6fc157"), Vector3(0.05 if k % 2 else -0.05, y, 0.02), Vector3(0.07, 0.04, 0.02), Vector3(0, 0, 0.6 if k % 2 else -0.6))
+					y -= 0.18
+					k += 1
+				efecto(tallo, "balancear", 0.25)
+		"nubes":
+			# nubes de algodón en relieve con gotitas colgando
+			for c in [Vector3(-1.8, 3.1, 0), Vector3(-1.1, 3.6, 0), Vector3(1.2, 3.55, 0), Vector3(1.85, 2.95, 0)]:
+				for k in 4:
+					_bola(n, c + Vector3(k * 0.2 - 0.3, sin(k * 1.4) * 0.07, z + 0.08), Vector3(0.18, 0.14, 0.08), "#ffffff", 0.9)
+				for k in 3:
+					_mi(n, _ball, mat("#7fc8ff", 0.2), c + Vector3(-0.2 + k * 0.2, -0.3 - k * 0.07, z + 0.1), Vector3(0.03, 0.045, 0.03), Vector3.ZERO, false)
+
+## Dónde mira la cámara al decorar cada ranura: centro del objeto (relativo a la habitación) y distancia.
+func foco(h: String, slot: String) -> Dictionary:
+	var t := {
+		"pared": [Vector3(0, 2.2, FONDO), 8.0], "piso": [Vector3(0, 0, 0.2), 6.5], "fondo": [Vector3(0, 3.0, -3.0), 9.0],
+		"nevera": [Vector3(-1.3, 1.1, -2.0), 4.4], "mesa": [Vector3(1.4, 0.7, -0.9), 3.6], "planta": [Vector3(-0.55, 1.75, -2.05), 3.3],
+		"cama": [Vector3(1.15, 0.6, -1.2), 3.8], "lampara": [Vector3(-1.45, 1.1, -1.9), 2.8], "alfombra": [Vector3(0, 0.2, 0.1), 4.5],
+		"cerca": [Vector3(0, 0.6, -2.7), 6.5], "arbol": [Vector3(-1.7, 1.7, -1.6), 5.6], "pasto": [Vector3(0, 0.3, 0.0), 7.0],
+		"juguete": [Vector3(1.4, 0.8, -1.25), 4.6], "banera": [Vector3(1.45, 0.6, -1.55), 4.0], "cortina": [Vector3(1.45, 1.7, -1.05), 4.2],
+	}
+	var v: Array = t.get(slot, [Vector3(0, 1.0, 0), 5.0])
+	return {"c": v[0], "d": v[1]}
 
 # ================= COCINA =================
 func _cocina_nevera(n: Node3D, p: Dictionary) -> void:
 	var x := -1.55
 	var z := FONDO + 0.5
 	var c := str(p.get("c", "#f4f6fa"))
-	var r := float(p.get("r", 0.08))
-	_rb(n, Vector3(0.95, 2.1, 0.8), Vector3(x, 1.05, z), c, r, Vector3.ZERO, 0.35)
-	_rb(n, Vector3(0.9, 0.025, 0.04), Vector3(x, 1.45, z + 0.41), Color(c).darkened(0.12).to_html(false), 0.01)
+	var osc := Color(c).darkened(0.15).to_html(false)
 	var cromo := "#dfe4ee"
-	_rb(n, Vector3(0.05, 0.45, 0.06), Vector3(x + 0.33, 1.8, z + 0.44), cromo, 0.025, Vector3.ZERO, 0.2)
-	_rb(n, Vector3(0.05, 0.6, 0.06), Vector3(x + 0.33, 0.95, z + 0.44), cromo, 0.025, Vector3.ZERO, 0.2)
-	_rb(n, Vector3(0.3, 0.36, 0.02), Vector3(x - 0.12, 1.85, z + 0.41), "#ffffff", 0.01)
-	_bola(n, Vector3(x - 0.12, 1.85, z + 0.43), Vector3(0.08, 0.08, 0.01), "#cf7a3e")
-	_bola(n, Vector3(x + 0.12, 1.2, z + 0.42), Vector3(0.04, 0.04, 0.02), "#ffcf4a", 0.3)
-	_bola(n, Vector3(x - 0.2, 1.05, z + 0.42), Vector3(0.035, 0.035, 0.02), "#6cc9b2", 0.3)
-	if p.get("magia", false):
-		# nevera mágica: borde de luz que late y destellos
-		var lm := mat(c, 0.4, 0.8).duplicate()
-		var marco := _mi(n, rbox_mesh(Vector3(1.0, 2.15, 0.06), 0.08), lm, Vector3(x, 1.06, z + 0.37))
-		efecto(marco, "titilar", 0.6, lm)
-		particulas_en(n, Vector3(x, 1.2, z + 0.5), "brillos", 14, 0.5)
+	match str(p.get("forma", "clasica")):
+		"retro":
+			# redondeada, con manilla grande cromada y patitas
+			_rb(n, Vector3(0.95, 1.75, 0.8), Vector3(x, 1.05, z), c, 0.3, Vector3.ZERO, 0.3)
+			_rb(n, Vector3(0.88, 0.03, 0.04), Vector3(x, 1.45, z + 0.41), osc, 0.01)
+			_rb(n, Vector3(0.1, 0.5, 0.1), Vector3(x + 0.32, 1.15, z + 0.45), cromo, 0.05, Vector3.ZERO, 0.15)
+			_rb(n, Vector3(0.5, 0.08, 0.04), Vector3(x, 1.75, z + 0.42), cromo, 0.03, Vector3.ZERO, 0.15)
+			for sx in [-1.0, 1.0]:
+				_cil(n, Vector3(x + sx * 0.35, 0.09, z + 0.25), 0.04, 0.18, cromo, Vector3.ZERO, 0.15)
+		"doble":
+			# dos puertas lado a lado, dispensador de agua y hielo
+			_rb(n, Vector3(1.15, 2.2, 0.8), Vector3(x + 0.05, 1.1, z), c, 0.06, Vector3.ZERO, 0.25)
+			_rb(n, Vector3(0.02, 2.1, 0.04), Vector3(x + 0.05, 1.1, z + 0.41), osc, 0.01)
+			for sx in [-1.0, 1.0]:
+				_rb(n, Vector3(0.04, 0.9, 0.06), Vector3(x + 0.05 + sx * 0.06, 1.25, z + 0.44), cromo, 0.02, Vector3.ZERO, 0.15)
+			_rb(n, Vector3(0.3, 0.42, 0.04), Vector3(x - 0.22, 1.25, z + 0.42), "#3a3d4a", 0.03)
+			_cil(n, Vector3(x - 0.22, 1.32, z + 0.45), 0.03, 0.05, "#7fc8ff", Vector3(PI / 2, 0, 0), 0.2)
+		"vintage":
+			# congelador arriba y puerta llena de imanes y dibujos
+			_rb(n, Vector3(0.95, 2.0, 0.8), Vector3(x, 1.0, z), c, 0.12, Vector3.ZERO, 0.4)
+			_rb(n, Vector3(0.9, 0.03, 0.04), Vector3(x, 1.5, z + 0.41), osc, 0.01)
+			var cols := ["#ff8fb3", "#ffe066", "#7fc8ff", "#7be08a", "#ff9f43", "#c3a6ff"]
+			for i in 9:
+				var px := x - 0.3 + (i % 3) * 0.28
+				var py := 0.6 + (i / 3) * 0.3 + (i % 2) * 0.05
+				if i % 3 == 1:
+					_rb(n, Vector3(0.2, 0.25, 0.015), Vector3(px, py, z + 0.415), "#ffffff", 0.01, Vector3(0, 0, (i - 4) * 0.08))
+					_bola(n, Vector3(px, py, z + 0.43), Vector3(0.06, 0.06, 0.008), cols[i % 6])
+				else:
+					_bola(n, Vector3(px, py, z + 0.42), Vector3(0.05, 0.05, 0.03), cols[i % 6], 0.3)
+			_mi(n, Atuendos.extruir(_estrella(), 0.2), mat("#ffd36e", 0.4), Vector3(x - 0.15, 1.75, z + 0.43), Vector3.ONE * 0.09)
+		"robot":
+			# nevera con cara: ojos de luz, antena y brazos
+			_rb(n, Vector3(0.95, 1.9, 0.8), Vector3(x, 0.95, z), c, 0.15, Vector3.ZERO, 0.3)
+			_rb(n, Vector3(0.7, 0.4, 0.04), Vector3(x, 1.55, z + 0.41), "#1e2230", 0.06)
+			var om := mat("#7fd8ff", 0.4, 2.0).duplicate()
+			for sx in [-1.0, 1.0]:
+				_mi(n, _ball, om, Vector3(x + sx * 0.15, 1.58, z + 0.44), Vector3(0.07, 0.07, 0.02), Vector3.ZERO, false)
+				_cil(n, Vector3(x + sx * 0.53, 1.0, z + 0.1), 0.05, 0.5, cromo, Vector3(0, 0, sx * 0.4), 0.2)
+				_bola(n, Vector3(x + sx * 0.65, 0.76, z + 0.1), Vector3.ONE * 0.08, cromo, 0.2)
+			_rb(n, Vector3(0.28, 0.05, 0.02), Vector3(x, 1.44, z + 0.44), "#7fd8ff", 0.02)
+			efecto(_mi(n, _ball, om, Vector3(x, 2.15, z), Vector3.ONE * 0.06, Vector3.ZERO, false), "titilar", 1.2, om)
+			_cil(n, Vector3(x, 2.0, z), 0.012, 0.22, cromo)
+			for i in 3:
+				_bola(n, Vector3(x - 0.2 + i * 0.2, 0.7, z + 0.42), Vector3(0.05, 0.05, 0.02), ["#ff5a5f", "#ffcf4a", "#4cc38a"][i], 0.3, 1.0)
+		"magica":
+			# de cristal: se ve lo de adentro, borde de luz y destellos
+			var vi := StandardMaterial3D.new()
+			vi.albedo_color = Color(Color(c).darkened(0.1), 0.7)
+			vi.emission_enabled = true
+			vi.emission = Color(c) * 0.35
+			vi.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			vi.roughness = 0.05
+			vi.metallic_specular = 1.0
+			_mi(n, rbox_mesh(Vector3(0.95, 2.1, 0.8), 0.15), vi, Vector3(x, 1.05, z))
+			for k in 3:
+				_rb(n, Vector3(0.8, 0.03, 0.6), Vector3(x, 0.5 + k * 0.5, z), "#ffffff", 0.01)
+			for v in [Vector3(-0.2, 0.6, 0), Vector3(0.15, 1.1, 0), Vector3(-0.1, 1.6, 0)]:
+				_bola(n, Vector3(x, 0, z) + v, Vector3.ONE * 0.09, ["#ff5a6e", "#ffcf4a", "#8fd16a"][int(v.y * 2) % 3], 0.4)
+			var lm := mat(c, 0.4, 1.2).duplicate()
+			efecto(_mi(n, rbox_mesh(Vector3(1.02, 2.17, 0.06), 0.08), lm, Vector3(x, 1.06, z + 0.37)), "titilar", 0.6, lm)
+			particulas_en(n, Vector3(x, 1.2, z + 0.5), "brillos", 14, 0.5)
+		_:
+			_rb(n, Vector3(0.95, 2.1, 0.8), Vector3(x, 1.05, z), c, 0.08, Vector3.ZERO, 0.35)
+			_rb(n, Vector3(0.9, 0.025, 0.04), Vector3(x, 1.45, z + 0.41), osc, 0.01)
+			_rb(n, Vector3(0.05, 0.45, 0.06), Vector3(x + 0.33, 1.8, z + 0.44), cromo, 0.025, Vector3.ZERO, 0.2)
+			_rb(n, Vector3(0.05, 0.6, 0.06), Vector3(x + 0.33, 0.95, z + 0.44), cromo, 0.025, Vector3.ZERO, 0.2)
+			_rb(n, Vector3(0.3, 0.36, 0.02), Vector3(x - 0.12, 1.85, z + 0.41), "#ffffff", 0.01)
+			_bola(n, Vector3(x - 0.12, 1.85, z + 0.43), Vector3(0.08, 0.08, 0.01), "#cf7a3e")
 
 func _cocina_mesa(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(1.55, 0, -0.9)
@@ -352,6 +620,40 @@ func _cocina_mesa(n: Node3D, p: Dictionary) -> void:
 			var llama := _mi(n, _ball, fm, q + Vector3(0, 1.23, 0), Vector3(0.022, 0.045, 0.022), Vector3.ZERO, false)
 			efecto(llama, "llama", 1.0, fm)
 			return
+		"picnic":
+			# mesa de picnic con bancas, mantel a cuadros y canasta
+			_rb(n, Vector3(1.3, 0.06, 0.7), q + Vector3(0, 0.74, 0), c, 0.02)
+			for sx in [-1.0, 1.0]:
+				_rb(n, Vector3(0.06, 0.8, 0.06), q + Vector3(sx * 0.5, 0.37, 0), osc, 0.02, Vector3(0.5, 0, 0))
+				_rb(n, Vector3(0.06, 0.8, 0.06), q + Vector3(sx * 0.5, 0.37, 0), osc, 0.02, Vector3(-0.5, 0, 0))
+			for sz in [-1.0, 1.0]:
+				_rb(n, Vector3(1.3, 0.05, 0.22), q + Vector3(0, 0.42, sz * 0.55), c, 0.02)
+			for i in 4:
+				for k in 3:
+					if (i + k) % 2 == 0:
+						_rb(n, Vector3(0.22, 0.012, 0.18), q + Vector3(-0.33 + i * 0.22, 0.775, -0.18 + k * 0.18), "#e85d6f", 0.005)
+			_rb(n, Vector3(0.88, 0.008, 0.54), q + Vector3(0, 0.772, 0), "#ffffff", 0.004)
+			_rb(n, Vector3(0.35, 0.2, 0.25), q + Vector3(0.38, 0.88, 0), "#c58a4a", 0.04)
+			_mi(n, _torus, mat("#a8743f"), q + Vector3(0.38, 0.98, 0), Vector3(0.14, 0.4, 0.14), Vector3(0, 0, PI / 2))
+			_bola(n, q + Vector3(-0.25, 0.83, 0.05), Vector3.ONE * 0.07, "#ff5a6e", 0.4)
+			return
+		"barra":
+			# barra alta de cocina con dos taburetes y frutero
+			_rb(n, Vector3(1.4, 0.08, 0.55), q + Vector3(0, 1.02, 0), c, 0.03, Vector3.ZERO, 0.3)
+			_rb(n, Vector3(1.3, 0.98, 0.45), q + Vector3(0, 0.49, -0.02), osc, 0.04)
+			for k in 3:
+				_rb(n, Vector3(0.4, 0.8, 0.02), q + Vector3(-0.43 + k * 0.43, 0.5, 0.21), Color(c).lightened(0.1).to_html(false), 0.03)
+			for sx in [-1.0, 1.0]:
+				var t := q + Vector3(sx * 0.4, 0, 0.55)
+				_cil(n, t + Vector3(0, 0.36, 0), 0.025, 0.72, "#c9d1dc", Vector3.ZERO, 0.2)
+				_cil(n, t + Vector3(0, 0.74, 0), 0.17, 0.07, "#ff8a5c")
+				_mi(n, _torus, mat("#c9d1dc", 0.2), t + Vector3(0, 0.25, 0), Vector3(0.13, 0.3, 0.13))
+				_cil(n, t + Vector3(0, 0.01, 0), 0.16, 0.02, "#c9d1dc", Vector3.ZERO, 0.2)
+			_cil(n, q + Vector3(0, 1.1, 0), 0.18, 0.06, "#ffffff")
+			_mi(n, _ball, mat("#ffe066", 0.5), q + Vector3(-0.05, 1.17, 0), Vector3(0.16, 0.05, 0.05), Vector3(0, 0, 0.3))
+			_bola(n, q + Vector3(0.08, 1.18, 0.04), Vector3.ONE * 0.07, "#ff9f43", 0.4)
+			_bola(n, q + Vector3(0.0, 1.2, -0.06), Vector3.ONE * 0.07, "#8fd16a", 0.4)
+			return
 		_:
 			_rb(n, Vector3(1.1, 0.08, 0.8), q + Vector3(0, 0.78, 0), c, 0.03)
 			for sx in [-1.0, 1.0]:
@@ -364,7 +666,7 @@ func _cocina_mesa(n: Node3D, p: Dictionary) -> void:
 
 ## Maceta con planta (cactus, helecho o girasol) junto a la nevera.
 func _cocina_planta(n: Node3D, p: Dictionary) -> void:
-	_planta(n, Vector3(-0.75, 0, FONDO + 0.45), p)
+	_planta(n, Vector3(-0.55, 1.07, FONDO + 0.45), p)
 
 func _planta(n: Node3D, q: Vector3, p: Dictionary) -> void:
 	var f := str(p.get("forma", "nada"))
@@ -397,6 +699,31 @@ func _planta(n: Node3D, q: Vector3, p: Dictionary) -> void:
 			efecto(tallo, "balancear", 0.6, pm if magia else null)
 			if magia:
 				particulas_en(n, q + Vector3(0, 1.1, 0), "luciernagas", 10, 0.3)
+		"bonsai":
+			# arbolito torcido en bandeja baja con piedritas
+			_cil(n, q + Vector3(0, 0.45, 0), 0.05, 0.22, "#7a4b2a", Vector3(0, 0, 0.4))
+			_cil(n, q + Vector3(-0.06, 0.62, 0), 0.04, 0.22, "#7a4b2a", Vector3(0, 0, -0.5))
+			_cil(n, q + Vector3(0.06, 0.66, 0), 0.025, 0.25, "#7a4b2a", Vector3(0, 0, 1.1))
+			for v in [Vector3(-0.12, 0.76, 0), Vector3(0.18, 0.72, 0.02), Vector3(0.0, 0.84, -0.03)]:
+				_mi(n, _ball, mat(c, 0.95), q + v, Vector3(0.14, 0.07, 0.12))
+			for k in 3:
+				_bola(n, q + Vector3(-0.08 + k * 0.08, 0.4, 0.1), Vector3.ONE * 0.025, "#b8b4ad")
+		"carnivora":
+			# atrapamoscas: bocas con dientes que se abren y cierran
+			for i in 3:
+				var a := -0.6 + i * 0.6
+				var b := Node3D.new()
+				b.position = q + Vector3(sin(a) * 0.12, 0.4, 0)
+				b.rotation = Vector3(0, 0, -a * 0.7)
+				n.add_child(b)
+				_cil(b, Vector3(0, 0.15, 0), 0.015, 0.3, "#4f9a3e")
+				for sy in [-1.0, 1.0]:
+					var lab := _mi(b, _ball, mat(c), Vector3(0, 0.34 + sy * 0.03, 0.02), Vector3(0.1, 0.04, 0.08), Vector3(sy * 0.3, 0, 0))
+					lab = lab
+					_bola(b, Vector3(0, 0.34 + sy * 0.035, 0.05), Vector3(0.07, 0.02, 0.04), "#e2574c")
+					for k in 4:
+						_mi(b, _cone, mat("#fff8e0"), Vector3(-0.06 + k * 0.04, 0.34 + sy * 0.005, 0.09), Vector3(0.008, 0.025, 0.008), Vector3(0, 0, PI if sy > 0 else 0.0))
+				efecto(b, "balancear", 0.7 + i * 0.2)
 
 # ================= HABITACIÓN =================
 func _habitacion_cama(n: Node3D, p: Dictionary) -> void:
@@ -408,14 +735,19 @@ func _habitacion_cama(n: Node3D, p: Dictionary) -> void:
 			for v in [Vector3(-0.45, 0.3, 0), Vector3(0, 0.33, 0.05), Vector3(0.45, 0.3, 0), Vector3(-0.2, 0.32, -0.3), Vector3(0.25, 0.32, -0.3)]:
 				_bola(n, q + v, Vector3(0.42, 0.22, 0.42), "#ffffff", 0.9)
 			_bola(n, q + Vector3(0, 0.55, -0.45), Vector3(0.35, 0.14, 0.18), "#dfe9ff")
-		"nube_magica":
-			cama_alto = 0.55
-			var g := Node3D.new()
-			n.add_child(g)
-			for v in [Vector3(-0.45, 0.35, 0), Vector3(0, 0.38, 0.05), Vector3(0.45, 0.35, 0), Vector3(-0.2, 0.37, -0.3), Vector3(0.25, 0.37, -0.3)]:
-				_bola(g, q + v, Vector3(0.42, 0.22, 0.42), "#f4ecff", 0.9, 0.25)
-			efecto(g, "flotar_suave")
-			particulas_en(n, q + Vector3(0, 0.9, 0), "brillos", 18, 0.8, "#c9b8ff")
+		"arcoiris":
+			# cama bajo un arcoíris de verdad, con nubes a los lados
+			cama_alto = 0.48
+			_rb(n, Vector3(1.5, 0.4, 1.0), q + Vector3(0, 0.2, 0), "#ffffff", 0.12)
+			_rb(n, Vector3(1.4, 0.1, 0.9), q + Vector3(0, 0.44, 0), "#fff3f7", 0.05)
+			var cols := ["#ff6b6b", "#ffb347", "#ffe066", "#7be08a", "#6fb8ff", "#b49cff"]
+			for i in cols.size():
+				var m := _mi(n, _torus, mat(cols[i], 0.6, 0.15), q + Vector3(0, 0.4, -0.5), Vector3.ONE * (0.95 - i * 0.07), Vector3(PI / 2, 0, 0))
+				m.scale = Vector3(0.95 - i * 0.07, 0.4, 0.95 - i * 0.07)
+			for sx in [-1.0, 1.0]:
+				for k in 3:
+					_bola(n, q + Vector3(sx * (0.85 + k * 0.1), 0.45 + k * 0.08, -0.5 + (k % 2) * 0.1), Vector3.ONE * (0.18 - k * 0.03), "#ffffff", 0.9)
+			particulas_en(n, q + Vector3(0, 1.0, -0.4), "brillos", 14, 0.9, "#ffe066")
 		"cohete":
 			cama_alto = 0.5
 			_rb(n, Vector3(1.5, 0.45, 1.0), q + Vector3(0, 0.25, 0), "#e8eef7", 0.18, Vector3.ZERO, 0.4)
@@ -480,6 +812,22 @@ func _habitacion_lampara(n: Node3D, p: Dictionary) -> void:
 			var bola := _mi(n, _ball, esp, q + Vector3(0, 0.6, 0), Vector3.ONE * 0.17)
 			efecto(bola, "girar", 2.0, esp)
 			particulas_en(n, q + Vector3(0.8, 1.6, 0.6), "brillos", 22, 1.6, "#ff8fe0")
+		"farol":
+			# farolito de papel colgando de un gancho, se mece
+			_cil(n, q + Vector3(0, 0.03, 0), 0.12, 0.06, "#3a3d4a")
+			_cil(n, q + Vector3(0, 0.5, 0), 0.015, 1.0, "#3a3d4a")
+			_cil(n, q + Vector3(0.12, 1.0, 0), 0.012, 0.25, "#3a3d4a", Vector3(0, 0, PI / 2))
+			var g := Node3D.new()
+			g.position = q + Vector3(0.24, 0.98, 0)
+			n.add_child(g)
+			_cil(g, Vector3(0, -0.07, 0), 0.006, 0.14, "#3a3d4a")
+			_mi(g, _ball, lampara_mat, Vector3(0, -0.3, 0), Vector3(0.16, 0.19, 0.16))
+			for y in [-0.13, -0.47]:
+				_cil(g, Vector3(0, y, 0), 0.08, 0.03, "#c0392b")
+			for k in 4:
+				_mi(g, _torus, mat(Color(c).darkened(0.2).to_html(false)), Vector3(0, -0.3, 0), Vector3(0.165, 0.2, 0.165) * 1.0, Vector3(0, k * PI / 4, PI / 2))
+			_cil(g, Vector3(0, -0.55, 0), 0.006, 0.12, "#ffd36e")
+			efecto(g, "columpio", 0.5)
 		"lava":
 			_cil(n, q + Vector3(0, 0.06, 0), 0.1, 0.12, "#4b4fa8")
 			var vi := StandardMaterial3D.new()
@@ -513,6 +861,20 @@ func _habitacion_alfombra(n: Node3D, p: Dictionary) -> void:
 		"nube":
 			for v in [Vector3(-0.5, 0, 0), Vector3(0, 0, -0.1), Vector3(0.5, 0, 0), Vector3(0, 0, 0.25)]:
 				_mi(n, _cyl, mat(c), q + v, Vector3(0.55, 0.02, 0.45), Vector3.ZERO, false)
+		"oso":
+			# alfombra de osito: cabeza 3D con orejas, hocico y ojos, y cuerpo extendido
+			_mi(n, _cyl, mat(c), q + Vector3(0, 0, 0.15), Vector3(0.8, 0.02, 0.6), Vector3.ZERO, false)
+			for sx in [-1.0, 1.0]:
+				for sz in [-1.0, 1.0]:
+					_mi(n, _cyl, mat(c), q + Vector3(sx * 0.75, 0, 0.15 + sz * 0.45), Vector3(0.22, 0.02, 0.18), Vector3.ZERO, false)
+			var h := q + Vector3(0, 0.08, -0.62)
+			_bola(n, h, Vector3(0.38, 0.14, 0.32), c)
+			for sx in [-1.0, 1.0]:
+				_bola(n, h + Vector3(sx * 0.3, 0.05, -0.18), Vector3(0.12, 0.06, 0.1), c)
+				_bola(n, h + Vector3(sx * 0.3, 0.08, -0.17), Vector3(0.07, 0.03, 0.06), "#ffd1dc")
+				_bola(n, h + Vector3(sx * 0.13, 0.13, 0.05), Vector3.ONE * 0.04, "#2b2633", 0.2)
+			_bola(n, h + Vector3(0, 0.08, 0.2), Vector3(0.14, 0.07, 0.11), Color(c).lightened(0.35).to_html(false))
+			_bola(n, h + Vector3(0, 0.14, 0.24), Vector3(0.05, 0.035, 0.04), "#2b2633", 0.2)
 		_:
 			_cil(n, q, 1.05, 0.02, c)
 			_cil(n, q + Vector3(0, 0.005, 0), 0.8, 0.02, Color(c).lightened(0.3).to_html(false))
@@ -535,32 +897,82 @@ func _fijo_patio(n: Node3D) -> void:
 
 func _patio_pasto(n: Node3D, p: Dictionary) -> void:
 	var c := str(p.get("c", "#8fd16a"))
+	var forma := str(p.get("forma", "pasto"))
 	_rb(n, Vector3(ANCHO, 0.2, 11.0), Vector3(0, -0.1, 2.0), c, 0.04)
 	var cc := Color(c)
-	if cc.s < 0.15:
-		particulas_en(n, Vector3(0, 3.6, -0.6), "nieve", 70, 3.4)
-		return   # nieve: copos cayendo, sin matas
-	if c == "#f5dfa8":
-		return   # arena: sin matas
 	var rnd := RandomNumberGenerator.new()
 	rnd.seed = 3
-	var flores := {"#ffffff": [], "#ffd36e": [], "#ff9fb0": [], "#b9a6ff": []}
-	var keys := flores.keys()
-	var nf := 90 if c == "#a5de7c" else 40
-	for i in nf:
-		var q := Vector3(rnd.randf_range(-3.8, 3.8), 0.03, rnd.randf_range(-2.6, 1.6))
-		if absf(q.x) < 0.8 and q.z > -0.8:
-			continue
-		var s := rnd.randf_range(0.035, 0.06)
-		flores[keys[i % keys.size()]].append(Transform3D(Basis.from_scale(Vector3(s, s * 0.6, s)), q))
-	for k in flores:
-		_multi(n, _ball, mat(k), flores[k])
-	var mata := []
-	for i in 160:
-		var q := Vector3(rnd.randf_range(-3.9, 3.9), 0.0, rnd.randf_range(-2.8, 1.6))
-		var b := Basis(Vector3.UP, rnd.randf() * TAU).scaled(Vector3(0.03, rnd.randf_range(0.08, 0.16), 0.03))
-		mata.append(Transform3D(b, q))
-	_multi(n, _cone, mat(cc.darkened(0.12).to_html(false)), mata)
+	match forma:
+		"nieve":
+			particulas_en(n, Vector3(0, 3.6, -0.6), "nieve", 70, 3.4)
+			# muñeco de nieve con bufanda y sombrero
+			var m := Vector3(2.4, 0, 0.2)
+			_bola(n, m + Vector3(0, 0.35, 0), Vector3.ONE * 0.38, "#ffffff", 0.8)
+			_bola(n, m + Vector3(0, 0.9, 0), Vector3.ONE * 0.28, "#ffffff", 0.8)
+			_bola(n, m + Vector3(0, 1.32, 0), Vector3.ONE * 0.2, "#ffffff", 0.8)
+			_mi(n, _cone, mat("#ff8c3a"), m + Vector3(0, 1.32, 0.25), Vector3(0.04, 0.16, 0.04), Vector3(PI / 2, 0, 0))
+			for sx in [-1.0, 1.0]:
+				_bola(n, m + Vector3(sx * 0.07, 1.4, 0.17), Vector3.ONE * 0.025, "#2b2633")
+			_mi(n, _torus, mat("#e85d6f"), m + Vector3(0, 1.15, 0), Vector3(0.2, 0.6, 0.2))
+			_cil(n, m + Vector3(0, 1.62, 0), 0.13, 0.22, "#2b2633")
+			_cil(n, m + Vector3(0, 1.51, 0), 0.2, 0.02, "#2b2633")
+			for v in [Vector3(-2.6, 0, 0.4), Vector3(-1.2, 0, 1.2), Vector3(1.2, 0, 1.0)]:
+				_bola(n, v, Vector3(0.4, 0.12, 0.3), "#f8fbff", 0.9)
+		"playa":
+			# arena con sombrilla, toalla, conchitas y estrellas de mar
+			var s := Vector3(2.3, 0, 0.0)
+			_cil(n, s + Vector3(0, 0.8, 0), 0.025, 1.6, "#ffffff")
+			for i in 8:
+				_mi(n, _cone, mat("#ff5a6e" if i % 2 == 0 else "#ffffff"), s + Vector3(0, 1.65, 0), Vector3(0.75, 0.3, 0.75), Vector3(0, TAU * i / 8.0, 0)).scale.x = 0.75
+			_rb(n, Vector3(0.6, 0.02, 1.1), Vector3(-2.3, 0.01, 0.6), "#4aa8ff", 0.01, Vector3(0, 0.3, 0))
+			for i in 6:
+				_mi(n, Atuendos.extruir(_estrella(), 0.3), mat(["#ff8f6b", "#ffcf4a"][i % 2]), Vector3(rnd.randf_range(-3.5, 3.5), 0.02, rnd.randf_range(-1.8, 1.6)), Vector3.ONE * 0.1, Vector3(-PI / 2, 0, rnd.randf() * TAU), false)
+			for i in 10:
+				_mi(n, _cone, mat("#ffe3d6"), Vector3(rnd.randf_range(-3.6, 3.6), 0.03, rnd.randf_range(-2.0, 1.8)), Vector3(0.05, 0.06, 0.04), Vector3(PI / 2, rnd.randf() * TAU, 0), false)
+			_bola(n, Vector3(-1.4, 0.15, 1.3), Vector3.ONE * 0.15, "#ffe066", 0.4)
+		"tulipanes":
+			var cols := ["#ff5a6e", "#ffcf4a", "#ff8fb3", "#c77dff", "#ffffff"]
+			for i in 60:
+				var v := Vector3(rnd.randf_range(-3.8, 3.8), 0, rnd.randf_range(-2.6, 1.6))
+				if absf(v.x) < 0.9 and v.z > -0.9:
+					continue
+				var h := rnd.randf_range(0.25, 0.45)
+				_cil(n, v + Vector3(0, h / 2.0, 0), 0.012, h, "#4f9a3e")
+				_mi(n, _ball, mat(cols[i % cols.size()]), v + Vector3(0, h + 0.05, 0), Vector3(0.06, 0.09, 0.06))
+				_mi(n, _ball, mat("#5fae4a"), v + Vector3(0.04, h * 0.4, 0), Vector3(0.025, 0.09, 0.01), Vector3(0, 0, -0.4))
+		"otono":
+			var cols := ["#ff8a3d", "#e2574c", "#ffb347", "#c58a4a"]
+			var xs := {}
+			for k in cols:
+				xs[k] = []
+			for i in 220:
+				var s := rnd.randf_range(0.05, 0.09)
+				xs[cols[i % 4]].append(Transform3D(Basis(Vector3.UP, rnd.randf() * TAU).scaled(Vector3(s, 0.01, s * 0.7)), Vector3(rnd.randf_range(-3.9, 3.9), 0.01, rnd.randf_range(-2.6, 1.8))))
+			for k in xs:
+				_multi(n, _ball, mat(k), xs[k])
+			# hongos de sombrero rojo con puntos
+			for v in [Vector3(-2.8, 0, 0.4), Vector3(-2.4, 0, 0.7), Vector3(2.6, 0, 0.5), Vector3(1.5, 0, 1.2)]:
+				var t := rnd.randf_range(0.7, 1.2)
+				_cil(n, v + Vector3(0, 0.1 * t, 0), 0.04 * t, 0.2 * t, "#fff3e0")
+				_mi(n, _ball, mat("#e2574c"), v + Vector3(0, 0.2 * t, 0), Vector3(0.13, 0.08, 0.13) * t)
+				for k in 3:
+					_bola(n, v + Vector3(cos(k * 2.1) * 0.07 * t, 0.26 * t, sin(k * 2.1) * 0.07 * t), Vector3.ONE * 0.018 * t, "#ffffff")
+		_:
+			var flores := {"#ffffff": [], "#ffd36e": []}
+			for i in 40:
+				var v := Vector3(rnd.randf_range(-3.8, 3.8), 0.03, rnd.randf_range(-2.6, 1.6))
+				if absf(v.x) < 0.8 and v.z > -0.8:
+					continue
+				var s := rnd.randf_range(0.035, 0.06)
+				flores["#ffffff" if i % 2 else "#ffd36e"].append(Transform3D(Basis.from_scale(Vector3(s, s * 0.6, s)), v))
+			for k in flores:
+				_multi(n, _ball, mat(k), flores[k])
+	if forma in ["pasto", "tulipanes", "otono"]:
+		var mata := []
+		for i in 160:
+			var v := Vector3(rnd.randf_range(-3.9, 3.9), 0.0, rnd.randf_range(-2.8, 1.6))
+			mata.append(Transform3D(Basis(Vector3.UP, rnd.randf() * TAU).scaled(Vector3(0.03, rnd.randf_range(0.08, 0.16), 0.03)), v))
+		_multi(n, _cone, mat(cc.darkened(0.12).to_html(false)), mata)
 
 func _patio_fondo(n: Node3D, p: Dictionary) -> void:
 	var id := str(p.get("cielo", "dia"))
@@ -663,11 +1075,26 @@ func _patio_cerca(n: Node3D, p: Dictionary) -> void:
 		"troncos":
 			for i in 17:
 				_cil(n, Vector3(-4.0 + i * 0.5, 0.45, z), 0.09, 0.9, c)
+				_cil(n, Vector3(-4.0 + i * 0.5, 0.905, z), 0.08, 0.01, "#e2c49a")
 			for y in [0.35, 0.7]:
 				_cil(n, Vector3(0, y, z + 0.08), 0.05, ANCHO, Color(c).darkened(0.15).to_html(false), Vector3(0, 0, PI / 2))
+		"caramelo":
+			# bastones de caramelo a rayas unidos por una cinta
+			for i in 14:
+				var x := -3.9 + i * 0.6
+				var g := Node3D.new()
+				g.position = Vector3(x, 0, z)
+				n.add_child(g)
+				for k in 8:
+					_cil(g, Vector3(0, 0.06 + k * 0.11, 0), 0.06, 0.11, c if k % 2 == 0 else "#ffffff", Vector3.ZERO, 0.3)
+				_mi(g, _torus, mat(c, 0.3), Vector3(0.1, 0.92, 0), Vector3(0.12, 0.25, 0.12), Vector3(PI / 2, 0, 0))
+			_cil(n, Vector3(0, 0.55, z + 0.07), 0.025, ANCHO, "#7be08a", Vector3(0, 0, PI / 2))
 		"seto":
 			for i in 9:
 				_bola(n, Vector3(-4.0 + i * 1.0, 0.5, z), Vector3(0.62, 0.55, 0.4), c, 0.95)
+			var flores := ["#ff8fb3", "#ffffff", "#ffe066", "#c3a6ff"]
+			for i in 30:
+				_bola(n, Vector3(-3.9 + i * 0.27, 0.3 + (i * 37 % 7) * 0.08, z + 0.35), Vector3.ONE * 0.05, flores[i % 4], 0.6)
 		"piedra":
 			var rnd := RandomNumberGenerator.new()
 			rnd.seed = 9
@@ -676,6 +1103,8 @@ func _patio_cerca(n: Node3D, p: Dictionary) -> void:
 					var s := rnd.randf_range(0.22, 0.3)
 					_mi(n, _ball, mat(Color(c).lightened(rnd.randf_range(-0.1, 0.1)).to_html(false)),
 						Vector3(-3.9 + i * 0.6 + (0.3 if f % 2 else 0.0), 0.18 + f * 0.27, z), Vector3(s * 1.2, s * 0.6, 0.2))
+			for x in [-3.0, -1.6, 1.8, 3.2]:
+				_bola(n, Vector3(x, 0.85, z + 0.05), Vector3(0.2, 0.06, 0.14), "#6fc157")
 		_:
 			var xs: Array = []
 			for i in 27:
@@ -688,42 +1117,97 @@ func _patio_arbol(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(-1.75, 0, -1.6)
 	var c := str(p.get("c", "#5fae4a"))
 	var cc := Color(c)
-	match str(p.get("forma", "redondo")):
-		"pino":
-			_cil(n, q + Vector3(0, 0.5, 0), 0.12, 1.0, "#7a4b2a")
-			for i in 4:
-				_mi(n, _cone, mat(cc.darkened(i * 0.05).to_html(false)), q + Vector3(0, 1.1 + i * 0.45, 0), Vector3(0.75 - i * 0.14, 0.7, 0.75 - i * 0.14))
-		"palmera":
-			for i in 8:
-				_cil(n, q + Vector3(sin(i * 0.15) * 0.2 * i * 0.15, 0.15 + i * 0.3, 0), 0.12 - i * 0.006, 0.3, "#b0844f", Vector3(0, 0, -i * 0.04))
+	match str(p.get("forma", "roble")):
+		"cerezo":
+			# cerezo llorón: tronco torcido y ramas que caen como cortina rosada
 			for i in 6:
-				var a := TAU * i / 6.0
-				_mi(n, _ball, mat(c), q + Vector3(0.35 + cos(a) * 0.45, 2.45, sin(a) * 0.45), Vector3(0.5, 0.06, 0.14), Vector3(0, -a, -0.35))
-			for i in 3:
-				_bola(n, q + Vector3(0.3 + (i - 1) * 0.1, 2.3, 0.08), Vector3.ONE * 0.08, "#7a4b2a")
+				_cil(n, q + Vector3(sin(i * 0.6) * 0.15, 0.2 + i * 0.32, 0), 0.13 - i * 0.012, 0.36, "#6e4a3a", Vector3(0, 0, sin(i * 0.9) * 0.25))
+			var copa := Node3D.new()
+			copa.position = q + Vector3(0, 2.1, 0)
+			n.add_child(copa)
+			_bola(copa, Vector3(0, 0.15, 0), Vector3(0.75, 0.4, 0.6), c, 0.95)
+			for i in 14:
+				var a := TAU * i / 14.0
+				var r := Node3D.new()
+				r.position = Vector3(cos(a) * 0.62, 0.05, sin(a) * 0.5)
+				copa.add_child(r)
+				for k in 5:
+					_bola(r, Vector3(0, -k * 0.2, 0), Vector3(0.09, 0.12, 0.09), cc.lightened(0.05 * (k % 2)).to_html(false), 0.95)
+				efecto(r, "balancear", 0.4)
+			particulas_en(n, q + Vector3(0, 2.2, 0.3), "petalos", 22, 1.0, c)
+		"pino":
+			# pino nevado: pisos de ramas con nieve encima y una estrella
+			_cil(n, q + Vector3(0, 0.45, 0), 0.12, 0.9, "#7a4b2a")
+			for i in 5:
+				var y := 0.9 + i * 0.42
+				var w := 0.85 - i * 0.15
+				_mi(n, _cone, mat(cc.darkened(i * 0.04).to_html(false)), q + Vector3(0, y, 0), Vector3(w, 0.62, w))
+				_mi(n, _cone, mat("#f4f8ff"), q + Vector3(0, y + 0.2, 0), Vector3(w * 0.62, 0.24, w * 0.62))
+			_mi(n, Atuendos.extruir(_estrella(), 0.2), mat("#ffd36e", 0.4, 1.0), q + Vector3(0, 3.2, 0), Vector3.ONE * 0.16)
+		"palmera":
+			for i in 9:
+				_cil(n, q + Vector3(i * i * 0.006, 0.15 + i * 0.3, 0), 0.12 - i * 0.006, 0.3, "#b0844f" if i % 2 else "#9a7040", Vector3(0, 0, -i * 0.04))
+			var top := q + Vector3(0.5, 2.75, 0)
+			for i in 8:
+				var a := TAU * i / 8.0
+				var h := Node3D.new()
+				h.position = top
+				h.rotation = Vector3(0, -a, 0)
+				n.add_child(h)
+				_mi(h, _ball, mat(cc.lightened(0.06 * (i % 2)).to_html(false)), Vector3(0.5, -0.12, 0), Vector3(0.55, 0.05, 0.13), Vector3(0, 0, -0.45))
+				efecto(h, "balancear", 0.3)
+			for i in 4:
+				_bola(n, top + Vector3(-0.08 + (i % 2) * 0.16, -0.15, -0.06 + (i / 2) * 0.12), Vector3.ONE * 0.1, "#6b4226", 0.4)
+		"arce":
+			# arce de otoño: copas planas en pisos, hojas cayendo y montones en el suelo
+			_cil(n, q + Vector3(0, 0.9, 0), 0.15, 1.8, "#6e4a3a")
+			for i in 4:
+				var y := 1.5 + i * 0.42
+				var w := 0.95 - i * 0.16
+				var col: String = ["#ff8a3d", "#ffb347", "#e2574c", "#ffcf4a"][i]
+				_mi(n, _cyl, mat(col, 0.95), q + Vector3(sin(i) * 0.1, y, 0), Vector3(w, 0.18, w * 0.8))
+				_bola(n, q + Vector3(sin(i) * 0.1, y + 0.1, 0), Vector3(w * 0.95, 0.12, w * 0.75), col, 0.95)
+			for k in 3:
+				_bola(n, q + Vector3(0.6 - k * 0.6, 0.05, 0.6 + (k % 2) * 0.3), Vector3(0.35, 0.1, 0.25), ["#ff8a3d", "#e2574c", "#ffb347"][k], 0.95)
+			particulas_en(n, q + Vector3(0, 2.4, 0.3), "petalos", 18, 1.0, "#ff8a3d")
+		"cristal":
+			# árbol de cristal: tronco plateado y ramas de cristales que brillan
+			var cm := StandardMaterial3D.new()
+			cm.albedo_color = Color(Color(c), 0.75)
+			cm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			cm.metallic_specular = 1.0
+			cm.roughness = 0.05
+			cm.emission_enabled = true
+			cm.emission = Color(c)
+			cm.emission_energy_multiplier = 0.6
+			_cil(n, q + Vector3(0, 0.9, 0), 0.1, 1.8, "#d9dde6", Vector3.ZERO, 0.2)
+			var rnd := RandomNumberGenerator.new()
+			rnd.seed = 21
+			for i in 16:
+				var a := rnd.randf() * TAU
+				var y := 1.4 + rnd.randf() * 1.4
+				var cr := _mi(n, _cone, cm, q + Vector3(cos(a) * rnd.randf_range(0.2, 0.7), y, sin(a) * 0.4),
+					Vector3(0.09, rnd.randf_range(0.3, 0.55), 0.09), Vector3(rnd.randf_range(-0.6, 0.6), 0, rnd.randf_range(-0.8, 0.8)))
+				if i % 4 == 0:
+					efecto(cr, "titilar", 0.5 + i * 0.1, cm)
+			particulas_en(n, q + Vector3(0, 2.2, 0.3), "brillos", 22, 0.9, "#e2d6ff")
 		_:
-			_cil(n, q + Vector3(0, 0.9, 0), 0.16, 1.8, "#8d5d32")
-			_cil(n, q + Vector3(0.25, 1.5, 0), 0.06, 0.6, "#8d5d32", Vector3(0, 0, -0.8))
-			var bolas := [Vector3(0, 2.3, 0), Vector3(-0.5, 2.0, 0.1), Vector3(0.5, 2.05, 0.05), Vector3(-0.2, 2.75, -0.1), Vector3(0.3, 2.6, 0.2)]
+			# roble: tronco ancho con columpio de neumático, copa grande y bellotas
+			_cil(n, q + Vector3(0, 0.9, 0), 0.2, 1.8, "#8d5d32")
+			var rama := _cil(n, q + Vector3(0.45, 1.75, 0.1), 0.07, 0.9, "#8d5d32", Vector3(0, 0, -1.2))
+			rama = rama
+			var col := Node3D.new()
+			col.position = q + Vector3(0.75, 1.85, 0.1)
+			n.add_child(col)
+			_cil(col, Vector3(0, -0.5, 0), 0.008, 1.0, "#c9b8a0")
+			_mi(col, _torus, mat("#2b2633"), Vector3(0, -1.05, 0), Vector3(0.2, 0.5, 0.2), Vector3(PI / 2, 0, 0))
+			efecto(col, "columpio", 0.6)
+			var bolas := [Vector3(0, 2.4, 0), Vector3(-0.55, 2.1, 0.1), Vector3(0.6, 2.2, 0.05), Vector3(-0.2, 2.85, -0.1), Vector3(0.35, 2.7, 0.2), Vector3(0.0, 2.2, 0.4)]
 			for i in bolas.size():
-				var col := cc.lightened(0.08 * (i % 3) - 0.04).to_html(false)
-				var m := mat(col, 0.95, 0.35 if c == "#b49cff" else 0.0)
-				_mi(n, _ball, m, q + bolas[i], Vector3.ONE * (0.55 - i * 0.03))
-			if c == "#ffc2d6" or c == "#ff9f43":
-				particulas_en(n, q + Vector3(0, 2.6, 0.3), "petalos", 18, 0.9, "#ffc2d6" if c == "#ffc2d6" else "#ff9f43")
-				var rnd := RandomNumberGenerator.new()
-				rnd.seed = 5
-				var xs: Array = []
-				for i in 25:
-					xs.append(Transform3D(Basis.from_scale(Vector3(0.035, 0.008, 0.035)), q + Vector3(rnd.randf_range(-1.2, 1.4), 0.012, rnd.randf_range(-0.6, 1.4))))
-				_multi(n, _ball, mat(c), xs)
-			elif c == "#b49cff":
-				particulas_en(n, q + Vector3(0, 2.2, 0.3), "brillos", 20, 0.9, "#e2d6ff")
-				for i in 8:
-					_bola(n, q + Vector3(sin(i * 1.7) * 0.6, 2.0 + cos(i * 2.3) * 0.5, 0.5), Vector3.ONE * 0.04, "#fff3c4", 0.5, 2.0)
-			else:
-				_bola(n, q + Vector3(0.35, 2.2, 0.45), Vector3(0.07, 0.09, 0.07), "#c58a4a", 0.4)
-				_bola(n, q + Vector3(-0.4, 1.9, 0.45), Vector3(0.07, 0.09, 0.07), "#c58a4a", 0.4)
+				_mi(n, _ball, mat(cc.lightened(0.06 * (i % 3) - 0.04).to_html(false), 0.95), q + bolas[i], Vector3.ONE * (0.6 - i * 0.03))
+			for v in [Vector3(0.35, 2.15, 0.6), Vector3(-0.4, 1.95, 0.55), Vector3(0.1, 2.5, 0.65)]:
+				_bola(n, q + v, Vector3(0.07, 0.09, 0.07), "#c58a4a", 0.4)
+				_bola(n, q + v + Vector3(0, 0.07, 0), Vector3(0.075, 0.035, 0.075), "#6b4226")
 
 ## Juegos del patio (lado derecho).
 func _patio_juguete(n: Node3D, p: Dictionary) -> void:
@@ -787,61 +1271,146 @@ func _patio_juguete(n: Node3D, p: Dictionary) -> void:
 func _bano_banera(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(1.45, 0, -1.55)
 	var c := str(p.get("c", "#ffffff"))
-	var patas := str(p.get("patas", ""))
+	var forma := str(p.get("forma", "clasica"))
 	var y0 := 0.0
-	if patas != "":
-		y0 = 0.15
-		for sx in [-1.0, 1.0]:
-			for sz in [-1.0, 1.0]:
-				_bola(n, q + Vector3(sx * 0.7, 0.09, sz * 0.3), Vector3(0.1, 0.09, 0.1), patas, 0.25)
-	_rb(n, Vector3(1.9, 0.75, 0.95), q + Vector3(0, y0 + 0.375, 0), c, 0.3, Vector3.ZERO, 0.25)
+	var agua_y := 0.72
+	var agua_s := Vector3(1.7, 0.04, 0.75)
+	match forma:
+		"garras":
+			y0 = 0.2
+			for sx in [-1.0, 1.0]:
+				for sz in [-1.0, 1.0]:
+					_mi(n, _cone, mat("#ffcf4a", 0.25), q + Vector3(sx * 0.7, 0.1, sz * 0.3), Vector3(0.09, 0.22, 0.09), Vector3(PI, 0, 0))
+					_bola(n, q + Vector3(sx * 0.7, 0.03, sz * 0.3 + 0.05), Vector3(0.08, 0.04, 0.1), "#ffcf4a", 0.25)
+			_mi(n, _ball, mat(c, 0.25), q + Vector3(0, y0 + 0.35, 0), Vector3(1.0, 0.45, 0.52))
+			_cil(n, q + Vector3(-0.85, y0 + 0.75, 0), 0.03, 0.4, "#ffcf4a", Vector3(0, 0, -0.4), 0.2)
+			agua_y = 0.68
+			agua_s = Vector3(1.6, 0.04, 0.7)
+		"barril":
+			# tina de madera con aros de metal
+			_cil(n, q + Vector3(0, 0.38, 0), 0.75, 0.76, c)
+			for y in [0.15, 0.6]:
+				_cil(n, q + Vector3(0, y, 0), 0.77, 0.06, "#6e6a64", Vector3.ZERO, 0.4)
+			for i in 16:
+				var a := TAU * i / 16.0
+				_rb(n, Vector3(0.02, 0.78, 0.02), q + Vector3(cos(a) * 0.755, 0.38, sin(a) * 0.755), "#8d5d32", 0.005)
+			agua_y = 0.7
+			agua_s = Vector3(1.35, 0.04, 1.35)
+		"concha":
+			# concha marina abierta, con perla
+			_mi(n, _ball, mat(c, 0.3), q + Vector3(0, 0.32, 0), Vector3(1.0, 0.36, 0.6))
+			for i in 9:
+				var a := -1.4 + i * 0.35
+				_mi(n, _ball, mat(Color(c).lightened(0.08 * (i % 2)).to_html(false), 0.3), q + Vector3(sin(a) * 0.85, 0.75 + cos(a) * 0.3, -0.45), Vector3(0.18, 0.55, 0.1), Vector3(0, 0, -a * 0.9))
+			_bola(n, q + Vector3(0.6, 0.7, -0.35), Vector3.ONE * 0.1, "#f8f4ff", 0.08)
+			agua_y = 0.62
+			agua_s = Vector3(1.5, 0.04, 0.85)
+		"moderna":
+			# bloque recto con borde fino y grifería negra alta
+			_rb(n, Vector3(2.0, 0.6, 1.0), q + Vector3(0, 0.3, 0), c, 0.04, Vector3.ZERO, 0.2)
+			_rb(n, Vector3(1.8, 0.1, 0.8), q + Vector3(0, 0.6, 0), "#e8eef7", 0.03)
+			_cil(n, q + Vector3(-0.9, 1.0, -0.4), 0.025, 0.9, "#1e1e24", Vector3.ZERO, 0.2)
+			_cil(n, q + Vector3(-0.8, 1.42, -0.4), 0.02, 0.25, "#1e1e24", Vector3(0, 0, PI / 2), 0.2)
+			agua_y = 0.62
+		"jacuzzi":
+			# redondo y empotrado, con escalón y luces
+			_cil(n, q + Vector3(0, 0.3, 0.1), 0.95, 0.6, c, Vector3.ZERO, 0.25)
+			_cil(n, q + Vector3(0, 0.62, 0.1), 1.0, 0.06, "#c9d1dc", Vector3.ZERO, 0.2)
+			_rb(n, Vector3(0.8, 0.18, 0.35), q + Vector3(-0.2, 0.09, 1.1), "#c9d1dc", 0.04)
+			var lz := mat("#7fd8ff", 0.4, 1.2).duplicate()
+			efecto(_mi(n, _cyl, lz, q + Vector3(0, 0.6, 0.1), Vector3(0.85, 0.02, 0.85), Vector3.ZERO, false), "titilar", 0.5, lz)
+			particulas_en(n, q + Vector3(0, 0.66, 0.1), "burbujas", 34, 0.7)
+			return
+		_:
+			_rb(n, Vector3(1.9, 0.75, 0.95), q + Vector3(0, 0.375, 0), c, 0.3, Vector3.ZERO, 0.25)
+	if forma == "clasica":
+		pass
 	var agua := StandardMaterial3D.new()
 	agua.albedo_color = Color(0.55, 0.82, 1.0, 0.85)
 	agua.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	agua.roughness = 0.05
 	agua.metallic_specular = 1.0
-	_mi(n, rbox_mesh(Vector3(1.7, 0.04, 0.75), 0.02), agua, q + Vector3(0, y0 + 0.72, 0), Vector3.ONE, Vector3.ZERO, false)
-	for i in 6:
-		_bola(n, q + Vector3(-0.6 + i * 0.25, y0 + 0.76, sin(i * 1.7) * 0.2), Vector3.ONE * (0.08 + (i % 3) * 0.03), "#ffffff", 0.9)
+	var bajo_y := y0 + agua_y
+	_mi(n, rbox_mesh(agua_s, 0.02), agua, q + Vector3(0, bajo_y, 0), Vector3.ONE, Vector3.ZERO, false)
+	for i in 5:
+		_bola(n, q + Vector3(-0.5 + i * 0.25, bajo_y + 0.04, sin(i * 1.7) * 0.2), Vector3.ONE * (0.08 + (i % 3) * 0.03), "#ffffff", 0.9)
 	var pato := Node3D.new()
-	pato.position = q + Vector3(0.5, y0 + 0.82, 0.1)
+	pato.position = q + Vector3(0.45, bajo_y + 0.1, 0.1)
 	n.add_child(pato)
 	_bola(pato, Vector3.ZERO, Vector3(0.11, 0.09, 0.13), "#ffd84a", 0.4)
 	_bola(pato, Vector3(0, 0.13, 0.07), Vector3.ONE * 0.065, "#ffd84a", 0.4)
 	_bola(pato, Vector3(0, 0.12, 0.14), Vector3(0.035, 0.015, 0.03), "#ff8c3a", 0.4)
 	efecto(pato, "flotar_suave")
-	var jac: bool = p.get("jacuzzi", false)
-	particulas_en(n, q + Vector3(0, y0 + 0.74, 0), "burbujas", 30 if jac else 10, 0.7)
-	if jac:
-		var lz := mat("#7fd8ff", 0.4, 1.0).duplicate()
-		var luz := _mi(n, rbox_mesh(Vector3(1.6, 0.02, 0.7), 0.02), lz, q + Vector3(0, y0 + 0.705, 0), Vector3.ONE, Vector3.ZERO, false)
-		efecto(luz, "titilar", 0.5, lz)
+	particulas_en(n, q + Vector3(0, bajo_y + 0.02, 0), "burbujas", 10, 0.6)
 
 func _bano_cortina(n: Node3D, p: Dictionary) -> void:
 	var q := Vector3(1.45, 0, -1.55)
 	var c1 := str(p.get("c1", "#7fc8ff"))
 	var c2 := str(p.get("c2", "#ffffff"))
 	var forma := str(p.get("forma", "rayas"))
+	var x0 := q.x - 0.95
+	var zc := q.z + 0.5
 	_cil(n, q + Vector3(0, 2.55, 0.5), 0.025, 2.2, "#c9d1dc", Vector3(0, 0, PI / 2), 0.2)
-	for i in 8:
-		var x := q.x - 0.95 + i * 0.09
-		var z := q.z + 0.5 + (0.035 if i % 2 else -0.035)
-		var col := (c1 if i % 2 == 0 else c2) if forma == "rayas" else c1
-		_rb(n, Vector3(0.1, 1.6, 0.04), Vector3(x, 1.75, z), col, 0.02, Vector3(0, (0.3 if i % 2 else -0.3), 0))
-	if forma == "burbujas":
-		for i in 6:
-			_bola(n, Vector3(q.x - 0.95 + (i % 3) * 0.25, 1.4 + (i / 3) * 0.6, q.z + 0.56), Vector3.ONE * 0.05, c2, 0.2)
-	elif forma == "estrellas":
-		for i in 5:
-			_mi(n, Atuendos.extruir(_estrella(), 0.1), mat(c2, 0.5, 0.6), Vector3(q.x - 0.9 + (i % 2) * 0.3, 1.2 + i * 0.25, q.z + 0.57), Vector3.ONE * 0.06)
-	elif forma == "luces":
-		# guirnalda de luces que titilan a lo largo de la barra y bajando por la cortina
-		var cols := ["#ff8fb3", "#ffe066", "#7fd8ff", "#b49cff", "#7be08a"]
-		for i in 14:
-			var lm := mat(cols[i % cols.size()], 0.4, 1.5).duplicate()
-			var y := 2.5 - absf(sin(i * 0.45)) * 0.12
-			var b := _mi(n, _ball, lm, Vector3(q.x - 1.0 + i * 0.15, y, q.z + 0.56), Vector3(0.028, 0.038, 0.028), Vector3.ZERO, false)
-			efecto(b, "titilar", 0.6 + (i % 4) * 0.35, lm)
+	match forma:
+		"cuentas":
+			# hilos de cuentas de colores
+			for i in 12:
+				for k in 14:
+					_bola(n, Vector3(x0 + i * 0.09, 2.45 - k * 0.11, zc), Vector3.ONE * 0.035, c1 if (i + k) % 3 else c2, 0.2)
+		"bambu":
+			# persiana de bambú enrollada arriba y medio bajada
+			for k in 10:
+				_cil(n, Vector3(q.x - 0.15, 2.4 - k * 0.09, zc), 0.035, 1.9, c1 if k % 2 else c2, Vector3(0, 0, PI / 2))
+			_cil(n, Vector3(q.x - 0.15, 2.48, zc + 0.03), 0.09, 1.9, c2, Vector3(0, 0, PI / 2))
+			for sx in [-0.7, 0.4]:
+				_cil(n, Vector3(q.x + sx, 1.95, zc + 0.05), 0.006, 1.0, "#6b4226")
+		"dosel":
+			# cortina larga recogida con un gran lazo
+			for i in 6:
+				var x := x0 + i * 0.07
+				_rb(n, Vector3(0.09, 1.0, 0.04), Vector3(x, 2.05, zc + (0.03 if i % 2 else -0.03)), c1, 0.02, Vector3(0, 0, (i - 2.5) * 0.04))
+				_rb(n, Vector3(0.1, 0.9, 0.04), Vector3(x + 0.05, 1.05, zc), c1, 0.02, Vector3(0, 0, -(i - 2.5) * 0.06))
+			for sx in [-1.0, 1.0]:
+				_mi(n, _cone, mat(c2), Vector3(x0 + 0.2 + sx * 0.12, 1.55, zc + 0.08), Vector3(0.1, 0.16, 0.04), Vector3(0, 0, -sx * PI / 2))
+			_bola(n, Vector3(x0 + 0.2, 1.55, zc + 0.09), Vector3.ONE * 0.05, c2)
+			_cil(n, Vector3(x0 + 0.24, 1.38, zc + 0.08), 0.015, 0.3, c2, Vector3(0, 0, 0.3))
+		"olas":
+			# borde inferior en ondas y peces de tela
+			for i in 8:
+				var x := x0 + i * 0.09
+				var largo := 1.4 + sin(i * 1.4) * 0.12
+				_rb(n, Vector3(0.1, largo, 0.04), Vector3(x, 2.5 - largo / 2.0, zc + (0.035 if i % 2 else -0.035)), c1, 0.02, Vector3(0, (0.3 if i % 2 else -0.3), 0))
+				_bola(n, Vector3(x, 2.5 - largo, zc + 0.03), Vector3(0.06, 0.05, 0.03), c2)
+			for k in 3:
+				_mi(n, _ball, mat("#ff9f43"), Vector3(x0 + 0.15 + k * 0.2, 1.6 + k * 0.25, zc + 0.07), Vector3(0.06, 0.035, 0.01), Vector3.ZERO, false)
+				_mi(n, _cone, mat("#ff9f43"), Vector3(x0 + 0.08 + k * 0.2, 1.6 + k * 0.25, zc + 0.07), Vector3(0.03, 0.04, 0.01), Vector3(0, 0, PI / 2), false)
+		"patitos":
+			for i in 8:
+				var x := x0 + i * 0.09
+				_rb(n, Vector3(0.1, 1.6, 0.04), Vector3(x, 1.75, zc + (0.035 if i % 2 else -0.035)), c1, 0.02, Vector3(0, (0.3 if i % 2 else -0.3), 0))
+			for k in 5:
+				var v := Vector3(x0 + 0.12 + (k % 2) * 0.32, 1.2 + k * 0.25, zc + 0.08)
+				_bola(n, v, Vector3(0.07, 0.055, 0.03), c2, 0.4)
+				_bola(n, v + Vector3(0.05, 0.05, 0), Vector3.ONE * 0.035, c2, 0.4)
+				_bola(n, v + Vector3(0.09, 0.05, 0.01), Vector3(0.02, 0.01, 0.015), "#ff8c3a")
+		_:
+			for i in 8:
+				var x := x0 + i * 0.09
+				var col := (c1 if i % 2 == 0 else c2) if forma == "rayas" else c1
+				_rb(n, Vector3(0.1, 1.6, 0.04), Vector3(x, 1.75, zc + (0.035 if i % 2 else -0.035)), col, 0.02, Vector3(0, (0.3 if i % 2 else -0.3), 0))
+			if forma == "burbujas":
+				for i in 6:
+					_bola(n, Vector3(x0 + (i % 3) * 0.25, 1.4 + (i / 3) * 0.6, zc + 0.06), Vector3.ONE * 0.05, c2, 0.2)
+			elif forma == "estrellas":
+				for i in 5:
+					_mi(n, Atuendos.extruir(_estrella(), 0.1), mat(c2, 0.5, 0.6), Vector3(x0 + 0.05 + (i % 2) * 0.3, 1.2 + i * 0.25, zc + 0.07), Vector3.ONE * 0.06)
+			elif forma == "luces":
+				var cols := ["#ff8fb3", "#ffe066", "#7fd8ff", "#b49cff", "#7be08a"]
+				for i in 14:
+					var lm := mat(cols[i % cols.size()], 0.4, 1.5).duplicate()
+					var y := 2.5 - absf(sin(i * 0.45)) * 0.12
+					var b := _mi(n, _ball, lm, Vector3(q.x - 1.0 + i * 0.15, y, zc + 0.06), Vector3(0.028, 0.038, 0.028), Vector3.ZERO, false)
+					efecto(b, "titilar", 0.6 + (i % 4) * 0.35, lm)
 
 func _ventana(n: Node3D, pos: Vector3, w: float, h: float, marco: String, cielo: StandardMaterial3D) -> void:
 	_rb(n, Vector3(w + 0.16, h + 0.16, 0.1), pos + Vector3(0, 0, 0.0), marco, 0.05)

@@ -13,49 +13,53 @@
     "#6cc9b2",
     "#4fae98"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "bufanda_rojo",
    "forma": "bufanda",
    "zona": "cuello",
-   "nombre": "Bufanda rojo",
-   "en": "Red Scarf",
+   "nombre": "Bufanda con flecos largos",
+   "en": "Fringed Scarf",
    "precio": 45,
    "nivel": 1,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "bufanda_lila",
    "forma": "bufanda",
    "zona": "cuello",
-   "nombre": "Bufanda lila",
-   "en": "Purple Scarf",
+   "nombre": "Bufanda gruesa con pompones",
+   "en": "Chunky Pom-pom Scarf",
    "precio": 45,
    "nivel": 1,
    "c": [
     "#9b7cf6",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "bufanda_amarillo",
    "forma": "bufanda",
    "zona": "cuello",
-   "nombre": "Bufanda amarillo",
-   "en": "Yellow Scarf",
+   "nombre": "Bufanda a rayas de lana",
+   "en": "Striped Wool Scarf",
    "precio": 45,
    "nivel": 1,
    "c": [
     "#ffcf4a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 3
   },
   {
    "id": "mono_rojo",
@@ -68,33 +72,36 @@
    "c": [
     "#e85d6f"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "mono_negro",
    "forma": "mono",
    "zona": "cuello",
-   "nombre": "Moño negro",
-   "en": "Black Bow Tie",
+   "nombre": "Moño gigante de lunares",
+   "en": "Giant Polka-dot Bow Tie",
    "precio": 40,
    "nivel": 1,
    "c": [
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "mono_lila",
    "forma": "mono",
    "zona": "cuello",
-   "nombre": "Moño lila",
-   "en": "Purple Bow Tie",
+   "nombre": "Moño de mariposa",
+   "en": "Butterfly Bow Tie",
    "precio": 40,
    "nivel": 1,
    "c": [
     "#9b7cf6"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "collar_bellotas",
@@ -121,35 +128,38 @@
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "panuelo_rojo",
    "forma": "panuelo",
    "zona": "cuello",
-   "nombre": "Pañuelo rojo",
-   "en": "Red Bandana",
+   "nombre": "Pañuelo de vaquero",
+   "en": "Cowboy Bandana",
    "precio": 45,
    "nivel": 1,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "panuelo_verde",
    "forma": "panuelo",
    "zona": "cuello",
-   "nombre": "Pañuelo verde",
-   "en": "Green Bandana",
+   "nombre": "Pañuelo con nudo de lado",
+   "en": "Side-knot Bandana",
    "precio": 45,
    "nivel": 1,
    "c": [
     "#4cc38a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "corbata_azul",
@@ -163,21 +173,23 @@
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "corbata_rojo",
    "forma": "corbata",
    "zona": "cuello",
-   "nombre": "Corbata rojo",
-   "en": "Red Necktie",
+   "nombre": "Corbata a rayas ancha",
+   "en": "Wide Striped Necktie",
    "precio": 60,
    "nivel": 2,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "collar_perlas",
@@ -204,21 +216,23 @@
     "#e85d6f",
     "#ffcf4a"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 0
   },
   {
    "id": "cascabel_azul",
    "forma": "cascabel",
    "zona": "cuello",
-   "nombre": "Cascabel azul",
-   "en": "Blue Jingle Bell",
+   "nombre": "Cascabel de tres campanas",
+   "en": "Triple Jingle Bell",
    "precio": 80,
    "nivel": 2,
    "c": [
     "#3d6dfe",
     "#ffcf4a"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 1
   },
   {
    "id": "medalla",
@@ -246,49 +260,53 @@
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "gorro_lana_azul",
    "forma": "gorro_lana",
    "zona": "cabeza",
-   "nombre": "Gorro de lana azul",
-   "en": "Blue Beanie",
+   "nombre": "Gorro de lana con orejeras y trenzas",
+   "en": "Earflap Beanie",
    "precio": 60,
    "nivel": 1,
    "c": [
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "gorro_lana_verde",
    "forma": "gorro_lana",
    "zona": "cabeza",
-   "nombre": "Gorro de lana verde",
-   "en": "Green Beanie",
+   "nombre": "Gorro de lana de gatito",
+   "en": "Kitty Beanie",
    "precio": 60,
    "nivel": 1,
    "c": [
     "#4cc38a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "gorro_lana_lila",
    "forma": "gorro_lana",
    "zona": "cabeza",
-   "nombre": "Gorro de lana lila",
-   "en": "Purple Beanie",
+   "nombre": "Gorro de lana largo de duende",
+   "en": "Long Elf Beanie",
    "precio": 60,
    "nivel": 1,
    "c": [
     "#9b7cf6",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 3
   },
   {
    "id": "gorra_azul",
@@ -302,49 +320,53 @@
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "gorra_rojo",
    "forma": "gorra",
    "zona": "cabeza",
-   "nombre": "Gorra rojo",
-   "en": "Red Cap",
+   "nombre": "Gorra al revés",
+   "en": "Backwards Cap",
    "precio": 70,
    "nivel": 1,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "gorra_negro",
    "forma": "gorra",
    "zona": "cabeza",
-   "nombre": "Gorra negro",
-   "en": "Black Cap",
+   "nombre": "Gorra con orejas de oso",
+   "en": "Bear-ear Cap",
    "precio": 70,
    "nivel": 1,
    "c": [
     "#2b2633",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "gorra_verde",
    "forma": "gorra",
    "zona": "cabeza",
-   "nombre": "Gorra verde",
-   "en": "Green Cap",
+   "nombre": "Gorra con cresta de dino",
+   "en": "Dino-spike Cap",
    "precio": 70,
    "nivel": 1,
    "c": [
     "#4cc38a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 3
   },
   {
    "id": "sombrero_copa_negro",
@@ -358,21 +380,23 @@
     "#2b2633",
     "#e85d6f"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "sombrero_copa_lila",
    "forma": "sombrero_copa",
    "zona": "cabeza",
-   "nombre": "Sombrero de copa lila",
-   "en": "Purple Top Hat",
+   "nombre": "Sombrero de copa alto con conejito",
+   "en": "Tall Bunny Top Hat",
    "precio": 150,
    "nivel": 3,
    "c": [
     "#9b7cf6",
     "#e85d6f"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "corona_oro",
@@ -386,21 +410,23 @@
     "#ffcf4a",
     "#e85d6f"
    ],
-   "anim": "brillar"
+   "anim": "brillar",
+   "v": 0
   },
   {
    "id": "corona_plata",
    "forma": "corona",
    "zona": "cabeza",
-   "nombre": "Corona de plata",
-   "en": "Silver Crown",
+   "nombre": "Corona de hielo",
+   "en": "Ice Crown",
    "precio": 320,
    "nivel": 5,
    "c": [
     "#cfd6e2",
     "#e85d6f"
    ],
-   "anim": "brillar"
+   "anim": "brillar",
+   "v": 1
   },
   {
    "id": "flor_rosa",
@@ -414,35 +440,38 @@
     "#ff8fb3",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "flor_blanco",
    "forma": "flor",
    "zona": "cabeza",
-   "nombre": "Flor blanco",
-   "en": "White Flower",
+   "nombre": "Flor margarita gigante",
+   "en": "Giant Daisy Flower",
    "precio": 35,
    "nivel": 1,
    "c": [
     "#f6f2ee",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "flor_celeste",
    "forma": "flor",
    "zona": "cabeza",
-   "nombre": "Flor celeste",
-   "en": "Sky Flower",
+   "nombre": "Flor ramo de tres",
+   "en": "Triple Bouquet Flower",
    "precio": 35,
    "nivel": 1,
    "c": [
     "#7fc8ff",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "audifonos_lila",
@@ -456,35 +485,38 @@
     "#9b7cf6",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "audifonos_rojo",
    "forma": "audifonos",
    "zona": "cabeza",
-   "nombre": "Audífonos rojo",
-   "en": "Red Headphones",
+   "nombre": "Audífonos con orejas de gato",
+   "en": "Cat-ear Headphones",
    "precio": 120,
    "nivel": 2,
    "c": [
     "#e85d6f",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "audifonos_menta",
    "forma": "audifonos",
    "zona": "cabeza",
-   "nombre": "Audífonos menta",
-   "en": "Mint Headphones",
+   "nombre": "Audífonos gamer con micrófono",
+   "en": "Gamer Mic Headphones",
    "precio": 120,
    "nivel": 2,
    "c": [
     "#7fd8be",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "vaquero_cafe",
@@ -498,21 +530,23 @@
     "#8d5d32",
     "#8d5d32"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "vaquero_negro",
    "forma": "vaquero",
    "zona": "cabeza",
-   "nombre": "Sombrero vaquero negro",
-   "en": "Black Cowboy Hat",
+   "nombre": "Sombrero vaquero de sheriff",
+   "en": "Sheriff Cowboy Hat",
    "precio": 130,
    "nivel": 3,
    "c": [
     "#2b2633",
     "#8d5d32"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "chef",
@@ -553,21 +587,23 @@
     "#3d6dfe",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "mago_lila",
    "forma": "mago",
    "zona": "cabeza",
-   "nombre": "Sombrero de mago lila",
-   "en": "Purple Wizard Hat",
+   "nombre": "Sombrero de mago doblado con cascabel",
+   "en": "Bent Bell Wizard Hat",
    "precio": 160,
    "nivel": 4,
    "c": [
     "#9b7cf6",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "casco_astronauta",
@@ -596,14 +632,15 @@
     "#4cc38a",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "corona_flores_lila",
    "forma": "corona_flores",
    "zona": "cabeza",
-   "nombre": "Corona de flores lila",
-   "en": "Purple Flower Crown",
+   "nombre": "Corona de flores con cintas de hada",
+   "en": "Fairy Ribbon Flower Crown",
    "precio": 110,
    "nivel": 2,
    "c": [
@@ -611,7 +648,8 @@
     "#4cc38a",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "cuernos_rojo",
@@ -624,20 +662,22 @@
    "c": [
     "#e85d6f"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "cuernos_negro",
    "forma": "cuernos",
    "zona": "cabeza",
-   "nombre": "Cuernitos negro",
-   "en": "Black Little Horns",
+   "nombre": "Cuernitos de carnero",
+   "en": "Ram Little Horns",
    "precio": 90,
    "nivel": 3,
    "c": [
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "aureola",
@@ -679,14 +719,15 @@
     "#ffcf4a",
     "#e85d6f"
    ],
-   "anim": "girar"
+   "anim": "girar",
+   "v": 0
   },
   {
    "id": "helice_verde",
    "forma": "helice",
    "zona": "cabeza",
-   "nombre": "Gorro con hélice verde",
-   "en": "Green Propeller Cap",
+   "nombre": "Gorro con hélice doble",
+   "en": "Twin Propeller Cap",
    "precio": 120,
    "nivel": 3,
    "c": [
@@ -694,7 +735,8 @@
     "#ffcf4a",
     "#e85d6f"
    ],
-   "anim": "girar"
+   "anim": "girar",
+   "v": 1
   },
   {
    "id": "gorro_navidad",
@@ -722,21 +764,23 @@
     "#f6f2ee",
     "#ff8fb3"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 0
   },
   {
    "id": "orejas_conejo_negro",
    "forma": "orejas_conejo",
    "zona": "cabeza",
-   "nombre": "Orejas de conejo negro",
-   "en": "Black Bunny Ears",
+   "nombre": "Orejas de conejo caídas",
+   "en": "Lop Bunny Ears",
    "precio": 90,
    "nivel": 2,
    "c": [
     "#2b2633",
     "#ff8fb3"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 1
   },
   {
    "id": "cuerno_unicornio",
@@ -762,33 +806,36 @@
    "c": [
     "#e85d6f"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "boina_negro",
    "forma": "boina",
    "zona": "cabeza",
-   "nombre": "Boina negro",
-   "en": "Black Beret",
+   "nombre": "Boina de pintor",
+   "en": "Painter Beret",
    "precio": 70,
    "nivel": 1,
    "c": [
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "boina_azul",
    "forma": "boina",
    "zona": "cabeza",
-   "nombre": "Boina azul",
-   "en": "Blue Beret",
+   "nombre": "Boina con insignia",
+   "en": "Badge Beret",
    "precio": 70,
    "nivel": 1,
    "c": [
     "#3d6dfe"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "casco_bombero",
@@ -858,35 +905,38 @@
     "#2b2633",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "lentes_sol_rojo",
    "forma": "lentes_sol",
    "zona": "ojos",
-   "nombre": "Lentes de sol rojo",
-   "en": "Red Sunglasses",
+   "nombre": "Lentes de sol de aviador",
+   "en": "Aviator Sunglasses",
    "precio": 55,
    "nivel": 1,
    "c": [
     "#e85d6f",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "lentes_sol_azul",
    "forma": "lentes_sol",
    "zona": "ojos",
-   "nombre": "Lentes de sol azul",
-   "en": "Blue Sunglasses",
+   "nombre": "Lentes de sol deportivos",
+   "en": "Sport Sunglasses",
    "precio": 55,
    "nivel": 1,
    "c": [
     "#3d6dfe",
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "lentes_corazon_rojo",
@@ -900,21 +950,23 @@
     "#e85d6f",
     "#ff8fb3"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "lentes_corazon_rosa",
    "forma": "lentes_corazon",
    "zona": "ojos",
-   "nombre": "Lentes corazón rosa",
-   "en": "Pink Heart Glasses",
+   "nombre": "Lentes corazón gigantes",
+   "en": "Giant Heart Glasses",
    "precio": 90,
    "nivel": 2,
    "c": [
     "#ff8fb3",
     "#ff8fb3"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "lentes_redondos_oro",
@@ -927,20 +979,22 @@
    "c": [
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "lentes_redondos_negro",
    "forma": "lentes_redondos",
    "zona": "ojos",
-   "nombre": "Lentes redondos negro",
-   "en": "Black Round Glasses",
+   "nombre": "Lentes redondos con cadena",
+   "en": "Chain Round Glasses",
    "precio": 65,
    "nivel": 1,
    "c": [
     "#2b2633"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "lentes_estrella_amarillo",
@@ -953,20 +1007,22 @@
    "c": [
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "lentes_estrella_lila",
    "forma": "lentes_estrella",
    "zona": "ojos",
-   "nombre": "Lentes estrella lila",
-   "en": "Purple Star Glasses",
+   "nombre": "Lentes estrella de rockstar con alas",
+   "en": "Rockstar Wing Star Glasses",
    "precio": 95,
    "nivel": 2,
    "c": [
     "#9b7cf6"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "monoculo",
@@ -993,21 +1049,23 @@
     "#7fc8ff",
     "#2b2633"
    ],
-   "anim": "parpadear"
+   "anim": "parpadear",
+   "v": 0
   },
   {
    "id": "visor_rosa",
    "forma": "visor",
    "zona": "ojos",
-   "nombre": "Visor cibernético rosa",
-   "en": "Pink Cyber Visor",
+   "nombre": "Visor cibernético con antenas",
+   "en": "Antenna Cyber Visor",
    "precio": 220,
    "nivel": 5,
    "c": [
     "#ff8fb3",
     "#2b2633"
    ],
-   "anim": "parpadear"
+   "anim": "parpadear",
+   "v": 1
   },
   {
    "id": "gafas_buceo",
@@ -1047,46 +1105,50 @@
    "c": [
     "#7fd8be"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "poleron_rosa",
    "forma": "poleron",
    "zona": "cuerpo",
-   "nombre": "Polerón rosa",
-   "en": "Pink Hoodie",
+   "nombre": "Polerón con orejas de oso",
+   "en": "Bear-ear Hoodie",
    "precio": 110,
    "nivel": 1,
    "c": [
     "#ff8fb3"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "poleron_gris",
    "forma": "poleron",
    "zona": "cuerpo",
-   "nombre": "Polerón gris",
-   "en": "Gray Hoodie",
+   "nombre": "Polerón universitario",
+   "en": "Varsity Hoodie",
    "precio": 110,
    "nivel": 1,
    "c": [
     "#9aa0ad"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "poleron_azul",
    "forma": "poleron",
    "zona": "cuerpo",
-   "nombre": "Polerón azul",
-   "en": "Blue Hoodie",
+   "nombre": "Polerón de dragón",
+   "en": "Dragon Hoodie",
    "precio": 110,
    "nivel": 1,
    "c": [
     "#3d6dfe"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 3
   },
   {
    "id": "polera_estrella_amarillo",
@@ -1100,21 +1162,23 @@
     "#ffcf4a",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "polera_estrella_celeste",
    "forma": "polera_estrella",
    "zona": "cuerpo",
-   "nombre": "Polera estrella celeste",
-   "en": "Sky Star Tee",
+   "nombre": "Polera estrella con rayo",
+   "en": "Lightning Star Tee",
    "precio": 75,
    "nivel": 1,
    "c": [
     "#7fc8ff",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "overol_azul",
@@ -1128,21 +1192,23 @@
     "#3d6dfe",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "overol_rosa",
    "forma": "overol",
    "zona": "cuerpo",
-   "nombre": "Overol rosa",
-   "en": "Pink Overalls",
+   "nombre": "Overol con parches de corazón",
+   "en": "Heart-patch Overalls",
    "precio": 130,
    "nivel": 2,
    "c": [
     "#ff8fb3",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "capa_rojo",
@@ -1156,35 +1222,38 @@
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 0
   },
   {
    "id": "capa_azul",
    "forma": "capa",
    "zona": "cuerpo",
-   "nombre": "Capa azul",
-   "en": "Blue Cape",
+   "nombre": "Capa real con armiño",
+   "en": "Royal Cape",
    "precio": 220,
    "nivel": 3,
    "c": [
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 1
   },
   {
    "id": "capa_lila",
    "forma": "capa",
    "zona": "cuerpo",
-   "nombre": "Capa lila",
-   "en": "Purple Cape",
+   "nombre": "Capa con capucha estrellada",
+   "en": "Starry Hood Cape",
    "precio": 220,
    "nivel": 3,
    "c": [
     "#9b7cf6",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 2
   },
   {
    "id": "chaleco_rojo",
@@ -1198,21 +1267,23 @@
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "chaleco_cafe",
    "forma": "chaleco",
    "zona": "cuerpo",
-   "nombre": "Chaleco café",
-   "en": "Brown Vest",
+   "nombre": "Chaleco de explorador",
+   "en": "Explorer Vest",
    "precio": 90,
    "nivel": 2,
    "c": [
     "#8d5d32",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "hawaiana_celeste",
@@ -1227,14 +1298,15 @@
     "#f6f2ee",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "hawaiana_rojo",
    "forma": "hawaiana",
    "zona": "cuerpo",
-   "nombre": "Camisa hawaiana rojo",
-   "en": "Red Hawaiian Shirt",
+   "nombre": "Camisa hawaiana con collar de flores",
+   "en": "Lei Hawaiian Shirt",
    "precio": 120,
    "nivel": 2,
    "c": [
@@ -1242,7 +1314,8 @@
     "#f6f2ee",
     "#ffcf4a"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "smoking",
@@ -1271,21 +1344,23 @@
     "#ffcf4a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "impermeable_rojo",
    "forma": "impermeable",
    "zona": "cuerpo",
-   "nombre": "Impermeable rojo",
-   "en": "Red Raincoat",
+   "nombre": "Impermeable con capucha de patito",
+   "en": "Duck-hood Raincoat",
    "precio": 120,
    "nivel": 2,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "sueter_rojo",
@@ -1299,35 +1374,38 @@
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "sueter_verde",
    "forma": "sueter",
    "zona": "cuerpo",
-   "nombre": "Suéter verde",
-   "en": "Green Sweater",
+   "nombre": "Suéter navideño con reno",
+   "en": "Holiday Reindeer Sweater",
    "precio": 100,
    "nivel": 2,
    "c": [
     "#4cc38a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "sueter_azul",
    "forma": "sueter",
    "zona": "cuerpo",
-   "nombre": "Suéter azul",
-   "en": "Blue Sweater",
+   "nombre": "Suéter de cuello alto",
+   "en": "Turtleneck Sweater",
    "precio": 100,
    "nivel": 2,
    "c": [
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "futbol_azul",
@@ -1341,35 +1419,38 @@
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "futbol_rojo",
    "forma": "futbol",
    "zona": "cuerpo",
-   "nombre": "Camiseta de fútbol rojo",
-   "en": "Red Soccer Jersey",
+   "nombre": "Camiseta de fútbol de arquero con guantes",
+   "en": "Goalkeeper Soccer Jersey",
    "precio": 110,
    "nivel": 2,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "futbol_amarillo",
    "forma": "futbol",
    "zona": "cuerpo",
-   "nombre": "Camiseta de fútbol amarillo",
-   "en": "Yellow Soccer Jersey",
+   "nombre": "Camiseta de fútbol de capitán",
+   "en": "Captain Soccer Jersey",
    "precio": 110,
    "nivel": 2,
    "c": [
     "#ffcf4a",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "tutu_rosa",
@@ -1383,21 +1464,23 @@
     "#ff8fb3",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "tutu_lila",
    "forma": "tutu",
    "zona": "cuerpo",
-   "nombre": "Tutú lila",
-   "en": "Purple Tutu",
+   "nombre": "Tutú de dos pisos con estrellas",
+   "en": "Starry Two-tier Tutu",
    "precio": 140,
    "nivel": 3,
    "c": [
     "#9b7cf6",
     "#f6f2ee"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "alas_hada_celeste",
@@ -1410,20 +1493,22 @@
    "c": [
     "#7fc8ff"
    ],
-   "anim": "aletear"
+   "anim": "aletear",
+   "v": 0
   },
   {
    "id": "alas_hada_rosa",
    "forma": "alas_hada",
    "zona": "espalda",
-   "nombre": "Alas de hada rosa",
-   "en": "Pink Fairy Wings",
+   "nombre": "Alas de hada de cristal largas",
+   "en": "Crystal Fairy Wings",
    "precio": 260,
    "nivel": 4,
    "c": [
     "#ff8fb3"
    ],
-   "anim": "aletear"
+   "anim": "aletear",
+   "v": 1
   },
   {
    "id": "alas_murcielago",
@@ -1450,35 +1535,38 @@
     "#e85d6f",
     "#8d5d32"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 0
   },
   {
    "id": "mochila_azul",
    "forma": "mochila",
    "zona": "espalda",
-   "nombre": "Mochila azul",
-   "en": "Blue Backpack",
+   "nombre": "Mochila con osito",
+   "en": "Teddy Backpack",
    "precio": 90,
    "nivel": 1,
    "c": [
     "#3d6dfe",
     "#8d5d32"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 1
   },
   {
    "id": "mochila_verde",
    "forma": "mochila",
    "zona": "espalda",
-   "nombre": "Mochila verde",
-   "en": "Green Backpack",
+   "nombre": "Mochila de explorador",
+   "en": "Explorer Backpack",
    "precio": 90,
    "nivel": 1,
    "c": [
     "#4cc38a",
     "#8d5d32"
    ],
-   "anim": ""
+   "anim": "",
+   "v": 2
   },
   {
    "id": "jetpack",
@@ -1533,21 +1621,23 @@
     "#ff9f43",
     "#2b2633"
    ],
-   "anim": "aletear"
+   "anim": "aletear",
+   "v": 0
   },
   {
    "id": "alas_mariposa_lila",
    "forma": "alas_mariposa",
    "zona": "espalda",
-   "nombre": "Alas de mariposa lila",
-   "en": "Purple Butterfly Wings",
+   "nombre": "Alas de mariposa con colas largas",
+   "en": "Swallowtail Butterfly Wings",
    "precio": 280,
    "nivel": 4,
    "c": [
     "#9b7cf6",
     "#2b2633"
    ],
-   "anim": "aletear"
+   "anim": "aletear",
+   "v": 1
   },
   {
    "id": "ninja_negro",
@@ -1561,35 +1651,38 @@
     "#2b2633",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 0
   },
   {
    "id": "ninja_rojo",
    "forma": "ninja",
    "zona": "traje",
-   "nombre": "Traje ninja rojo",
-   "en": "Red Ninja Suit",
+   "nombre": "Traje ninja con espada",
+   "en": "Sword Ninja Suit",
    "precio": 600,
    "nivel": 4,
    "c": [
     "#e85d6f",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 1
   },
   {
    "id": "ninja_azul",
    "forma": "ninja",
    "zona": "traje",
-   "nombre": "Traje ninja azul",
-   "en": "Blue Ninja Suit",
+   "nombre": "Traje ninja con estrellas ninja",
+   "en": "Shuriken Ninja Suit",
    "precio": 600,
    "nivel": 4,
    "c": [
     "#3d6dfe",
     "#f6f2ee"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 2
   },
   {
    "id": "robot_plata",
@@ -1604,14 +1697,15 @@
     "#7fc8ff",
     "#e85d6f"
    ],
-   "anim": "parpadear"
+   "anim": "parpadear",
+   "v": 0
   },
   {
    "id": "robot_oro",
    "forma": "robot",
    "zona": "traje",
-   "nombre": "Traje de robot de oro",
-   "en": "Gold Robot Suit",
+   "nombre": "Traje de robot con propulsores",
+   "en": "Rocket Robot Suit",
    "precio": 900,
    "nivel": 6,
    "c": [
@@ -1619,7 +1713,8 @@
     "#7fc8ff",
     "#e85d6f"
    ],
-   "anim": "parpadear"
+   "anim": "parpadear",
+   "v": 1
   },
   {
    "id": "slime_verde",
@@ -1632,33 +1727,36 @@
    "c": [
     "#4cc38a"
    ],
-   "anim": "gelatina"
+   "anim": "gelatina",
+   "v": 0
   },
   {
    "id": "slime_rosa",
    "forma": "slime",
    "zona": "traje",
-   "nombre": "Traje de slime rosa",
-   "en": "Pink Slime Suit",
+   "nombre": "Traje de slime rey con corona",
+   "en": "King Slime Suit",
    "precio": 750,
    "nivel": 5,
    "c": [
     "#ff8fb3"
    ],
-   "anim": "gelatina"
+   "anim": "gelatina",
+   "v": 1
   },
   {
    "id": "slime_celeste",
    "forma": "slime",
    "zona": "traje",
-   "nombre": "Traje de slime celeste",
-   "en": "Sky Slime Suit",
+   "nombre": "Traje de slime de agua con burbujas",
+   "en": "Bubbly Slime Suit",
    "precio": 750,
    "nivel": 5,
    "c": [
     "#7fc8ff"
    ],
-   "anim": "gelatina"
+   "anim": "gelatina",
+   "v": 2
   },
   {
    "id": "astronauta",
@@ -1687,21 +1785,23 @@
     "#4cc38a",
     "#ffcf4a"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 0
   },
   {
    "id": "dino_lila",
    "forma": "dino",
    "zona": "traje",
-   "nombre": "Disfraz de dinosaurio lila",
-   "en": "Purple Dino Costume",
+   "nombre": "Disfraz de dinosaurio tricerátops",
+   "en": "Triceratops Dino Costume",
    "precio": 700,
    "nivel": 5,
    "c": [
     "#9b7cf6",
     "#ffcf4a"
    ],
-   "anim": "balancear"
+   "anim": "balancear",
+   "v": 1
   },
   {
    "id": "abeja",
@@ -1831,21 +1931,23 @@
     "#3d6dfe",
     "#ffcf4a"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 0
   },
   {
    "id": "heroe_rojo",
    "forma": "heroe",
    "zona": "traje",
-   "nombre": "Traje de superhéroe rojo",
-   "en": "Red Superhero Suit",
+   "nombre": "Traje de superhéroe con rayo y botas",
+   "en": "Lightning Superhero Suit",
    "precio": 900,
    "nivel": 6,
    "c": [
     "#e85d6f",
     "#ffcf4a"
    ],
-   "anim": "ondear"
+   "anim": "ondear",
+   "v": 1
   },
   {
    "id": "momia",
@@ -2172,8 +2274,8 @@
    "piso": [
     {
      "id": "madera",
-     "nombre": "Madera",
-     "en": "Wood",
+     "nombre": "Tablas de madera",
+     "en": "Wood Planks",
      "precio": 0,
      "p": {
       "tipo": "tablas",
@@ -2182,21 +2284,21 @@
      }
     },
     {
-     "id": "madera_oscura",
-     "nombre": "Madera oscura",
-     "en": "Dark Wood",
-     "precio": 60,
+     "id": "parquet",
+     "nombre": "Parquet en espiga",
+     "en": "Herringbone Parquet",
+     "precio": 90,
      "p": {
-      "tipo": "tablas",
-      "c1": "#8d5d32",
-      "c2": "#6e4524"
+      "tipo": "espiga",
+      "c1": "#c58a55",
+      "c2": "#9c6a3c"
      }
     },
     {
      "id": "ajedrez",
      "nombre": "Baldosa ajedrez",
      "en": "Checker Tiles",
-     "precio": 50,
+     "precio": 60,
      "p": {
       "tipo": "ajedrez",
       "c1": "#f4f1ec",
@@ -2204,47 +2306,47 @@
      }
     },
     {
-     "id": "ajedrez_rosa",
-     "nombre": "Baldosa rosa",
-     "en": "Pink Tiles",
-     "precio": 70,
+     "id": "hexagonos",
+     "nombre": "Baldosa panal",
+     "en": "Honeycomb Tiles",
+     "precio": 90,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#fff3f7",
-      "c2": "#ff9fb8"
+      "tipo": "hexagonos",
+      "c1": "#fff6dc",
+      "c2": "#ffcf6a"
      }
     },
     {
-     "id": "ajedrez_menta",
-     "nombre": "Baldosa menta",
-     "en": "Mint Tiles",
-     "precio": 70,
+     "id": "piedra",
+     "nombre": "Piso de piedras",
+     "en": "Stone Path Floor",
+     "precio": 110,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#f2fbf8",
-      "c2": "#7fd8be"
+      "tipo": "piedra",
+      "c1": "#d9d2c6",
+      "c2": "#a89f92"
      }
     },
     {
-     "id": "alfombra_azul",
-     "nombre": "Alfombra azul",
-     "en": "Blue Carpet",
-     "precio": 80,
+     "id": "mullida",
+     "nombre": "Alfombra peluda",
+     "en": "Shaggy Carpet",
+     "precio": 120,
      "p": {
-      "tipo": "liso",
-      "c1": "#7fa8e8",
-      "c2": "#6a92d4"
-     }
-    },
-    {
-     "id": "alfombra_lila",
-     "nombre": "Alfombra lila",
-     "en": "Purple Carpet",
-     "precio": 80,
-     "p": {
-      "tipo": "liso",
+      "tipo": "mullida",
       "c1": "#b9a2f0",
-      "c2": "#a68ce0"
+      "c2": "#d4c4ff"
+     }
+    },
+    {
+     "id": "mosaico",
+     "nombre": "Mosaico de colores",
+     "en": "Color Mosaic",
+     "precio": 130,
+     "p": {
+      "tipo": "mosaico",
+      "c1": "#f2f6fb",
+      "c2": "#7fc8ff"
      }
     }
    ],
@@ -2255,59 +2357,58 @@
      "en": "Classic Fridge",
      "precio": 0,
      "p": {
-      "c": "#f4f6fa",
-      "r": 0.08
+      "forma": "clasica",
+      "c": "#f4f6fa"
      }
     },
     {
      "id": "retro",
-     "nombre": "Nevera retro rosa",
-     "en": "Retro Pink Fridge",
+     "nombre": "Nevera retro",
+     "en": "Retro Fridge",
      "precio": 120,
      "p": {
-      "c": "#ffb3c1",
-      "r": 0.18
+      "forma": "retro",
+      "c": "#ffb3c1"
      }
     },
     {
-     "id": "menta",
-     "nombre": "Nevera menta",
-     "en": "Mint Fridge",
-     "precio": 120,
+     "id": "doble",
+     "nombre": "Nevera de dos puertas",
+     "en": "Double-Door Fridge",
+     "precio": 180,
      "p": {
-      "c": "#9fe0c8",
-      "r": 0.18
+      "forma": "doble",
+      "c": "#cfd6e2"
      }
     },
     {
-     "id": "negra",
-     "nombre": "Nevera moderna",
-     "en": "Modern Fridge",
-     "precio": 160,
+     "id": "vintage",
+     "nombre": "Nevera con pegatinas",
+     "en": "Sticker Fridge",
+     "precio": 140,
      "p": {
-      "c": "#3a3d4a",
-      "r": 0.05
+      "forma": "vintage",
+      "c": "#9fe0c8"
      }
     },
     {
-     "id": "amarilla",
-     "nombre": "Nevera amarilla",
-     "en": "Yellow Fridge",
-     "precio": 120,
+     "id": "robot",
+     "nombre": "Nevera robot",
+     "en": "Robot Fridge",
+     "precio": 260,
      "p": {
-      "c": "#ffd86a",
-      "r": 0.18
+      "forma": "robot",
+      "c": "#ffd86a"
      }
     },
     {
      "id": "magica",
-     "nombre": "Nevera mágica",
-     "en": "Magic Fridge",
-     "precio": 260,
+     "nombre": "Nevera de cristal",
+     "en": "Crystal Fridge",
+     "precio": 300,
      "p": {
-      "c": "#b49cff",
-      "r": 0.18,
-      "magia": true
+      "forma": "magica",
+      "c": "#b49cff"
      },
      "fx": true
     }
@@ -2325,32 +2426,12 @@
     },
     {
      "id": "azul",
-     "nombre": "Mesa redonda azul",
-     "en": "Round Blue Table",
+     "nombre": "Mesa redonda",
+     "en": "Round Table",
      "precio": 90,
      "p": {
       "forma": "redonda",
       "c": "#7fb8ff"
-     }
-    },
-    {
-     "id": "rosa",
-     "nombre": "Mesa redonda rosa",
-     "en": "Round Pink Table",
-     "precio": 90,
-     "p": {
-      "forma": "redonda",
-      "c": "#ffadc4"
-     }
-    },
-    {
-     "id": "blanca",
-     "nombre": "Mesa blanca",
-     "en": "White Table",
-     "precio": 80,
-     "p": {
-      "forma": "cuadrada",
-      "c": "#f2efe9"
      }
     },
     {
@@ -2373,6 +2454,26 @@
       "c": "#ffadc4"
      },
      "fx": true
+    },
+    {
+     "id": "picnic",
+     "nombre": "Mesa de picnic",
+     "en": "Picnic Table",
+     "precio": 140,
+     "p": {
+      "forma": "picnic",
+      "c": "#b0844f"
+     }
+    },
+    {
+     "id": "barra",
+     "nombre": "Barra con taburetes",
+     "en": "Breakfast Bar",
+     "precio": 190,
+     "p": {
+      "forma": "barra",
+      "c": "#f2efe9"
+     }
     }
    ],
    "planta": [
@@ -2424,6 +2525,27 @@
      "p": {
       "forma": "flor_magica",
       "c": "#c77dff"
+     },
+     "fx": true
+    },
+    {
+     "id": "bonsai",
+     "nombre": "Bonsái",
+     "en": "Bonsai",
+     "precio": 160,
+     "p": {
+      "forma": "bonsai",
+      "c": "#4f9a3e"
+     }
+    },
+    {
+     "id": "carnivora",
+     "nombre": "Planta carnívora",
+     "en": "Snappy Plant",
+     "precio": 200,
+     "p": {
+      "forma": "carnivora",
+      "c": "#7cc96a"
      },
      "fx": true
     }
@@ -2567,8 +2689,8 @@
    "piso": [
     {
      "id": "madera",
-     "nombre": "Madera",
-     "en": "Wood",
+     "nombre": "Tablas de madera",
+     "en": "Wood Planks",
      "precio": 0,
      "p": {
       "tipo": "tablas",
@@ -2577,21 +2699,21 @@
      }
     },
     {
-     "id": "madera_oscura",
-     "nombre": "Madera oscura",
-     "en": "Dark Wood",
-     "precio": 60,
+     "id": "parquet",
+     "nombre": "Parquet en espiga",
+     "en": "Herringbone Parquet",
+     "precio": 90,
      "p": {
-      "tipo": "tablas",
-      "c1": "#8d5d32",
-      "c2": "#6e4524"
+      "tipo": "espiga",
+      "c1": "#c58a55",
+      "c2": "#9c6a3c"
      }
     },
     {
      "id": "ajedrez",
      "nombre": "Baldosa ajedrez",
      "en": "Checker Tiles",
-     "precio": 50,
+     "precio": 60,
      "p": {
       "tipo": "ajedrez",
       "c1": "#f4f1ec",
@@ -2599,36 +2721,36 @@
      }
     },
     {
-     "id": "ajedrez_rosa",
-     "nombre": "Baldosa rosa",
-     "en": "Pink Tiles",
-     "precio": 70,
+     "id": "hexagonos",
+     "nombre": "Baldosa panal",
+     "en": "Honeycomb Tiles",
+     "precio": 90,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#fff3f7",
-      "c2": "#ff9fb8"
+      "tipo": "hexagonos",
+      "c1": "#fff6dc",
+      "c2": "#ffcf6a"
      }
     },
     {
-     "id": "ajedrez_menta",
-     "nombre": "Baldosa menta",
-     "en": "Mint Tiles",
-     "precio": 70,
+     "id": "piedra",
+     "nombre": "Piso de piedras",
+     "en": "Stone Path Floor",
+     "precio": 110,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#f2fbf8",
-      "c2": "#7fd8be"
+      "tipo": "piedra",
+      "c1": "#d9d2c6",
+      "c2": "#a89f92"
      }
     },
     {
-     "id": "alfombra_azul",
-     "nombre": "Alfombra azul",
-     "en": "Blue Carpet",
-     "precio": 80,
+     "id": "mullida",
+     "nombre": "Alfombra peluda",
+     "en": "Shaggy Carpet",
+     "precio": 120,
      "p": {
-      "tipo": "liso",
-      "c1": "#7fa8e8",
-      "c2": "#6a92d4"
+      "tipo": "mullida",
+      "c1": "#b9a2f0",
+      "c2": "#d4c4ff"
      }
     }
    ],
@@ -2691,12 +2813,12 @@
      }
     },
     {
-     "id": "nube_magica",
-     "nombre": "Nube mágica",
-     "en": "Magic Cloud Bed",
+     "id": "arcoiris",
+     "nombre": "Cama arcoíris",
+     "en": "Rainbow Bed",
      "precio": 320,
      "p": {
-      "forma": "nube_magica"
+      "forma": "arcoiris"
      },
      "fx": true
     }
@@ -2735,14 +2857,15 @@
      "fx": true
     },
     {
-     "id": "hongo_azul",
-     "nombre": "Lámpara hongo azul",
-     "en": "Blue Mushroom Lamp",
-     "precio": 70,
+     "id": "farol",
+     "nombre": "Farol de bellota",
+     "en": "Acorn Lantern",
+     "precio": 120,
      "p": {
-      "forma": "hongo",
-      "c": "#6fa8ff"
-     }
+      "forma": "farol",
+      "c": "#ffcf80"
+     },
+     "fx": true
     },
     {
      "id": "lava",
@@ -2790,13 +2913,13 @@
      "fx": true
     },
     {
-     "id": "redonda_azul",
-     "nombre": "Alfombra celeste",
-     "en": "Sky Rug",
-     "precio": 50,
+     "id": "oso",
+     "nombre": "Alfombra osito",
+     "en": "Teddy Rug",
+     "precio": 110,
      "p": {
-      "forma": "redonda",
-      "c": "#a9d2ff"
+      "forma": "oso",
+      "c": "#e2b98a"
      }
     },
     {
@@ -2827,7 +2950,8 @@
      "p": {
       "forma": "arcoiris",
       "c": "#ff6b6b"
-     }
+     },
+     "fx": true
     }
    ]
   },
@@ -2941,20 +3065,20 @@
      }
     },
     {
-     "id": "rosa",
-     "nombre": "Cerca rosa",
-     "en": "Pink Fence",
-     "precio": 60,
+     "id": "caramelo",
+     "nombre": "Cerca de caramelo",
+     "en": "Candy Cane Fence",
+     "precio": 120,
      "p": {
-      "forma": "estacas",
-      "c": "#ffb3c7"
+      "forma": "caramelo",
+      "c": "#ff5a6e"
      }
     },
     {
      "id": "seto",
-     "nombre": "Seto",
-     "en": "Hedge",
-     "precio": 70,
+     "nombre": "Seto con flores",
+     "en": "Flower Hedge",
+     "precio": 90,
      "p": {
       "forma": "seto",
       "c": "#5fae4a"
@@ -2974,30 +3098,30 @@
    "arbol": [
     {
      "id": "roble",
-     "nombre": "Roble",
-     "en": "Oak",
+     "nombre": "Roble con columpio",
+     "en": "Oak Tree",
      "precio": 0,
      "p": {
-      "forma": "redondo",
+      "forma": "roble",
       "c": "#5fae4a"
      }
     },
     {
      "id": "cerezo",
-     "nombre": "Cerezo",
-     "en": "Cherry Tree",
-     "precio": 120,
+     "nombre": "Cerezo llorón",
+     "en": "Weeping Cherry",
+     "precio": 140,
      "p": {
-      "forma": "redondo",
+      "forma": "cerezo",
       "c": "#ffc2d6"
      },
      "fx": true
     },
     {
      "id": "pino",
-     "nombre": "Pino",
-     "en": "Pine",
-     "precio": 90,
+     "nombre": "Pino nevado",
+     "en": "Snowy Pine",
+     "precio": 100,
      "p": {
       "forma": "pino",
       "c": "#3f8f4a"
@@ -3005,8 +3129,8 @@
     },
     {
      "id": "palmera",
-     "nombre": "Palmera",
-     "en": "Palm Tree",
+     "nombre": "Palmera con cocos",
+     "en": "Coconut Palm",
      "precio": 130,
      "p": {
       "forma": "palmera",
@@ -3015,22 +3139,22 @@
     },
     {
      "id": "otono",
-     "nombre": "Árbol de otoño",
-     "en": "Autumn Tree",
-     "precio": 110,
+     "nombre": "Arce de otoño",
+     "en": "Autumn Maple",
+     "precio": 130,
      "p": {
-      "forma": "redondo",
-      "c": "#ff9f43"
+      "forma": "arce",
+      "c": "#ff8a3d"
      },
      "fx": true
     },
     {
      "id": "magico",
-     "nombre": "Árbol mágico",
-     "en": "Magic Tree",
-     "precio": 250,
+     "nombre": "Árbol de cristal",
+     "en": "Crystal Tree",
+     "precio": 280,
      "p": {
-      "forma": "redondo",
+      "forma": "cristal",
       "c": "#b49cff"
      },
      "fx": true
@@ -3043,44 +3167,49 @@
      "en": "Grass",
      "precio": 0,
      "p": {
+      "forma": "pasto",
       "c": "#8fd16a"
      }
     },
     {
      "id": "primavera",
-     "nombre": "Pasto con flores",
-     "en": "Spring Grass",
-     "precio": 60,
+     "nombre": "Jardín de tulipanes",
+     "en": "Tulip Garden",
+     "precio": 90,
      "p": {
+      "forma": "tulipanes",
       "c": "#a5de7c"
      }
     },
     {
      "id": "otono",
-     "nombre": "Pasto de otoño",
-     "en": "Autumn Grass",
-     "precio": 60,
+     "nombre": "Hojas y hongos",
+     "en": "Leaves & Mushrooms",
+     "precio": 90,
      "p": {
-      "c": "#c9c46a"
+      "forma": "otono",
+      "c": "#c9b26a"
      },
      "fx": true
     },
     {
      "id": "nieve",
-     "nombre": "Nieve",
-     "en": "Snow",
-     "precio": 120,
+     "nombre": "Nieve con muñeco",
+     "en": "Snow & Snowman",
+     "precio": 160,
      "p": {
+      "forma": "nieve",
       "c": "#f2f6fb"
      },
      "fx": true
     },
     {
      "id": "arena",
-     "nombre": "Arena de playa",
-     "en": "Beach Sand",
-     "precio": 90,
+     "nombre": "Playa",
+     "en": "Beach",
+     "precio": 150,
      "p": {
+      "forma": "playa",
       "c": "#f5dfa8"
      }
     }
@@ -3321,8 +3450,8 @@
    "piso": [
     {
      "id": "madera",
-     "nombre": "Madera",
-     "en": "Wood",
+     "nombre": "Tablas de madera",
+     "en": "Wood Planks",
      "precio": 0,
      "p": {
       "tipo": "tablas",
@@ -3334,7 +3463,7 @@
      "id": "ajedrez",
      "nombre": "Baldosa ajedrez",
      "en": "Checker Tiles",
-     "precio": 50,
+     "precio": 60,
      "p": {
       "tipo": "ajedrez",
       "c1": "#f4f1ec",
@@ -3342,36 +3471,36 @@
      }
     },
     {
-     "id": "ajedrez_rosa",
-     "nombre": "Baldosa rosa",
-     "en": "Pink Tiles",
-     "precio": 70,
+     "id": "hexagonos",
+     "nombre": "Baldosa panal",
+     "en": "Honeycomb Tiles",
+     "precio": 90,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#fff3f7",
-      "c2": "#ff9fb8"
+      "tipo": "hexagonos",
+      "c1": "#fff6dc",
+      "c2": "#ffcf6a"
      }
     },
     {
-     "id": "ajedrez_menta",
-     "nombre": "Baldosa menta",
-     "en": "Mint Tiles",
-     "precio": 70,
+     "id": "piedra",
+     "nombre": "Piso de piedras",
+     "en": "Stone Path Floor",
+     "precio": 110,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#f2fbf8",
-      "c2": "#7fd8be"
+      "tipo": "piedra",
+      "c1": "#d9d2c6",
+      "c2": "#a89f92"
      }
     },
     {
-     "id": "baldosa_blanca",
-     "nombre": "Baldosa blanca",
-     "en": "White Tiles",
-     "precio": 0,
+     "id": "mosaico",
+     "nombre": "Mosaico de colores",
+     "en": "Color Mosaic",
+     "precio": 130,
      "p": {
-      "tipo": "ajedrez",
-      "c1": "#f7f9fc",
-      "c2": "#e3e9f2"
+      "tipo": "mosaico",
+      "c1": "#f2f6fb",
+      "c2": "#7fc8ff"
      }
     }
    ],
@@ -3382,52 +3511,50 @@
      "en": "Classic Tub",
      "precio": 0,
      "p": {
-      "c": "#ffffff",
-      "patas": ""
+      "forma": "clasica",
+      "c": "#ffffff"
      },
      "fx": true
     },
     {
      "id": "dorada",
-     "nombre": "Bañera patas doradas",
-     "en": "Golden Feet Tub",
+     "nombre": "Bañera de patas doradas",
+     "en": "Clawfoot Tub",
      "precio": 150,
      "p": {
-      "c": "#fff4f6",
-      "patas": "#ffcf4a"
+      "forma": "garras",
+      "c": "#fff4f6"
      },
      "fx": true
     },
     {
-     "id": "rosa",
-     "nombre": "Bañera rosa",
-     "en": "Pink Tub",
-     "precio": 120,
+     "id": "barril",
+     "nombre": "Tina de barril",
+     "en": "Barrel Tub",
+     "precio": 140,
      "p": {
-      "c": "#ffc2d6",
-      "patas": ""
-     },
-     "fx": true
+      "forma": "barril",
+      "c": "#b0844f"
+     }
     },
     {
-     "id": "menta",
-     "nombre": "Bañera menta",
-     "en": "Mint Tub",
-     "precio": 120,
+     "id": "concha",
+     "nombre": "Bañera concha",
+     "en": "Seashell Tub",
+     "precio": 220,
      "p": {
-      "c": "#b4ecd9",
-      "patas": "#ffffff"
-     },
-     "fx": true
+      "forma": "concha",
+      "c": "#ffc2d6"
+     }
     },
     {
      "id": "negra",
-     "nombre": "Bañera elegante",
-     "en": "Elegant Tub",
+     "nombre": "Bañera moderna",
+     "en": "Modern Tub",
      "precio": 200,
      "p": {
-      "c": "#3a3d4a",
-      "patas": "#ffcf4a"
+      "forma": "moderna",
+      "c": "#3a3d4a"
      },
      "fx": true
     },
@@ -3437,9 +3564,8 @@
      "en": "Glow Jacuzzi",
      "precio": 260,
      "p": {
-      "c": "#e8f4ff",
-      "patas": "",
-      "jacuzzi": true
+      "forma": "jacuzzi",
+      "c": "#e8f4ff"
      },
      "fx": true
     }
@@ -3479,14 +3605,14 @@
      }
     },
     {
-     "id": "rayas_rosa",
-     "nombre": "Cortina rosa",
-     "en": "Pink Curtain",
-     "precio": 50,
+     "id": "cuentas",
+     "nombre": "Cortina de cuentas",
+     "en": "Bead Curtain",
+     "precio": 110,
      "p": {
-      "forma": "rayas",
+      "forma": "cuentas",
       "c1": "#ff9fb8",
-      "c2": "#ffffff"
+      "c2": "#ffe066"
      }
     },
     {
@@ -3495,42 +3621,42 @@
      "en": "Duck Curtain",
      "precio": 80,
      "p": {
-      "forma": "burbujas",
+      "forma": "patitos",
       "c1": "#fff3b0",
       "c2": "#ffd84a"
      }
     },
     {
-     "id": "mar",
-     "nombre": "Cortina del mar",
-     "en": "Sea Curtain",
-     "precio": 70,
+     "id": "olas",
+     "nombre": "Cortina de olas",
+     "en": "Wave Curtain",
+     "precio": 100,
      "p": {
-      "forma": "rayas",
+      "forma": "olas",
       "c1": "#3cc9c0",
-      "c2": "#7fc8ff"
-     }
-    },
-    {
-     "id": "lila",
-     "nombre": "Cortina lila",
-     "en": "Lilac Curtain",
-     "precio": 50,
-     "p": {
-      "forma": "lisa",
-      "c1": "#c3a6ff",
-      "c2": "#c3a6ff"
-     }
-    },
-    {
-     "id": "noche",
-     "nombre": "Cortina noche",
-     "en": "Night Curtain",
-     "precio": 90,
-     "p": {
-      "forma": "estrellas",
-      "c1": "#2f3170",
       "c2": "#ffffff"
+     }
+    },
+    {
+     "id": "bambu",
+     "nombre": "Persiana de bambú",
+     "en": "Bamboo Blind",
+     "precio": 120,
+     "p": {
+      "forma": "bambu",
+      "c1": "#c9b26a",
+      "c2": "#9c8648"
+     }
+    },
+    {
+     "id": "dosel",
+     "nombre": "Cortina con lazo",
+     "en": "Tied Drape",
+     "precio": 130,
+     "p": {
+      "forma": "dosel",
+      "c1": "#c3a6ff",
+      "c2": "#ff8fb3"
      }
     },
     {

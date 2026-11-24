@@ -57,6 +57,8 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 4.7 127 decoraciones: 30+ por habitación (paredes con 12 patrones, pisos, plantas, camas, lámparas, cielos, juegos del patio…).
 - [x] 4.13 Efectos en la decoración (partículas, luces, animaciones) y 13 diseños nuevos con efecto.
 - [x] 4.14 Burbuja de habitaciones junto a Más (tocar o mantener y deslizar).
+- [x] 4.15 **Cada decoración con forma propia** (no solo otro color): 6 árboles distintos, 7 pisos (tablas, espiga, ajedrez, hexágonos, piedra, mullido, mosaico), neveras retro/doble/robot/cristal, mesa de picnic y barra, bonsái y planta carnívora, cama arcoíris, farol, alfombra de osito, 5 suelos de patio (tulipanes, otoño con hongos, nieve con muñeco, playa), 6 bañeras y 9 cortinas. Cada pared trae su adorno 3D (reloj, repisas, banderines, cuadros, móviles de estrellas, corazón de neón, antorchas, vigas, enredaderas, nubes).
+- [x] 4.16 Al decorar, la cámara va al objeto que estás cambiando.
 - [ ] 4.8 Temas completos: "Casa del árbol", "Nave espacial", "Castillo", "Playa", "Dulces", "Star Nova".
 - [ ] 4.9 Ventanas con día y noche reales (hora del teléfono) y clima (lluvia, nieve).
 - [ ] 4.10 Muebles que se mueven con el dedo (poner/quitar cuadros, plantas, juguetes).
@@ -81,6 +83,7 @@ para poder decir "hagamos el 4.12, 7.3 y 9.1".
 - [x] 6.3 Prendas con nivel mínimo (candado).
 - [x] 6.4 137 prendas en 6 zonas, con capas que ondean, alas que aletean, hélices que giran, luces que parpadean y slime que tiembla.
 - [x] 6.5 Zona espalda (alas, mochilas, jetpack, caparazón) y trajes completos (ninja, robot, slime, astronauta…). Faltan zapatos.
+- [x] 6.12 **Cada variante con diseño propio** (61 prendas que antes eran solo otro color): gorro de gatito, de duende y con orejeras; gorra al revés, con orejas de oso o cresta de dino; lentes de aviador y deportivos; polerón con orejas, universitario y de dragón; ninja con espada o estrellas; robot con propulsores; slime rey y de burbujas; tricerátops; y más.
 - [ ] 6.6 Trajes completos de Star Nova (los de las tiendas de cada mundo) — coherencia entre juegos.
 - [ ] 6.7 Conjuntos (set de 4 piezas con descuento).
 - [ ] 6.8 Ropa de temporada: Halloween, Navidad, verano, Fiestas Patrias, San Valentín.

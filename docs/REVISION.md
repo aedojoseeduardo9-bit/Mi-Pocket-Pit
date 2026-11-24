@@ -1,5 +1,17 @@
 # Pocket Pip — revisión de errores
 
+## Versión 0.4 (lo que pediste: "que cada compra se note")
+- [x] **Compras que solo cambiaban color o partículas** (el ejemplo de los árboles). Ahora toda decoración y toda prenda
+  tiene su propia forma. Revisado con una galería automática: una foto de cada una de las 141 decoraciones y las 137
+  prendas (de frente y de espalda), para confirmar que ninguna se parece a otra.
+- [x] **La cámara no mostraba lo que decorabas**: al abrir "Decorar" se acercaba a Pip y la nevera, la mesa, la cama o el
+  árbol quedaban cortados en el borde. Ahora la cámara va al objeto de la pestaña elegida y lo deja entero sobre el panel.
+  La vista normal también se abrió un poco para que se vea más de la habitación.
+- [x] La planta de la cocina quedaba escondida detrás del mesón: ahora está encima.
+- [x] Los adornos de pared quedaban fuera de cuadro en el teléfono (pantalla angosta): se movieron a la parte visible.
+- [x] Moños, corbatas y cascabeles nuevos bajados un poco para que los cachetes de Pip no los tapen.
+- [ ] Las prendas de cuello de antes (moño, corbata, cascabel) se ven poco por los cachetes de Pip.
+
 ## Versión 0.3 (lo que reportaste en la APK 2)
 - [x] **Lag fuerte en la pantalla nioro.** Causas encontradas y corregidas:
   - La intro corría mientras el juego se armaba detrás (casa, Pip, ropa de muestra para preparar sombreadores): cada

@@ -461,7 +461,7 @@ func abrir_panel(tipo: String) -> void:
 	hoja.add_child(_hoja_pie)
 	_armar_tabs()
 	_armar_tarjetas()
-	main.zoom_panel = 1.0 if tipo in ["armario", "decorar", "mas"] else 0.0
+	main.zoom_panel = 1.0 if tipo in ["armario", "mas"] else 0.0
 	var tw := create_tween().set_parallel()
 	tw.tween_property(hoja, "position:y", size.y - hoja.size.y, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(_velo, "color:a", 0.25 if tipo in ["tienda", "juegos", "ajustes"] else 0.0, 0.3)
@@ -479,6 +479,7 @@ func cerrar_panel(rapido := false) -> void:
 			main.casa.rearmar(h, slot)
 	hoja_tipo = ""
 	main.zoom_panel = 0.0
+	main.foco_deco = ""
 	var hj := hoja
 	var vl := _velo
 	hoja = null
@@ -559,6 +560,9 @@ func _tarjeta(csz: Vector2) -> UI.Tarjeta:
 	return t
 
 func _armar_tarjetas() -> void:
+	if hoja_tipo == "decorar":
+		# la cámara va al objeto que se decora (queda entero sobre el panel)
+		main.foco_deco = str(Estado.cat.deco[Casa.HABS[main.hab]].keys()[_hoja_tab])
 	for c in _hoja_grid.get_children():
 		c.queue_free()
 	_hoja_scroll.scroll_vertical = 0

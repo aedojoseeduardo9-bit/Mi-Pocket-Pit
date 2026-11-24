@@ -25,6 +25,8 @@ var cam_pos_obj := Vector3.ZERO
 var cam_mira_obj := Vector3.ZERO
 var zoom_panel := 0.0         ## 0..1: acerca la cámara a Pip cuando hay un panel abierto
 var _zoom_k := 0.0
+var foco_deco := ""           ## ranura de decoración que mira la cámara ("" = Pip)
+var _foco_k := 0.0
 var luz_apagada := false
 var _noche_k := 0.0
 
@@ -188,7 +190,7 @@ func _fin_intro() -> void:
 # ---------------- cámara ----------------
 func _objetivo_camara() -> void:
 	var x := pip.position.x if modo == "viaje" else casa.centro(hab)
-	var base := Vector3(x, 1.55, 4.7)
+	var base := Vector3(x, 1.6, 5.2)
 	var mira := Vector3(x, 1.02, 0.0)
 	# con un panel abierto (armario) Pip queda entero arriba del panel
 	var cerca := Vector3(pip.position.x, 1.15, 5.3)
@@ -201,6 +203,20 @@ func _objetivo_camara() -> void:
 		mira = Vector3(x, 1.35, 0.0)
 	cam_pos_obj = base.lerp(cerca, _zoom_k)
 	cam_mira_obj = mira.lerp(mira_cerca, _zoom_k)
+	if foco_deco == "_pip_atras":
+		cam_pos_obj = pip.position + Vector3(-1.5, 1.15, -1.5)
+		cam_mira_obj = pip.position + Vector3(0, 0.75, 0)
+	elif foco_deco == "_pip":
+		# primer plano de Pip (fotos de la galería de ropa)
+		cam_pos_obj = pip.position + Vector3(0.45, 1.25, 3.1)
+		cam_mira_obj = pip.position + Vector3(0, 0.85, 0)
+	elif foco_deco != "" and modo != "viaje":
+		# decorando: encuadra el objeto arriba de la pantalla (el panel tapa la mitad de abajo)
+		var f: Dictionary = casa.foco(Casa.HABS[hab], foco_deco)
+		var c: Vector3 = f.c + Vector3(casa.centro(hab), 0, 0)
+		var d: float = f.d
+		cam_pos_obj = c + Vector3(0, d * 0.3, d)
+		cam_mira_obj = c - Vector3(0, d * 0.24, 0)
 
 func _process(dt: float) -> void:
 	if not listo or (hud and hud.juego != null):

@@ -69,6 +69,10 @@ func _correr() -> void:
 	main.hud.cerrar_modal()
 	await _esperar(1.0)
 	await foto("habitacion")
+	if OS.get_environment("OJOS_GALERIA") != "":
+		await _galeria()
+		_terminar()
+		return
 	# brazos y orejas nuevos, de cerca
 	main.zoom_panel = 1.0
 	main.pip.hacer("saludo")
@@ -272,18 +276,18 @@ func _correr() -> void:
 				main.casa.rearmar(h, s, v.id)
 	ok(true, "todas las decoraciones se arman")
 	var combos := {
-		"habitacion": [{"pared": "corazones_noche", "cama": "nube_magica", "lampara": "disco", "alfombra": "arcoiris", "piso": "alfombra_lila"},
-			{"pared": "corazones_noche", "cama": "castillo", "lampara": "lava", "alfombra": "corazon", "piso": "alfombra_lila"},
-			{"pared": "lunares_algodon", "cama": "concha", "lampara": "estrella", "alfombra": "nube", "piso": "madera_oscura"}],
-		"cocina": [{"pared": "ladrillo_crema", "piso": "ajedrez_menta", "nevera": "magica", "mesa": "dulces", "planta": "flor_magica"},
-			{"pared": "ladrillo_crema", "piso": "ajedrez_menta", "nevera": "amarilla", "mesa": "hongo", "planta": "girasol"}],
+		"habitacion": [{"pared": "corazones_noche", "cama": "arcoiris", "lampara": "disco", "alfombra": "oso", "piso": "mullida"},
+			{"pared": "corazones_noche", "cama": "castillo", "lampara": "farol", "alfombra": "corazon", "piso": "hexagonos"},
+			{"pared": "lunares_algodon", "cama": "concha", "lampara": "estrella", "alfombra": "nube", "piso": "parquet"}],
+		"cocina": [{"pared": "ladrillo_crema", "piso": "mosaico", "nevera": "robot", "mesa": "dulces", "planta": "carnivora"},
+			{"pared": "ladrillo_crema", "piso": "piedra", "nevera": "vintage", "mesa": "picnic", "planta": "bonsai"}],
 		"patio": [{"fondo": "lluvia_estrellas", "cerca": "seto", "arbol": "magico", "pasto": "nieve", "juguete": "fogata"},
 			{"fondo": "dia", "cerca": "blanca", "arbol": "cerezo", "pasto": "primavera", "juguete": "fuente"},
 			{"fondo": "aurora", "cerca": "seto", "arbol": "pino", "pasto": "nieve", "juguete": "telescopio"},
-			{"fondo": "dulce", "cerca": "rosa", "arbol": "palmera", "pasto": "arena", "juguete": "piscina"},
+			{"fondo": "dulce", "cerca": "caramelo", "arbol": "palmera", "pasto": "arena", "juguete": "piscina"},
 			{"fondo": "galaxia", "cerca": "piedra", "arbol": "magico", "pasto": "primavera", "juguete": "columpio"}],
-		"bano": [{"pared": "acuario", "banera": "jacuzzi", "cortina": "luces", "piso": "ajedrez_rosa"},
-			{"pared": "corazones_coral", "banera": "negra", "cortina": "noche", "piso": "ajedrez_rosa"}],
+		"bano": [{"pared": "acuario", "banera": "jacuzzi", "cortina": "luces", "piso": "mosaico"},
+			{"pared": "corazones_coral", "banera": "negra", "cortina": "patitos", "piso": "hexagonos"}],
 	}
 	for h in combos:
 		await _ir(Casa.HABS.find(h))
@@ -375,6 +379,9 @@ func _correr() -> void:
 	ok(Estado.d.durmiendo, "se recuerda que Pip quedó durmiendo")
 	main.apagar_luz(false)
 	await _esperar(1.0)
+	_terminar()
+
+func _terminar() -> void:
 	var fallos := 0
 	for l in informe:
 		if l.begins_with("FALLO"):
@@ -389,3 +396,32 @@ func _correr() -> void:
 	f.close()
 	print("\n".join(informe))
 	get_tree().quit(1 if fallos > 0 else 0)
+
+
+## Galería (OJOS_GALERIA=1): una foto de cada decoración y de cada prenda, para revisar que todas se vean distintas.
+func _galeria() -> void:
+	var solo_ropa := OS.get_environment("OJOS_GALERIA") in ["ropa", "espalda"]
+	for h in ([] if solo_ropa else Casa.HABS):
+		await _ir(Casa.HABS.find(h))
+		for s in Estado.cat.deco[h]:
+			main.foco_deco = s
+			await _esperar(1.0)
+			for v in Estado.cat.deco[h][s]:
+				main.casa.rearmar(h, s, v.id)
+				await _esperar(0.35)
+				await foto("gal_%s_%s_%s" % [h, s, v.id])
+			main.casa.rearmar(h, s, "")
+		main.foco_deco = ""
+	await _ir(1)
+	var atras := OS.get_environment("OJOS_GALERIA") == "espalda"
+	main.foco_deco = "_pip_atras" if atras else "_pip"
+	await _esperar(1.0)
+	for r in Estado.cat.ropa:
+		if atras and not str(r.zona) in ["espalda", "traje", "cuerpo"]:
+			continue
+		_vestir({r.zona: r.id})
+		await _esperar(0.3)
+		await foto("ropa_%s" % r.id)
+	_vestir({})
+	main.foco_deco = ""
+	ok(true, "galería completa")
