@@ -130,9 +130,14 @@ func _armar_mundo() -> void:
 	sol.light_energy = 0.42
 	sol.light_color = Color("#fff4e2")
 	sol.shadow_enabled = true
-	sol.shadow_blur = 1.6
+	# sombras: rango corto (la casa mide ~8 m) para que cada píxel de sombra sea chico y el borde no se vea dentado;
+	# sesgo un poco mayor para que las superficies curvas no se sombreen a sí mismas en rayas
+	sol.shadow_blur = 1.5
+	sol.shadow_bias = 0.06
+	sol.shadow_normal_bias = 2.6
 	sol.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
-	sol.directional_shadow_max_distance = 11.0
+	sol.directional_shadow_max_distance = 8.5
+	sol.directional_shadow_fade_start = 0.9
 	mundo.add_child(sol)
 	casa = Casa.new()
 	mundo.add_child(casa)
@@ -463,7 +468,32 @@ func alimentar(id: String, desde: Vector2) -> void:
 		Estado.subir("hambre", float(c.llena))
 		Estado.dar_xp(3)
 		fx.emitir("corazon", boca + Vector2(0, -40), 2)
-		hud.refrescar())
+		hud.refrescar()
+		if c.has("efecto"):
+			_efecto_comida(str(c.efecto)))
+
+## Comidas exóticas (regalos de nivel): cada una le hace algo a Pip.
+func _efecto_comida(ef: String) -> void:
+	await get_tree().create_timer(0.75).timeout
+	match ef:
+		"fuego":
+			pip.hacer("sacudir")
+			hud.toast("¡Pica, pica! ¡Pip echa fuego!", Color("#ff4d3a"))
+			Sfx.play("dash", 0.8)
+			for i in 14:
+				fx.emitir("chispa", boca_en_pantalla() + Vector2(0, 16), 5, Color("#ff7a2a") if i % 2 else Color("#ffcf4a"))
+				await get_tree().create_timer(0.1).timeout
+		"frio":
+			pip.hacer("sacudir")
+			hud.toast("¡Brrr! Helado de estrellas", Color("#7fd8ff"))
+			for i in 10:
+				fx.emitir("burbuja", pip_en_pantalla() + Vector2(randf_range(-120, 120), -160), 3, Color("#e8f6ff"))
+				await get_tree().create_timer(0.15).timeout
+		_:
+			# brillo, gigante, fantasma, arcoiris o mini: como una poción corta
+			pip.tomar_pocion(ef, 20.0)
+			Sfx.play("crystal")
+			fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -120), 8)
 
 # ---------------- habitación: dormir ----------------
 func apagar_luz(on: bool) -> void:
@@ -628,6 +658,7 @@ func _subio_nivel(n: int) -> void:
 	Sfx.play("level")
 	pip.hacer("celebrar", true)
 	fx.emitir("estrella", pip_en_pantalla() + Vector2(0, -150), 10)
+	hud.avisar_nivel(n)
 
 func _compra_lista(id: String, n: int) -> void:
 	Sfx.play("chest")
@@ -654,12 +685,12 @@ func _physics_process(_dt: float) -> void:
 func aplicar_ajustes() -> void:
 	var q := int(Estado.cfg("calidad"))
 	sol.shadow_enabled = q >= 1
-	sol.shadow_blur = 1.6 if q >= 2 else 1.0
+	sol.shadow_blur = 1.5
 	env.glow_enabled = q >= 1
 	get_viewport().msaa_3d = Viewport.MSAA_4X if q >= 2 else (Viewport.MSAA_2X if q == 1 else Viewport.MSAA_DISABLED)
 	get_viewport().scaling_3d_scale = 1.0 if q >= 1 else 0.75
 	Engine.max_fps = 60 if q >= 1 else 30
-	RenderingServer.directional_shadow_atlas_set_size(2048 if q >= 2 else 1024, true)
+	RenderingServer.directional_shadow_atlas_set_size(4096 if q >= 2 else 2048, true)
 	var idioma := str(Estado.cfg("idioma"))
 	if idioma != L.idioma:
 		L.cambiar(idioma)

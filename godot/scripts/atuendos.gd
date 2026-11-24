@@ -224,7 +224,7 @@ static func vestir(pip: PipModel, puesto: Dictionary) -> void:
 			for nd in res:
 				_ajustar_capibara(pip, nd as Node3D, zona)
 		piezas.append_array(res)
-		if str(def.forma) in ["robot", "astronauta", "caballero", "casco_astronauta"]:
+		if str(def.forma) in ["robot", "astronauta", "caballero", "casco_astronauta", "astronauta_nova"]:
 			orejas = false
 	for e in pip.ears:
 		e.visible = orejas and pip.forma == "pip"
@@ -585,6 +585,94 @@ static func _armar(pip: PipModel, forma: String, cs: Array, anim: String, v := 0
 				var a := TAU * i / 5.0
 				_p(g, _cyl, tela(c1), Vector3(cos(a) * 0.07, 0.05 + sin(a) * 0.07, -0.245), Vector3(0.03, 0.004, 0.03), Vector3(PI / 2, 0, 0))
 
+		# ================= EXCLUSIVAS DE NIVEL =================
+		"casco_ovni":
+			var ov := _g(g, "ovni", Vector3(0, 0.3, -0.01))
+			_p(ov, _ball, metal(c0), Vector3.ZERO, Vector3(0.18, 0.035, 0.18))
+			_p(ov, _torus, metal(Color(c0).darkened(0.25).to_html(false)), Vector3(0, -0.005, 0), Vector3(0.18, 0.2, 0.18))
+			_p(ov, _ball, vidrio(c1, 0.5), Vector3(0, 0.03, 0), Vector3(0.085, 0.075, 0.085))
+			_p(ov, _ball, tela("#7be08a"), Vector3(0, 0.035, 0), Vector3.ONE * 0.035)
+			for sx in [-1.0, 1.0]:
+				_p(ov, _ball, tela("#2b2633"), Vector3(sx * 0.012, 0.045, 0.03), Vector3.ONE * 0.008)
+			var lm := luz(c2)
+			for i in 8:
+				var a := TAU * i / 8.0
+				_p(ov, _ball, lm, Vector3(cos(a) * 0.15, -0.012, sin(a) * 0.15), Vector3.ONE * 0.014)
+			var rayo := vidrio(c1, 0.22)
+			_p(ov, _cone, rayo, Vector3(0, -0.07, 0), Vector3(0.1, 0.12, 0.1)).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			_an(pip, ov, "flotar", 1.0, lm)
+		"anillo_planetas":
+			var an := _g(g, "anillo", Vector3(0, 0.2, 0), Vector3(0.3, 0, 0.12))
+			var am := luz(c0)
+			am.emission_energy_multiplier = 0.4
+			_p(an, _torus, am, Vector3.ZERO, Vector3(0.21, 0.12, 0.21))
+			var pc := [c0, c1, c2, "#7be08a"]
+			for i in 4:
+				var a := TAU * i / 4.0 + 0.4
+				var pl := _p(an, _ball, brillante(pc[i]), Vector3(cos(a) * 0.205, 0, sin(a) * 0.205), Vector3.ONE * (0.025 + i * 0.006))
+				if i == 2:
+					_p(pl, _torus, tela("#fff3c4"), Vector3.ZERO, Vector3(1.8, 0.6, 1.8), Vector3(0.4, 0, 0))
+			_an(pip, an, "girar", 1.1, am)
+		"corona_sol":
+			var oro := metal(c0)
+			_p(g, _cyl, oro, Vector3(0, 0.15, 0), Vector3(0.1, 0.04, 0.1))
+			for i in 5:
+				var a := TAU * i / 5.0
+				_p(g, _cone, oro, Vector3(sin(a) * 0.09, 0.2, cos(a) * 0.09), Vector3(0.024, 0.06, 0.024))
+			var halo := _g(g, "halo", Vector3(0, 0.08, -0.12))
+			var sm := luz(c1)
+			_p(halo, _cyl, luz(c2), Vector3.ZERO, Vector3(0.13, 0.01, 0.13), Vector3(PI / 2, 0, 0))
+			for i in 12:
+				var a := TAU * i / 12.0
+				_p(halo, _cone, sm, Vector3(sin(a) * 0.19, cos(a) * 0.19, 0), Vector3(0.03, 0.09 if i % 2 == 0 else 0.06, 0.012), Vector3(0, 0, -a))
+			_an(pip, halo, "brillar", 0.0, sm)
+			_p(g, _ball, luz("#ff4d6d"), Vector3(0, 0.16, 0.1), Vector3(0.018, 0.018, 0.01))
+		"visor_nebulosa":
+			var vm := luz(c1)
+			vm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			vm.albedo_color.a = 0.8
+			var vi := _p(g, _ball, vm, Vector3(0, 0.022, 0.06), Vector3(0.168, 0.052, 0.13))
+			vi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			var v2 := luz(c2)
+			_p(g, _ball, v2, Vector3(0, 0.0, 0.062), Vector3(0.166, 0.024, 0.128)).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			_p(g, _torus, tela(c0), Vector3(0, 0.035, 0), Vector3(0.16, 0.25, 0.154))
+			var bri := _g(g, "brillos", Vector3(0, 0.1, 0.12))
+			for i in 3:
+				_p(bri, _star, luz("#ffffff"), Vector3(-0.1 + i * 0.1, 0.02 * (i % 2), 0.0), Vector3.ONE * 0.016)
+			_an(pip, bri, "flotar", 1.0)
+			_an(pip, g, "parpadear", 0.0, vm)
+		"capa_galaxia":
+			var tc := tela(c0)
+			tc.cull_mode = BaseMaterial3D.CULL_DISABLED
+			var capa := _g(g, "capa", Vector3(0, 0.15, -0.08))
+			_p(capa, _ball, tc, Vector3(0, -0.15, -0.06), Vector3(0.2, 0.25, 0.04), Vector3(0.14, 0, 0))
+			var sm := luz("#ffffff")
+			for i in 10:
+				_p(capa, _star, sm if i % 3 else luz(c2), Vector3(-0.13 + (i % 5) * 0.065, -0.06 - (i / 5) * 0.14 - (i % 2) * 0.04, -0.105), Vector3.ONE * 0.015, Vector3(0, PI, 0))
+			var neb := vidrio(c1, 0.45)
+			neb.emission_enabled = true
+			neb.emission = Color(c1) * 0.6
+			for i in 3:
+				_p(capa, _ball, neb, Vector3(-0.07 + i * 0.07, -0.13 - (i % 2) * 0.08, -0.1), Vector3(0.05, 0.035, 0.008))
+			_p(g, _torus, luz(c2), Vector3(0, 0.15, 0.0), Vector3(0.11, 0.35, 0.11), Vector3(0.25, 0, 0))
+			_p(g, _star, metal("#ffd36e"), Vector3(0, 0.14, 0.13), Vector3.ONE * 0.022)
+			_an(pip, capa, "ondear", 1.2)
+			_an(pip, capa, "brillar", 0.0, sm)
+		"alas_cometa":
+			var cm := luz(c0)
+			cm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			cm.albedo_color.a = 0.7
+			for s in [-1.0, 1.0]:
+				var w := _g(g, "ala", Vector3(s * 0.06, 0.12, -0.17), Vector3(0, s * 0.35, 0))
+				for k in 3:
+					var m := _p(w, _cone, cm if k != 1 else luz(c2), Vector3(s * (0.16 + k * 0.03), 0.06 - k * 0.08, 0), Vector3(0.06, 0.34 - k * 0.06, 0.018), Vector3(0, 0, s * (1.15 + k * 0.32)))
+					m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				_p(w, _star, luz(c1), Vector3(s * 0.03, 0.03, 0.01), Vector3.ONE * 0.045)
+				for k in 3:
+					_p(w, _ball, luz("#ffffff"), Vector3(s * (0.22 + k * 0.06), 0.1 - k * 0.07, 0.012), Vector3.ONE * 0.01)
+				_an(pip, w, "aletear", s * 0.8)
+			_an(pip, g, "brillar", 0.0, cm)
+
 		# ================= TRAJES =================
 		_:
 			if forma in TRAJES:
@@ -597,9 +685,10 @@ const CUERPO_TORSO := ["bufanda", "mono", "collar_bellotas", "panuelo", "corbata
 	"poleron", "polera_estrella", "sueter", "futbol", "impermeable", "hawaiana", "chaleco", "smoking", "overol", "tutu", "capa",
 	"alas_hada", "alas_angel", "alas_mariposa", "alas_murcielago", "mochila", "jetpack", "caparazon",
 	"ninja", "robot", "slime", "astronauta", "dino", "abeja", "caballero", "mago_traje", "pinguino", "rana", "unicornio",
-	"vampiro", "payaso", "heroe", "momia", "calabaza", "panda", "tiburon"]
+	"vampiro", "payaso", "heroe", "momia", "calabaza", "panda", "tiburon",
+	"alien", "astronauta_nova", "dragon_estelar", "capa_galaxia", "alas_cometa"]
 const TRAJES := ["ninja", "robot", "slime", "astronauta", "dino", "abeja", "caballero", "mago_traje", "pinguino", "rana",
-	"unicornio", "vampiro", "payaso", "heroe", "momia", "calabaza", "panda", "tiburon"]
+	"unicornio", "vampiro", "payaso", "heroe", "momia", "calabaza", "panda", "tiburon", "alien", "astronauta_nova", "dragon_estelar"]
 
 ## Capa sobre el torso (un poco más grande que el cuerpo).
 static func _tronco(g: Node3D, mat: Material, extra := 0.008) -> MeshInstance3D:
@@ -945,6 +1034,67 @@ static func _traje(pip: PipModel, g: Node3D, forma: String, c0: String, c1: Stri
 			for s in [-1.0, 1.0]:
 				_p(hg, _ball, n, Vector3(s * 0.11, 0.13, 0.0), Vector3.ONE * 0.045)
 				_p(hg, _ball, n, Vector3(s * 0.065, 0.03, 0.155), Vector3(0.03, 0.035, 0.01), Vector3(0, 0, s * 0.4))
+		"alien":
+			var v := tela(c0)
+			_tronco(g, v)
+			out.append_array(_mangas(pip, v))
+			out.append_array(_piernas(pip, v))
+			_capucha(hg, v, 0.012)
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
+			var lm := luz(c2)
+			for i in 3:
+				var tallo := _g(hg, "ojo%d" % i, Vector3((i - 1) * 0.06, 0.13, 0.02), Vector3(0, 0, (1 - i) * 0.35))
+				_p(tallo, _cyl, v, Vector3(0, 0.05, 0), Vector3(0.008, 0.1, 0.008))
+				_p(tallo, _ball, tela("#ffffff"), Vector3(0, 0.11, 0), Vector3.ONE * 0.028)
+				_p(tallo, _ball, tela(c1), Vector3(0, 0.112, 0.022), Vector3(0.013, 0.013, 0.008))
+				_an(pip, tallo, "balancear", 0.3 * (i - 1) + 0.15)
+			for i in 3:
+				_p(g, _ball, lm, Vector3(-0.05 + i * 0.05, -0.02, 0.163), Vector3.ONE * 0.012)
+			_p(g, _torus, tela(c1), Vector3(0, -0.02, -0.01), Vector3(0.155, 0.15, 0.175))
+			_an(pip, g, "parpadear", 0.0, lm)
+		"astronauta_nova":
+			var tr := tela(c0)
+			var oro := metal(c1)
+			_tronco(g, tr, 0.014)
+			out.append_array(_mangas(pip, tr))
+			out.append_array(_piernas(pip, tr))
+			_p(g, _torus, oro, Vector3(0, -0.02, -0.01), Vector3(0.16, 0.2, 0.18))
+			var sm := luz("#fff3c4")
+			_p(g, rbox(Vector3(0.11, 0.08, 0.02), 0.02), tela("#1e2230"), Vector3(0, 0.07, 0.175), Vector3.ONE, Vector3(-0.15, 0, 0))
+			for i in 3:
+				_p(g, _star, sm, Vector3(-0.03 + i * 0.03, 0.075, 0.188), Vector3.ONE * 0.011)
+			_an(pip, g, "brillar", 0.0, sm)
+			_p(g, rbox(Vector3(0.18, 0.2, 0.08), 0.04), oro, Vector3(0, 0.06, -0.2), Vector3.ONE)
+			for sx in [-1.0, 1.0]:
+				_p(g, _cone, tr, Vector3(sx * 0.1, 0.0, -0.22), Vector3(0.03, 0.07, 0.03), Vector3(0, 0, sx * 0.5))
+			_p(hg, _ball, vidrio(c2, 0.28), Vector3(0, 0.02, 0.01), Vector3(0.22, 0.21, 0.21))
+			_p(hg, _torus, oro, Vector3(0, -0.15, 0), Vector3(0.17, 0.6, 0.17))
+			var orb := _g(hg, "orbita", Vector3(0, 0.05, 0), Vector3(0.35, 0, 0.2))
+			_p(orb, _ball, brillante("#ff8f6b"), Vector3(0.27, 0, 0), Vector3.ONE * 0.03)
+			_p(orb, _ball, luz("#fff3c4"), Vector3(-0.27, 0, 0), Vector3.ONE * 0.018)
+			_an(pip, orb, "girar", 1.6)
+		"dragon_estelar":
+			var c := tela(c0)
+			var cr := vidrio(c1, 0.6)
+			cr.emission_enabled = true
+			cr.emission = Color(c1) * 0.7
+			_tronco(g, c)
+			out.append_array(_mangas(pip, c))
+			out.append_array(_piernas(pip, c))
+			_p(g, _ball, metal(c2), Vector3(0, 0.03, 0.1), Vector3(0.1, 0.12, 0.08))
+			_capucha(hg, c, 0.012)
+			_p(hg, _ball, _piel(pip), Vector3(0, -0.01, 0.1), Vector3(0.12, 0.1, 0.07))
+			for sx in [-1.0, 1.0]:
+				_p(hg, _cone, cr, Vector3(sx * 0.07, 0.15, -0.02), Vector3(0.022, 0.1, 0.022), Vector3(-0.5, 0, -sx * 0.4))
+			for i in 5:
+				_p(hg if i < 2 else g, _cone, cr, Vector3(0, 0.16 - i * 0.06, -0.08 - i * 0.025) if i < 2 else Vector3(0, 0.27 - i * 0.07, -0.18), Vector3(0.025, 0.05, 0.016), Vector3(-0.5, 0, 0))
+			for s in [-1.0, 1.0]:
+				var w := _g(g, "ala", Vector3(s * 0.04, 0.12, -0.15), Vector3(0, s * 0.5, 0))
+				_p(w, _ala_bat, c, Vector3.ZERO, Vector3(0.24 * s, 0.24, 0.24)).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				for k in 3:
+					_p(w, _star, luz(c1), Vector3(s * (0.06 + k * 0.06), 0.04, 0.012), Vector3.ONE * 0.012)
+				_an(pip, w, "aletear", s * 0.9)
+			_an(pip, g, "brillar", 0.0, cr)
 		"tiburon":
 			var gr := tela(c0)
 			_tronco(g, gr)
