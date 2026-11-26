@@ -1309,7 +1309,10 @@ static func _variante(pip: PipModel, g: Node3D, forma: String, v: int, c0: Strin
 			_p(g, _cone, hielo, Vector3(0, 0.29, 0.07), Vector3(0.03, 0.2, 0.03))
 			_an(pip, g, "brillar", 0.0, hielo)
 		"flor1":
-			g.scale = Vector3.ONE * 2.3
+			# margarita grande como pinche al costado de la cabeza (antes tapaba el ojo y la hoja llegaba a la nariz)
+			g.position = Vector3(0.125, 0.135, 0.0)
+			g.rotation = Vector3(-0.2, 1.05, 0.35)
+			g.scale = Vector3.ONE * 1.7
 			for i in 10:
 				var a := TAU * (i + 0.5) / 10.0
 				_p(g, _ball, tela("#ffffff"), Vector3(cos(a) * 0.03, sin(a) * 0.03, -0.002), Vector3(0.024, 0.008, 0.005), Vector3(0, 0, a))

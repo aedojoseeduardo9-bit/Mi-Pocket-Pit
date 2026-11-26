@@ -1,5 +1,15 @@
 # Pocket Pip — revisión de errores
 
+## Versión 0.6.1
+- [x] **Margarita gigante (flor blanca) tapaba el ojo** y la hojita llegaba a la nariz: estaba agrandada 2,3 veces en
+  el mismo lugar de la flor chica. Ahora va al costado de la cabeza como pinche (en Pip y en la capibara).
+- [x] **La app se cerraba sola en algunos teléfonos (por ejemplo Vivo).** Sin el registro del teléfono no se puede
+  saber la causa exacta; lo más común es que la tarjeta gráfica no aguante sombras grandes, suavizado o brillo.
+  Nuevo **modo seguro automático**: si el juego se cerró solo la vez anterior, al abrir baja un paso la calidad
+  gráfica (hasta "Baja": sin sombras ni brillo, 30 cuadros) y avisa. Se puede volver a subir en Ajustes.
+  Si el teléfono cierra la app estando en segundo plano (ahorro de batería de Vivo), eso lo hace el sistema: la
+  partida ya se guarda al salir; en el teléfono conviene permitir "alto consumo en segundo plano" para Pocket Pip.
+
 ## Versión 0.6 (gráfica optimizada, brillo de la habitación y errores de compras)
 ### Compras (lo más importante)
 - [x] **Compras que se entregaban dos veces.** El botón "Procesando..." se veía desactivado pero seguía respondiendo
