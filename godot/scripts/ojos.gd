@@ -287,6 +287,13 @@ func _correr() -> void:
 	bt._gui_input(evb2)
 	ok(toques[0] == 0, "un botón desactivado no responde")
 	bt.queue_free()
+	# modo seguro: si la app se cerró sola, al abrir baja un paso la calidad gráfica
+	var q_antes := int(Estado.cfg("calidad"))
+	Estado.d.cfg.calidad = 2
+	Estado._revisar_cierre(true)
+	ok(int(Estado.cfg("calidad")) == 1 and Estado.cierre_raro, "si el juego se cerró solo, baja la calidad gráfica")
+	Estado.cierre_raro = false
+	Estado.d.cfg.calidad = q_antes
 	var b3 := Estado.bellotas()
 	Estado.d.tengo.append("deco_habitacion_cama_nube_magica")
 	Estado._limpiar()
@@ -531,12 +538,17 @@ func _galeria() -> void:
 		main.foco_deco = ""
 	await _ir(1)
 	var atras := OS.get_environment("OJOS_GALERIA") == "espalda"
+	if OS.get_environment("OJOS_CAPI") != "":
+		Estado.d.capi_hasta = Time.get_unix_time_from_system() + 900.0
+		main._revisar_forma()
 	main.foco_deco = "_pip_atras" if atras else "_pip"
 	await _esperar(1.0)
 	for r in Estado.cat.ropa:
 		if atras and not str(r.zona) in ["espalda", "traje", "cuerpo"]:
 			continue
 		if OS.get_environment("OJOS_SOLO_REGALO") != "" and not r.get("regalo", false):
+			continue
+		if OS.get_environment("OJOS_SOLO") != "" and not str(r.id).contains(OS.get_environment("OJOS_SOLO")):
 			continue
 		_vestir({r.zona: r.id})
 		await _esperar(0.3)

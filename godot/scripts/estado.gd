@@ -39,6 +39,9 @@ func _ready() -> void:
 				L.registrar(str(x.get("en", "")))
 	prueba = OS.get_cmdline_user_args().has("--prueba") or _tiene_arg("--ojos")
 	cargar()
+	if not prueba:
+		_revisar_cierre(FileAccess.file_exists(MARCA))
+		_marca(true)
 	L.cambiar(str(d.cfg.idioma))
 
 func _tiene_arg(pre: String) -> bool:
@@ -77,6 +80,36 @@ func nueva() -> Dictionary:
 		"skin": {"nave": "avellana", "cartas": "bellota", "nubes": "algodon"},   ## diseños elegidos en los minijuegos
 		"cfg": {"musica": 0.7, "efectos": 1.0, "calidad": 1, "idioma": idioma, "vibrar": true},
 	}
+
+# ---------------- modo seguro ----------------
+## Algunos teléfonos (por ejemplo ciertos Vivo) cierran la app cuando su tarjeta gráfica no aguanta sombras grandes,
+## suavizado de bordes o brillo. Mientras el juego está abierto existe una marca en disco; al pasar a segundo plano o
+## cerrarse bien, se borra. Si al abrir la marca sigue ahí, la vez anterior el juego se cerró solo: se baja un paso
+## la calidad gráfica (hasta "Baja") y se avisa.
+const MARCA := "user://abierto.marca"
+var cierre_raro := false
+
+func _marca(on: bool) -> void:
+	if prueba:
+		return
+	if on:
+		var f := FileAccess.open(MARCA, FileAccess.WRITE)
+		if f:
+			f.store_string(str(Time.get_unix_time_from_system()))
+	elif FileAccess.file_exists(MARCA):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(MARCA))
+
+func _revisar_cierre(hubo_cierre: bool) -> void:
+	if not hubo_cierre:
+		return
+	cierre_raro = true
+	d.cfg["cierres"] = int(d.cfg.get("cierres", 0)) + 1
+	var q := int(d.cfg.calidad)
+	if q > 0:
+		d.cfg.calidad = q - 1
+	_sucio = true
+	if not prueba:
+		guardar()
 
 ## Bellotas devueltas al cargar (decoraciones que ya no existen); la interfaz lo avisa una vez.
 var reembolso := 0
@@ -188,7 +221,9 @@ func _process(dt: float) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
 		guardar()
+		_marca(false)
 	elif what == NOTIFICATION_APPLICATION_RESUMED or what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		_marca(true)
 		if not prueba:
 			_avanzar_tiempo()
 

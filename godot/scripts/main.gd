@@ -188,8 +188,12 @@ func _fin_intro() -> void:
 		Estado.d.durmiendo = false
 		pip.hacer("saludo")
 		Sfx.play("feliz")
+	if Estado.cierre_raro:
+		Estado.cierre_raro = false
+		hud.toast("Gráficos más livianos para que Pip no se cierre", UI.NARANJO)
+		await get_tree().create_timer(2.8).timeout
 	if Estado.reembolso > 0:
-		hud.toast(L.f("Te devolvimos %d bellotas de decoraciones que cambiaron", [Estado.reembolso]), UI.MENTA)
+		hud.toast(L.f("+%d bellotas devueltas", [Estado.reembolso]), UI.MENTA)
 		fx.volar(hud.size * 0.5, hud.pos_bellotas(), 12)
 		Estado.reembolso = 0
 		Estado.guardar()
@@ -720,7 +724,8 @@ func aplicar_ajustes() -> void:
 	get_viewport().msaa_3d = Viewport.MSAA_4X if q >= 2 else (Viewport.MSAA_2X if q == 1 else Viewport.MSAA_DISABLED)
 	get_viewport().scaling_3d_scale = 1.0 if q >= 1 else 0.75
 	Engine.max_fps = 60 if q >= 1 else 30
-	RenderingServer.directional_shadow_atlas_set_size(4096 if q >= 2 else 2048, true)
+	# calidad baja = lo más liviano posible (modo seguro): sin sombras ni brillo, mapa de sombras chico
+	RenderingServer.directional_shadow_atlas_set_size(4096 if q >= 2 else (2048 if q == 1 else 1024), true)
 	var idioma := str(Estado.cfg("idioma"))
 	if idioma != L.idioma:
 		L.cambiar(idioma)
