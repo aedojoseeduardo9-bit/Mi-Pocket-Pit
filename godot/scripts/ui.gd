@@ -644,6 +644,12 @@ class Boton extends Control:
 		resized.connect(func(): pivot_offset = size * 0.5)
 
 	func _gui_input(e: InputEvent) -> void:
+		if not activo:
+			# desactivado de verdad (antes igual respondía: un "Procesando..." se podía volver a tocar
+			# y la compra se entregaba dos veces)
+			if e is InputEventMouseButton:
+				accept_event()
+			return
 		if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
 			if e.pressed:
 				_apretado = true

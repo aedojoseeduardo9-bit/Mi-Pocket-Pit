@@ -22,6 +22,9 @@ var cama_alto := 0.45
 var _mats := {}
 var _rbox := {}
 var _ball: SphereMesh
+var _ball_low: SphereMesh      ## para piezas chicas (bolitas, flores, botones): menos polígonos
+var _cyl_low: CylinderMesh
+var _ocultar_t := -1.0         ## cuenta para esconder las habitaciones que no se ven
 var _cyl: CylinderMesh
 var _cone: CylinderMesh
 var _torus: TorusMesh
@@ -38,6 +41,16 @@ func _init() -> void:
 	_cyl.bottom_radius = 1.0
 	_cyl.height = 1.0
 	_cyl.radial_segments = 28
+	_ball_low = SphereMesh.new()
+	_ball_low.radius = 1.0
+	_ball_low.height = 2.0
+	_ball_low.radial_segments = 12
+	_ball_low.rings = 6
+	_cyl_low = CylinderMesh.new()
+	_cyl_low.top_radius = 1.0
+	_cyl_low.bottom_radius = 1.0
+	_cyl_low.height = 1.0
+	_cyl_low.radial_segments = 12
 	_cone = CylinderMesh.new()
 	_cone.top_radius = 0.0
 	_cone.bottom_radius = 1.0
@@ -118,12 +131,20 @@ func rbox_mesh(s: Vector3, r: float) -> ArrayMesh:
 
 func _mi(parent: Node3D, mesh: Mesh, m: Material, pos: Vector3, sc := Vector3.ONE, rot := Vector3.ZERO, sombra := true) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
+	# optimización: las piezas chicas usan mallas de pocos polígonos y no proyectan sombra (no se nota y
+	# en el teléfono cada sombra obliga a dibujar la pieza otra vez)
+	var tam := maxf(absf(sc.x), maxf(absf(sc.y), absf(sc.z)))
+	if mesh == _ball and tam < 0.09:
+		mesh = _ball_low
+	elif mesh == _cyl and maxf(absf(sc.x), absf(sc.z)) < 0.06:
+		mesh = _cyl_low
+	var grande := (mesh.get_aabb().size * sc.abs()).length() > 0.22
 	mi.mesh = mesh
 	mi.material_override = m
 	mi.position = pos
 	mi.scale = sc
 	mi.rotation = rot
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if sombra else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if sombra and grande else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(mi)
 	return mi
 
@@ -1457,13 +1478,14 @@ func _fijo_habitacion(n: Node3D) -> void:
 	# ventana con la luna o el sol
 	ventana_mat = mat("#bfe2ff", 0.5, 0.5)
 	var vm := StandardMaterial3D.new()
-	vm.albedo_color = Color("#bfe2ff")
+	# cielo de la ventana con brillo suave (antes encandilaba: albedo claro + brillo propio alto)
+	vm.albedo_color = Color("#a9d2f3")
 	vm.emission_enabled = true
 	vm.emission = Color("#9fc8ff")
-	vm.emission_energy_multiplier = 0.6
+	vm.emission_energy_multiplier = 0.22
 	set_meta("ventana_habitacion", vm)
-	_ventana(n, Vector3(-0.2, 2.75, FONDO + 0.05), 1.2, 1.0, "#fff8f0", vm)
-	_bola(n, Vector3(0.05, 2.95, FONDO + 0.08), Vector3(0.14, 0.14, 0.01), "#fff6c9", 0.5, 1.2)
+	_ventana(n, Vector3(-0.2, 2.75, FONDO + 0.05), 1.2, 1.0, "#f6ece2", vm)
+	_bola(n, Vector3(0.05, 2.95, FONDO + 0.08), Vector3(0.14, 0.14, 0.01), "#fff1b8", 0.5, 0.55)
 	# velador
 	_rb(n, Vector3(0.6, 0.62, 0.5), Vector3(-1.45, 0.31, FONDO + 0.6), "#d9b48f", 0.06)
 	_rb(n, Vector3(0.5, 0.03, 0.04), Vector3(-1.45, 0.42, FONDO + 0.86), "#b48a62", 0.01)
@@ -1550,8 +1572,25 @@ func efecto(n: Node3D, tipo: String, x := 1.0, m: StandardMaterial3D = null) -> 
 	efectos.append({"n": n, "tipo": tipo, "h": _h, "x": x, "rot": n.rotation, "pos": n.position, "sc": n.scale, "mat": m,
 		"fase": randf() * TAU})
 
+## Muestra las habitaciones entre a y b (el camino que recorre Pip al viajar).
+func mostrar_camino(a: int, b: int) -> void:
+	_ocultar_t = -1.0
+	for i in HABS.size():
+		if i >= mini(a, b) and i <= maxi(a, b):
+			(nodos[HABS[i]] as Node3D).visible = true
+
+## Optimización: solo se dibuja la habitación donde está Pip (las demás no se ven y gastaban
+## llamadas de dibujo y sombras).
+func _solo_activa() -> void:
+	for h in HABS:
+		(nodos[h] as Node3D).visible = h == hab_activa
+
 func _process(dt: float) -> void:
 	t_fx += dt
+	if _ocultar_t > 0.0:
+		_ocultar_t -= dt
+		if _ocultar_t <= 0.0:
+			_solo_activa()
 	var i := efectos.size() - 1
 	while i >= 0:
 		var e: Dictionary = efectos[i]
@@ -1607,6 +1646,7 @@ func _animar(e: Dictionary) -> void:
 ## Activa solo las partículas de la habitación donde está Pip.
 func activar(h: String) -> void:
 	hab_activa = h
+	_ocultar_t = 0.7   # cuando la cámara termina de llegar, las otras habitaciones se esconden
 	var i := particulas.size() - 1
 	while i >= 0:
 		var pe = particulas[i][0]

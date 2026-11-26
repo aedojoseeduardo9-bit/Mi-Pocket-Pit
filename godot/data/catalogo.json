@@ -2704,8 +2704,8 @@
      "precio": 0,
      "p": {
       "patron": "liso",
-      "c1": "#e6dcff",
-      "c2": "#d2c2ff"
+      "c1": "#dccff5",
+      "c2": "#c8b6f0"
      }
     },
     {
@@ -2770,8 +2770,8 @@
      "precio": 40,
      "p": {
       "patron": "ladrillo",
-      "c1": "#e6dcff",
-      "c2": "#d2c2ff"
+      "c1": "#dccff5",
+      "c2": "#c8b6f0"
      }
     },
     {
@@ -4243,6 +4243,34 @@
  "nivel_compra": {
   "base": 1200,
   "por_nivel": 300
+ },
+ "reembolsos": {
+  "deco_cocina_piso_madera_oscura": 60,
+  "deco_cocina_piso_ajedrez_rosa": 70,
+  "deco_cocina_piso_ajedrez_menta": 70,
+  "deco_cocina_piso_alfombra_azul": 80,
+  "deco_cocina_piso_alfombra_lila": 80,
+  "deco_cocina_nevera_menta": 120,
+  "deco_cocina_nevera_negra": 160,
+  "deco_cocina_nevera_amarilla": 120,
+  "deco_cocina_mesa_rosa": 90,
+  "deco_cocina_mesa_blanca": 80,
+  "deco_habitacion_piso_madera_oscura": 60,
+  "deco_habitacion_piso_ajedrez_rosa": 70,
+  "deco_habitacion_piso_ajedrez_menta": 70,
+  "deco_habitacion_piso_alfombra_azul": 80,
+  "deco_habitacion_cama_nube_magica": 320,
+  "deco_habitacion_lampara_hongo_azul": 70,
+  "deco_habitacion_alfombra_redonda_azul": 50,
+  "deco_patio_cerca_rosa": 60,
+  "deco_bano_piso_ajedrez_rosa": 70,
+  "deco_bano_piso_ajedrez_menta": 70,
+  "deco_bano_banera_rosa": 120,
+  "deco_bano_banera_menta": 120,
+  "deco_bano_cortina_rayas_rosa": 50,
+  "deco_bano_cortina_mar": 70,
+  "deco_bano_cortina_lila": 50,
+  "deco_bano_cortina_noche": 90
  },
  "regalo_diario": [
   20,

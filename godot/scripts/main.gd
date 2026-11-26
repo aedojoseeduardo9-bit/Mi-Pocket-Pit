@@ -118,7 +118,7 @@ func _armar_mundo() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 0.95
 	env.glow_enabled = true
-	env.glow_intensity = 0.35
+	env.glow_intensity = 0.28
 	env.glow_bloom = 0.04
 	env.glow_hdr_threshold = 1.1
 	env.adjustment_enabled = true
@@ -188,6 +188,11 @@ func _fin_intro() -> void:
 		Estado.d.durmiendo = false
 		pip.hacer("saludo")
 		Sfx.play("feliz")
+	if Estado.reembolso > 0:
+		hud.toast(L.f("Te devolvimos %d bellotas de decoraciones que cambiaron", [Estado.reembolso]), UI.MENTA)
+		fx.volar(hud.size * 0.5, hud.pos_bellotas(), 12)
+		Estado.reembolso = 0
+		Estado.guardar()
 	if Estado.regalo_disponible():
 		await get_tree().create_timer(0.6).timeout
 		hud.abrir_regalo()
@@ -269,16 +274,40 @@ func _process(dt: float) -> void:
 		_t_forma = 0.5
 		_revisar_forma()
 
+## Luz de cada habitación: sol, luz ambiente, exposición y tono. La habitación (cuarto de Pip) es más tibia y
+## suave: con la luz de la cocina se veía lavada y encandilaba. El baño, todo blanco, también baja un poco.
+const LUZ := [
+	{"sol": 0.42, "amb": 0.38, "exp": 0.95, "tono": "#fff1e6"},   # cocina
+	{"sol": 0.33, "amb": 0.29, "exp": 0.84, "tono": "#ffe6d6"},   # habitación
+	{"sol": 0.46, "amb": 0.40, "exp": 0.95, "tono": "#fff4e8"},   # patio
+	{"sol": 0.37, "amb": 0.32, "exp": 0.87, "tono": "#f4f2ff"},   # baño
+]
+var _luz_x := -1.0
+var _noche_aplicada := -1.0
+
 func _aplicar_noche() -> void:
 	var k := _noche_k
-	sol.light_energy = lerpf(0.42, 0.06, k)
-	env.ambient_light_energy = lerpf(0.38, 0.16, k)
-	env.ambient_light_color = Color("#fff1e6").lerp(Color("#6b78c9"), k)
+	# mezcla la luz de las habitaciones según dónde mira la cámara (al viajar cambia suave)
 	if casa.lampara_mat:
 		casa.lampara_mat.emission_energy_multiplier = lerpf(0.6, 0.05, k)
+	var fx_ := clampf(cam_pos.x / Casa.ANCHO, 0.0, 3.0)
+	if absf(fx_ - _luz_x) < 0.002 and k == _noche_aplicada:
+		return   # nada cambió: no se toca el ambiente (cada cambio cuesta en el teléfono)
+	_luz_x = fx_
+	_noche_aplicada = k
+	var a: Dictionary = LUZ[int(floorf(fx_))]
+	var b: Dictionary = LUZ[mini(3, int(floorf(fx_)) + 1)]
+	var u: float = fx_ - floorf(fx_)
+	var base_sol := lerpf(float(a.sol), float(b.sol), u)
+	var base_amb := lerpf(float(a.amb), float(b.amb), u)
+	env.tonemap_exposure = lerpf(float(a.exp), float(b.exp), u)
+	sol.light_energy = lerpf(base_sol, 0.06, k)
+	env.ambient_light_energy = lerpf(base_amb, 0.16, k)
+	env.ambient_light_color = Color(str(a.tono)).lerp(Color(str(b.tono)), u).lerp(Color("#6b78c9"), k)
 	var vm = casa.get_meta("ventana_habitacion", null)
 	if vm:
 		(vm as StandardMaterial3D).emission = Color("#9fc8ff").lerp(Color("#1a2266"), k)
+		(vm as StandardMaterial3D).emission_energy_multiplier = lerpf(0.22, 0.6, k)
 
 func _pantalla(p: Vector3) -> Vector2:
 	# de 3D a coordenadas de la interfaz (el lienzo está escalado)
@@ -310,6 +339,7 @@ func ir_a(i: int) -> void:
 	hab = i
 	Estado.d.habitacion = i
 	modo = "viaje"
+	casa.mostrar_camino(desde, i)
 	Sfx.play("swipe", 1.0, -3.0)
 	pip.dormir(false)
 	pip.accion = ""

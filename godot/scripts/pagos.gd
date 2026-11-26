@@ -10,18 +10,32 @@ signal compra_fallida(id: String, motivo: String)
 
 const MODO_PRUEBA := true
 
+var _en_curso := ""     ## compra que se está procesando (solo una a la vez: evita cobrar o entregar dos veces)
+
+func en_curso() -> bool:
+	return _en_curso != ""
+
 func comprar(id: String) -> void:
+	if _en_curso != "":
+		compra_fallida.emit(id, "Espera: hay otra compra en curso")
+		return
 	var p: Dictionary = Estado.busca(Estado.cat.paquetes, id)
 	if p.is_empty():
 		p = Estado.busca(Estado.cat.especiales, id)
 	if p.is_empty():
 		compra_fallida.emit(id, "Ese paquete no existe")
 		return
+	if p.get("una_vez", false) and Estado.d.compras.get(id, false):
+		compra_fallida.emit(id, "Ya lo compraste")
+		return
+	_en_curso = id
 	if MODO_PRUEBA:
 		# simula la espera de la tienda para que la animación se sienta real
 		await get_tree().create_timer(0.6).timeout
+		_en_curso = ""
 		_entregar(p)
 		return
+	_en_curso = ""
 	compra_fallida.emit(id, "La tienda todavía no está conectada")
 
 func _entregar(p: Dictionary) -> void:

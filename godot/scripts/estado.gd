@@ -78,14 +78,29 @@ func nueva() -> Dictionary:
 		"cfg": {"musica": 0.7, "efectos": 1.0, "calidad": 1, "idioma": idioma, "vibrar": true},
 	}
 
+## Bellotas devueltas al cargar (decoraciones que ya no existen); la interfaz lo avisa una vez.
+var reembolso := 0
+
+func _leer(ruta: String):
+	if not FileAccess.file_exists(ruta):
+		return null
+	var f := FileAccess.open(ruta, FileAccess.READ)
+	if f == null:
+		return null
+	var g = JSON.parse_string(f.get_as_text())
+	return g if g is Dictionary and g.has("bellotas") else null
+
 func cargar() -> void:
 	d = nueva()
-	if prueba or not FileAccess.file_exists(RUTA):
+	if prueba:
 		return
-	var f := FileAccess.open(RUTA, FileAccess.READ)
-	var g = JSON.parse_string(f.get_as_text())
-	if g is Dictionary:
-		_mezclar(d, g)
+	# si la partida quedó a medio escribir (el teléfono se apagó justo), se usa la copia de respaldo
+	var g = _leer(RUTA)
+	if g == null:
+		g = _leer(RUTA + ".bak")
+	if g == null:
+		return
+	_mezclar(d, g)
 	_limpiar()
 	# partidas de antes de los regalos por nivel: se entregan los que ya correspondían (sin ventanas)
 	for n in range(2, nivel() + 1):
@@ -102,6 +117,15 @@ func _mezclar(a: Dictionary, b: Dictionary) -> void:
 
 ## Quita lo que ya no existe en el catálogo (ropa o decoración de versiones viejas).
 func _limpiar() -> void:
+	# decoraciones compradas que se rediseñaron: se devuelven sus bellotas (una sola vez: la clave se borra)
+	var rb: Dictionary = cat.get("reembolsos", {})
+	for k in d.tengo.duplicate():
+		if rb.has(k):
+			d.tengo.erase(k)
+			reembolso += int(rb[k])
+	if reembolso > 0:
+		d.bellotas = int(d.bellotas) + reembolso
+		_sucio = true
 	for z in d.puesto:
 		var id := str(d.puesto[z])
 		if id != "" and not ropa_por_id.has(id):
@@ -129,9 +153,24 @@ func guardar() -> void:
 	if prueba:
 		return
 	d.t = Time.get_unix_time_from_system()
-	var f := FileAccess.open(RUTA, FileAccess.WRITE)
-	if f:
-		f.store_string(JSON.stringify(d))
+	# guardado seguro: primero a un archivo aparte; si quedó completo, la partida anterior pasa a ser el respaldo
+	# y el nuevo la reemplaza. Así un corte a medio guardar nunca borra las compras.
+	var tmp := RUTA + ".tmp"
+	var f := FileAccess.open(tmp, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string(JSON.stringify(d))
+	f.close()
+	if _leer(tmp) == null:
+		return
+	var dir := DirAccess.open("user://")
+	if dir == null:
+		return
+	if FileAccess.file_exists(RUTA):
+		if FileAccess.file_exists(RUTA + ".bak"):
+			dir.remove(RUTA.get_file() + ".bak")
+		dir.rename(RUTA.get_file(), RUTA.get_file() + ".bak")
+	dir.rename(tmp.get_file(), RUTA.get_file())
 
 ## Algo importante cambió: se avisa a la interfaz y se guarda pronto.
 func marcar() -> void:
