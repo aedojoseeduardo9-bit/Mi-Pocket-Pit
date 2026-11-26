@@ -9,6 +9,7 @@ signal accion_terminada(nombre: String)
 
 static var _ball: SphereMesh
 static var _low: SphereMesh
+static var _mid: SphereMesh     ## esfera intermedia para piezas medianas (ojos, nariz): menos triángulos
 static var _cone: CylinderMesh
 static var _torus: TorusMesh
 static var _star: ArrayMesh
@@ -97,6 +98,11 @@ static func _geos() -> void:
 	_low.height = 2.0
 	_low.radial_segments = 14
 	_low.rings = 7
+	_mid = SphereMesh.new()
+	_mid.radius = 1.0
+	_mid.height = 2.0
+	_mid.radial_segments = 20
+	_mid.rings = 10
 	_cone = CylinderMesh.new()
 	_cone.top_radius = 0.0
 	_cone.bottom_radius = 1.0
@@ -166,6 +172,11 @@ static func gloss_mat(color: String) -> StandardMaterial3D:
 
 func _part(parent: Node3D, mesh: Mesh, mat: Material, pos: Vector3, sc: Vector3) -> MeshInstance3D:
 	var m := MeshInstance3D.new()
+	# optimización: Pip tiene ~80 piezas; las chicas no necesitan 800 triángulos (no se nota la diferencia)
+	var tam := maxf(sc.x, maxf(sc.y, sc.z))
+	if mesh == _ball and tam < 0.07:
+		m.set_meta("forma_orig", "esfera")   # al exportar el modelo sigue siendo "esfera"
+		mesh = _low if tam < 0.03 else _mid
 	m.mesh = mesh
 	m.material_override = mat
 	m.position = pos
@@ -870,9 +881,56 @@ const COLA_LADOS := 12
 
 ## Rehace la malla de la cola siguiendo los huesos: curva suave (Catmull-Rom), grosor que crece hacia el medio,
 ## borde ondulado (pelaje), lados más claros y punta crema.
+## Optimización: lo que no cambia de un cuadro a otro (triángulos, colores, senos y radios de cada anillo) se
+## calcula una vez; la forma se rehace hasta 40 veces por segundo (antes, todo en cada cuadro).
+var _cola_idx := PackedInt32Array()
+var _cola_cs := PackedColorArray()
+var _cola_clave := ""
+var _cola_dir: Array = []          ## [cos, sin, ondita] de cada vértice del anillo
+var _cola_r := PackedFloat32Array()
+var _cola_r_grosor := -1.0
+var _cola_t := 0.0
+
 func _cola_tubo() -> void:
 	if not cola.visible:
 		return
+	if t - _cola_t < 0.025 and _cola_t > 0.0 and t >= _cola_t:
+		return
+	_cola_t = t
+	if _cola_idx.is_empty():
+		for k in COLA_ANILLOS - 1:
+			for l in COLA_LADOS:
+				var a := k * COLA_LADOS + l
+				var b := k * COLA_LADOS + (l + 1) % COLA_LADOS
+				_cola_idx.append_array([a, b, a + COLA_LADOS, b, b + COLA_LADOS, a + COLA_LADOS])
+		for k in COLA_ANILLOS:
+			var u := float(k) / (COLA_ANILLOS - 1)
+			for l in COLA_LADOS:
+				var a := TAU * l / COLA_LADOS
+				_cola_dir.append([cos(a), sin(a), 1.0 + 0.09 * sin(a * 5.0 + u * 23.0)])
+	if _cola_r_grosor != cola_grosor:
+		_cola_r_grosor = cola_grosor
+		_cola_r.resize(COLA_ANILLOS)
+		for k in COLA_ANILLOS:
+			var u := float(k) / (COLA_ANILLOS - 1)
+			var r := cola_grosor * 0.03 + cola_grosor * 0.078 * pow(sin(PI * minf(1.0, u * 1.12) * 0.5), 0.7) * (1.0 - 0.35 * u)
+			if u > 0.86:
+				r *= sqrt(maxf(0.0, 1.0 - (u - 0.86) / 0.14))
+			_cola_r[k] = r
+	var fur: Color = (M.fur as StandardMaterial3D).albedo_color
+	var fur2: Color = (M.fur2 as StandardMaterial3D).albedo_color
+	var tip: Color = (M.tailTip as StandardMaterial3D).albedo_color
+	var clave := "%s|%s|%s|%s" % [fur, fur2, tip, cola_punta]
+	if clave != _cola_clave:
+		_cola_clave = clave
+		_cola_cs = PackedColorArray()
+		for k in COLA_ANILLOS:
+			var u := float(k) / (COLA_ANILLOS - 1)
+			for l in COLA_LADOS:
+				var c := fur.lerp(fur2, 0.35 + 0.35 * absf(float(_cola_dir[k * COLA_LADOS + l][0])))
+				if u > cola_punta:
+					c = c.lerp(tip, clampf((u - cola_punta) / 0.16, 0.0, 1.0))
+				_cola_cs.append(c)
 	var inv := torso.global_transform.affine_inverse()
 	var pts: Array[Vector3] = [Vector3(0, 0.03, -0.1)]
 	for i in tail.size():
@@ -891,44 +949,30 @@ func _cola_tubo() -> void:
 		var u2 := u * u
 		var u3 := u2 * u
 		cen.append(0.5 * ((2.0 * p1) + (-p0 + p2) * u + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * u2 + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * u3))
-	var fur: Color = (M.fur as StandardMaterial3D).albedo_color
-	var fur2: Color = (M.fur2 as StandardMaterial3D).albedo_color
-	var tip: Color = (M.tailTip as StandardMaterial3D).albedo_color
 	var vs := PackedVector3Array()
 	var ns := PackedVector3Array()
-	var cs := PackedColorArray()
-	var idx := PackedInt32Array()
+	vs.resize(COLA_ANILLOS * COLA_LADOS)
+	ns.resize(COLA_ANILLOS * COLA_LADOS)
 	var ref := Vector3.RIGHT
+	var q := 0
 	for k in COLA_ANILLOS:
-		var u := float(k) / (COLA_ANILLOS - 1)
 		var tg := (cen[mini(k + 1, COLA_ANILLOS - 1)] - cen[maxi(k - 1, 0)]).normalized()
 		var b1 := (ref - tg * ref.dot(tg)).normalized()
 		ref = b1
 		var b2 := tg.cross(b1)
-		var r := cola_grosor * 0.03 + cola_grosor * 0.078 * pow(sin(PI * minf(1.0, u * 1.12) * 0.5 + 0.0), 0.7) * (1.0 - 0.35 * u)
-		if u > 0.86:
-			r *= sqrt(maxf(0.0, 1.0 - (u - 0.86) / 0.14))
+		var r: float = _cola_r[k]
 		for l in COLA_LADOS:
-			var a := TAU * l / COLA_LADOS
-			var dir := b1 * cos(a) + b2 * sin(a)
-			var rr := r * (1.0 + 0.09 * sin(a * 5.0 + u * 23.0))
-			vs.append(cen[k] + dir * rr)
-			ns.append(dir)
-			var c := fur.lerp(fur2, 0.35 + 0.35 * absf(cos(a)))
-			if u > cola_punta:
-				c = c.lerp(tip, clampf((u - cola_punta) / 0.16, 0.0, 1.0))
-			cs.append(c)
-	for k in COLA_ANILLOS - 1:
-		for l in COLA_LADOS:
-			var a := k * COLA_LADOS + l
-			var b := k * COLA_LADOS + (l + 1) % COLA_LADOS
-			idx.append_array([a, b, a + COLA_LADOS, b, b + COLA_LADOS, a + COLA_LADOS])
+			var dd: Array = _cola_dir[q]
+			var dir: Vector3 = b1 * float(dd[0]) + b2 * float(dd[1])
+			vs[q] = cen[k] + dir * (r * float(dd[2]))
+			ns[q] = dir
+			q += 1
 	var arr := []
 	arr.resize(Mesh.ARRAY_MAX)
 	arr[Mesh.ARRAY_VERTEX] = vs
 	arr[Mesh.ARRAY_NORMAL] = ns
-	arr[Mesh.ARRAY_COLOR] = cs
-	arr[Mesh.ARRAY_INDEX] = idx
+	arr[Mesh.ARRAY_COLOR] = _cola_cs
+	arr[Mesh.ARRAY_INDEX] = _cola_idx
 	cola_mesh.clear_surfaces()
 	cola_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
 
@@ -1258,7 +1302,7 @@ func exportar() -> Dictionary:
 		var m := mi as MeshInstance3D
 		if m == cola or m.get_parent() is Area3D:
 			continue
-		var forma := _nombre_malla(m.mesh)
+		var forma := str(m.get_meta("forma_orig", _nombre_malla(m.mesh)))
 		if forma == "brazo" or forma.begins_with("oreja"):
 			if not mallas.has(forma):
 				var arr := m.mesh.surface_get_arrays(0)

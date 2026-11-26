@@ -1,5 +1,33 @@
 # Pocket Pip — revisión de errores
 
+## Versión 0.6 (gráfica optimizada, brillo de la habitación y errores de compras)
+### Compras (lo más importante)
+- [x] **Compras que se entregaban dos veces.** El botón "Procesando..." se veía desactivado pero seguía respondiendo
+  (los botones nunca revisaban si estaban activos): un segundo toque volvía a comprar. Ahora un botón desactivado no
+  responde, y la tienda procesa una sola compra a la vez.
+- [x] **Cobros dobles con bellotas** al tocar rápido dos veces mientras una ventana se cerraba (subir de nivel,
+  capibara de 3 minutos): la ventana que se cierra ya no recibe toques, y ropa, decoración y bailes revisan que no los
+  tengas antes de cobrar.
+- [x] **Los packs de una sola vez** (bienvenida, capibara para siempre) se podían volver a comprar llamando a la
+  tienda: ahora se rechaza ("Ya lo compraste").
+- [x] **Compra que fallaba = ventana colgada para siempre** en "Procesando...". Ahora avisa el motivo y se cierra.
+  Además, al terminar una compra el juego cerraba cualquier ventana abierta (por ejemplo "¡Nivel N!"): ahora cierra
+  solo la suya, y solo escucha la respuesta de su propio paquete.
+- [x] **Partida perdida si el teléfono se apagaba justo al guardar**: el archivo quedaba a medias y el juego partía
+  de cero (con las compras perdidas). Ahora guarda en un archivo aparte, lo revisa y recién ahí reemplaza; la partida
+  anterior queda como respaldo y se usa si la principal está dañada.
+- [x] **27 decoraciones que se compraban en la 0.3 desaparecieron al rediseñarlas en la 0.4** sin devolver nada
+  (por ejemplo la cama nube mágica de 320). Ahora se devuelven sus bellotas automáticamente y se avisa una vez.
+
+### Gráfica
+- [x] **Brillo muy alto en la habitación**: la ventana tenía brillo propio fuerte sobre un color casi blanco y
+  encandilaba; la luz era la misma en las 4 habitaciones. Ahora cada habitación tiene su luz (la habitación más tibia
+  y suave, el baño un poco menos blanco), la ventana muestra cielo y la pared lavanda tiene más color.
+- [x] **Optimización**: solo se dibuja la habitación donde está Pip (las otras se muestran al viajar); las piezas
+  chicas ya no proyectan sombra y usan mallas livianas; las piezas chicas de Pip (dientes, deditos, ojos) usan menos
+  polígonos; la cola de Pip ya no recalcula todo en cada cuadro (colores, triángulos y senos quedan guardados y la
+  forma se rehace hasta 40 veces por segundo). Piezas con sombra: de ~279 a ~80; piezas dibujadas: de ~317 a ~130.
+
 ## Versión 0.5
 - [x] **Bordes de las sombras dentados y con puntitos.** La sombra cubría 11 m con una imagen de 2048 píxeles y se
   desenfocaba con poco detalle: se ve en escalera. Ahora cubre 8,5 m (la casa entera) con 4096 en calidad alta

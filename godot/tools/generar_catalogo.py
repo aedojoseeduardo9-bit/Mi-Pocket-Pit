@@ -205,7 +205,7 @@ PATRONES = [("liso", "lisa", "Plain"), ("rayas", "a rayas", "Striped"), ("lunare
 PALETAS = {
     "cocina": [("#fff1dc", "#f3d9b6", "crema", "Cream"), ("#cdeee2", "#a9dcc8", "menta", "Mint"), ("#ffe1e8", "#ffc2d1", "cerezo", "Cherry"),
                ("#fff6c2", "#ffe58a", "limón", "Lemon"), ("#dbe9ff", "#b9d2ff", "cielo", "Sky"), ("#efe2ff", "#d8c4ff", "lavanda", "Lavender")],
-    "habitacion": [("#e6dcff", "#d2c2ff", "lavanda", "Lavender"), ("#2f3170", "#454a9c", "noche", "Night"), ("#ffdcc8", "#ffc6a8", "durazno", "Peach"),
+    "habitacion": [("#dccff5", "#c8b6f0", "lavanda", "Lavender"), ("#2f3170", "#454a9c", "noche", "Night"), ("#ffdcc8", "#ffc6a8", "durazno", "Peach"),
                    ("#d7f2e8", "#b4e3d1", "menta", "Mint"), ("#ffe8f1", "#ffcfe2", "algodón", "Cotton"), ("#fff3d6", "#ffe1a1", "vainilla", "Vanilla")],
     "bano": [("#dff3fb", "#bfe1ee", "azulejo", "Tile"), ("#ffd1c4", "#ffb7a3", "coral", "Coral"), ("#e2f7e1", "#c3ebc0", "pistacho", "Pistachio"),
              ("#f0e6ff", "#dccaff", "uva", "Grape"), ("#fffbe6", "#fff0b3", "arena", "Sand"), ("#e8edf5", "#ccd6e6", "nube", "Cloud")],
@@ -446,10 +446,25 @@ for h, slots in deco.items():
             if x["id"] in CON_EFECTO and (sl not in ("pared", "piso", "cerca", "cortina", "nevera", "mesa") or x["id"] in ("acuario", "luces", "magica", "dulces")):
                 x["fx"] = True
 
+# Decoraciones que existían en la versión 0.3 y se rediseñaron en la 0.4: quien las compró recibe de vuelta
+# sus bellotas (Estado._limpiar). Clave = lo que queda en "tengo"; valor = precio pagado.
+REEMBOLSOS = {
+    "deco_cocina_piso_madera_oscura": 60, "deco_cocina_piso_ajedrez_rosa": 70, "deco_cocina_piso_ajedrez_menta": 70,
+    "deco_cocina_piso_alfombra_azul": 80, "deco_cocina_piso_alfombra_lila": 80, "deco_cocina_nevera_menta": 120,
+    "deco_cocina_nevera_negra": 160, "deco_cocina_nevera_amarilla": 120, "deco_cocina_mesa_rosa": 90,
+    "deco_cocina_mesa_blanca": 80, "deco_habitacion_piso_madera_oscura": 60, "deco_habitacion_piso_ajedrez_rosa": 70,
+    "deco_habitacion_piso_ajedrez_menta": 70, "deco_habitacion_piso_alfombra_azul": 80,
+    "deco_habitacion_cama_nube_magica": 320, "deco_habitacion_lampara_hongo_azul": 70,
+    "deco_habitacion_alfombra_redonda_azul": 50, "deco_patio_cerca_rosa": 60, "deco_bano_piso_ajedrez_rosa": 70,
+    "deco_bano_piso_ajedrez_menta": 70, "deco_bano_banera_rosa": 120, "deco_bano_banera_menta": 120,
+    "deco_bano_cortina_rayas_rosa": 50, "deco_bano_cortina_mar": 70, "deco_bano_cortina_lila": 50,
+    "deco_bano_cortina_noche": 90,
+}
+
 cat = {"_nota": "GENERADO por godot/tools/generar_catalogo.py — no editar a mano.",
        "ropa": ropa, "pociones": pociones, "bailes": bailes, "comida": comida, "deco": deco, "juegos": juegos,
        "paquetes": paquetes, "especiales": especiales, "comida_exotica": comida_exotica, "naves": naves,
-       "cartas": cartas, "nubes": nubes, "recompensas": recompensas, "nivel_compra": {"base": 1200, "por_nivel": 300}, "regalo_diario": [20, 30, 40, 50, 60, 80, 150],
+       "cartas": cartas, "nubes": nubes, "recompensas": recompensas, "nivel_compra": {"base": 1200, "por_nivel": 300}, "reembolsos": REEMBOLSOS, "regalo_diario": [20, 30, 40, 50, 60, 80, 150],
        "bellotas_gratis": {"max": 5, "minutos": 30}}
 
 with open(os.path.join(RAIZ, "data", "catalogo.json"), "w", encoding="utf-8") as f:

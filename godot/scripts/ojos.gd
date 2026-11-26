@@ -258,6 +258,40 @@ func _correr() -> void:
 	Pagos.comprar("bellotas_500")
 	await Pagos.compra_lista
 	ok(Estado.bellotas() == b1 + 500, "compra de prueba entrega 500 bellotas")
+	# compras: errores que podían cobrar o entregar dos veces
+	var b2 := Estado.bellotas()
+	var fallos_pago: Array = []
+	var al_fallar := func(id, motivo): fallos_pago.append(motivo)
+	Pagos.compra_fallida.connect(al_fallar)
+	Pagos.comprar("bellotas_500")
+	Pagos.comprar("bellotas_500")          # segundo toque mientras se procesa
+	await Pagos.compra_lista
+	await _esperar(0.8)
+	ok(Estado.bellotas() == b2 + 500 and fallos_pago.size() == 1, "doble toque en una compra entrega solo una vez")
+	Pagos.comprar("capibara_permanente")
+	await _esperar(0.8)
+	ok(fallos_pago.size() == 2, "un pack de una sola vez no se puede volver a comprar")
+	Pagos.compra_fallida.disconnect(al_fallar)
+	var bt := UI.Boton.new("check", "x", Color.WHITE, Vector2(100, 100))
+	main.hud.add_child(bt)
+	var toques := [0]
+	bt.presionado.connect(func(): toques[0] += 1)
+	bt.activo = false
+	var evb := InputEventMouseButton.new()
+	evb.button_index = MOUSE_BUTTON_LEFT
+	evb.position = Vector2(50, 50)
+	evb.pressed = true
+	bt._gui_input(evb)
+	var evb2 := evb.duplicate()
+	evb2.pressed = false
+	bt._gui_input(evb2)
+	ok(toques[0] == 0, "un botón desactivado no responde")
+	bt.queue_free()
+	var b3 := Estado.bellotas()
+	Estado.d.tengo.append("deco_habitacion_cama_nube_magica")
+	Estado._limpiar()
+	ok(Estado.bellotas() == b3 + 320 and not Estado.tiene("deco_habitacion_cama_nube_magica"), "decoración quitada: se devuelven sus bellotas")
+	Estado.reembolso = 0
 	main.hud.cerrar_panel()
 	await _esperar(0.5)
 	# decoración: más de 30 por habitación
@@ -470,6 +504,13 @@ func _galeria() -> void:
 			await foto("regalo_nivel_%d" % n)
 		main.hud.cerrar_modal()
 		return
+	if OS.get_environment("OJOS_GALERIA") == "medir":
+		for i in [1, 0, 2, 3]:
+			await _ir(i)
+			await _esperar(1.2)
+			informe.append(_medir(Casa.HABS[i]))
+			await foto("luz_%d" % i)
+		return
 	if OS.get_environment("OJOS_GALERIA") == "sombras":
 		for i in [1, 0, 2, 3]:
 			await _ir(i)
@@ -503,3 +544,45 @@ func _galeria() -> void:
 	_vestir({})
 	main.foco_deco = ""
 	ok(true, "galería completa")
+
+## Cuánto cuesta dibujar un cuadro (para comparar antes y después de optimizar).
+func _medir(nombre: String) -> String:
+	var mal := 0
+	var visibles := 0
+	var sombra := 0
+	for n in main.mundo.find_children("*", "GeometryInstance3D", true, false):
+		var g := n as GeometryInstance3D
+		mal += 1
+		if g.is_visible_in_tree():
+			visibles += 1
+			if g.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF:
+				sombra += 1
+	var dc := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+	var ob := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME)
+	var pr := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
+	# las 6 piezas visibles con más triángulos
+	var pesos: Array = []
+	for n in main.mundo.find_children("*", "GeometryInstance3D", true, false):
+		var g := n as GeometryInstance3D
+		if not g.is_visible_in_tree():
+			continue
+		var tri := 0
+		var cuantas := 1
+		var m: Mesh = null
+		if g is MeshInstance3D:
+			m = (g as MeshInstance3D).mesh
+		elif g is MultiMeshInstance3D and (g as MultiMeshInstance3D).multimesh:
+			m = (g as MultiMeshInstance3D).multimesh.mesh
+			cuantas = (g as MultiMeshInstance3D).multimesh.instance_count
+		if m:
+			for si in m.get_surface_count():
+				var arr := m.surface_get_arrays(si)
+				var idx = arr[Mesh.ARRAY_INDEX]
+				tri += (idx.size() if idx != null else (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()) / 3
+		pesos.append([tri * cuantas, "%s(%s x%d)" % [g.get_parent().name, m.get_class() if m else "?", cuantas]])
+	pesos.sort_custom(func(a, b): return a[0] > b[0])
+	var top := ""
+	for k in mini(6, pesos.size()):
+		top += " %d:%s" % [pesos[k][0], pesos[k][1]]
+	informe.append("PESADAS " + nombre + top)
+	return "MEDIDA %s: %d llamadas de dibujo, %d objetos, %d triángulos | piezas 3D %d (visibles %d, con sombra %d)" % [nombre, dc, ob, pr, mal, visibles, sombra]

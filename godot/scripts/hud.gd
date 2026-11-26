@@ -807,6 +807,8 @@ func _armar_pie() -> void:
 					b.presionado.connect(abrir_subir_nivel)
 				else:
 					b = _boton_comprar(int(r.precio), func():
+						if Estado.tiene(id):
+							return
 						if pagar(int(r.precio)):
 							Estado.agregar(id)
 							Estado.poner(zona, id)
@@ -820,6 +822,8 @@ func _armar_pie() -> void:
 				var id := _hoja_sel
 				if int(v.get("precio", 0)) > 0:
 					b = _boton_comprar(int(v.precio), func():
+						if Estado.tiene("deco_%s_%s_%s" % [h, slot, id]):
+							return
 						if pagar(int(v.precio)):
 							Estado.agregar("deco_%s_%s_%s" % [h, slot, id])
 							Estado.poner_deco(h, slot, id)
@@ -847,6 +851,8 @@ func _armar_pie() -> void:
 				var bl: Dictionary = Estado.busca(Estado.cat.bailes, _hoja_sel)
 				var id := _hoja_sel
 				b = _boton_comprar(int(bl.precio), func():
+					if Estado.tiene("baile_" + id):
+						return
 					if pagar(int(bl.precio)):
 						Estado.agregar("baile_" + id)
 						_celebrar_compra()
@@ -946,6 +952,10 @@ func cerrar_modal() -> void:
 	if modal and is_instance_valid(modal):
 		var m := modal
 		modal = null
+		# mientras se desvanece no se puede tocar nada (antes un segundo toque rápido volvía a cobrar)
+		m.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for c in m.find_children("*", "Control", true, false):
+			(c as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var tw := create_tween()
 		tw.tween_property(m, "modulate:a", 0.0, 0.18)
 		tw.tween_callback(m.queue_free)
@@ -1101,10 +1111,14 @@ func abrir_subir_nivel() -> void:
 	si.tam_texto = 26
 	si.sonido = ""
 	si.position = Vector2(card.size.x * 0.5 - 24, card.size.y - 116)
+	var fondo_nv := modal
 	si.presionado.connect(func():
+		if modal != fondo_nv or Estado.nivel() != n:
+			return
 		if Estado.bellotas() < costo:
 			sin_bellotas(costo - Estado.bellotas())
 			return
+		si.activo = false
 		cerrar_modal()
 		if Estado.comprar_nivel():
 			_celebrar_compra()
@@ -1145,7 +1159,10 @@ func abrir_capibara() -> void:
 		b1.tam_texto = 22
 		b1.position = Vector2(card.size.x * 0.5 - 308, y)
 		b1.presionado.connect(func():
+			if not b1.activo:
+				return
 			if Estado.pociones("capibara") > 0 or pagar(int(p.precio)):
+				b1.activo = false
 				if Estado.pociones("capibara") <= 0:
 					Estado.sumar_pocion("capibara", 1)
 				cerrar_modal()
@@ -1187,13 +1204,34 @@ func _confirmar_compra(id: String) -> void:
 	si.color_icono = Color.WHITE
 	si.tam_texto = 24
 	si.position = Vector2(card.size.x * 0.5 - 4, card.size.y - 112)
+	var fondo := modal
 	si.presionado.connect(func():
 		si.activo = false
+		no.activo = false
 		si.texto = "Procesando..."
 		si.queue_redraw()
+		var res := {"listo": false, "ok": false, "motivo": ""}
+		var al_ok := func(cid: String, _n: int):
+			if cid == id:
+				res.listo = true
+				res.ok = true
+		var al_fallar := func(cid: String, motivo: String):
+			if cid == id:
+				res.listo = true
+				res.motivo = motivo
+		Pagos.compra_lista.connect(al_ok)
+		Pagos.compra_fallida.connect(al_fallar)
 		Pagos.comprar(id)
-		await Pagos.compra_lista
-		cerrar_modal()
+		while not res.listo:
+			await get_tree().process_frame
+		Pagos.compra_lista.disconnect(al_ok)
+		Pagos.compra_fallida.disconnect(al_fallar)
+		# se cierra solo esta ventana (si entretanto se abrió otra, no se toca)
+		if modal == fondo:
+			cerrar_modal()
+		if not res.ok:
+			Sfx.play("deny")
+			toast(str(res.motivo), UI.ROJO)
 		if hoja_tipo == "tienda":
 			_armar_tarjetas())
 	card.add_child(no)
